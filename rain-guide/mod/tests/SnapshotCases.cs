@@ -55,11 +55,16 @@ internal static class SnapshotCases
         gzip.CopyTo(restored);
         check(json.SequenceEqual(restored.ToArray()), "gzip/base64url round trip preserves entire JSON without truncation");
         using var document = JsonDocument.Parse(json);
+        check(document.RootElement.GetProperty("route").GetBoolean(), "route highlighting is enabled by default in a game snapshot");
         check(document.RootElement.GetProperty("progress").GetProperty("flags").GetProperty("ghostsTalkedTo").GetProperty("CC").GetInt32() == 2, "echo dictionary serializes as a JSON object");
         var players = document.RootElement.GetProperty("players");
         check(players.GetArrayLength() == 3 && !players[2].GetProperty("available").GetBoolean() && !players[2].TryGetProperty("room", out _), "unresolved remote players remain present without fabricated coordinates");
         check(!players[1].TryGetProperty("px", out _) && players[1].GetProperty("accuracy").GetString() == "room", "abstract remote position never pretends to have pixel precision");
         check(players[2].GetProperty("name").GetString() == "远端 <玩家>", "Unicode and markup-like player names survive JSON as text");
+
+        snapshot.route = false;
+        using (var routeOff = JsonDocument.Parse(SnapshotProtocol.Json(snapshot)))
+            check(!routeOff.RootElement.GetProperty("route").GetBoolean(), "route highlighting setting is preserved in a game snapshot");
 
         snapshot.progress.rooms = Enumerable.Range(0, SnapshotProtocol.MaxRooms + 1).Select(x => "SU_R" + x).ToList();
         bool roomsRejected = false;

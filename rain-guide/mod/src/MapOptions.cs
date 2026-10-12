@@ -7,6 +7,8 @@ namespace WhereShouldIGo
     {
         internal readonly Configurable<KeyCode> OpenKey;
         internal readonly Configurable<int> HoldTenths;
+        internal readonly Configurable<bool> EnableRouteHighlight;
+        internal readonly Configurable<bool> EnableGNavigation;
 
         internal MapOptions()
         {
@@ -15,6 +17,10 @@ namespace WhereShouldIGo
             HoldTenths = config.Bind("HoldTenths", 6,
                 new ConfigurableInfo("按住时长，单位 0.1 秒 / Hold duration in tenths of a second.",
                     new ConfigAcceptableRange<int>(2, 20)));
+            EnableRouteHighlight = config.Bind("EnableRouteHighlight", true,
+                new ConfigurableInfo("在雨间网页地图中高亮推荐路线 / Highlight the recommended route on the Rainward web map."));
+            EnableGNavigation = config.Bind("EnableGNavigation", true,
+                new ConfigurableInfo("启用 G 键长按打开地图 / Enable hold-G navigation."));
         }
 
         public override void Initialize()
@@ -27,9 +33,13 @@ namespace WhereShouldIGo
                 new OpKeyBinder(OpenKey, new Vector2(330, 460), new Vector2(180, 30), false),
                 new OpLabel(25, 385, "按住时长 ×0.1 秒 / Hold ×0.1 s"),
                 new OpSlider(HoldTenths, new Vector2(330, 385), 200),
-                new OpLabel(new Vector2(25, 255), new Vector2(550, 85),
+                new OpCheckBox(EnableRouteHighlight, new Vector2(25, 320)),
+                new OpLabel(60, 320, "启用高亮路线 / Highlight recommended route"),
+                new OpCheckBox(EnableGNavigation, new Vector2(25, 285)),
+                new OpLabel(60, 285, "启用 G 键导航 / Enable G-key navigation"),
+                new OpLabel(new Vector2(25, 190), new Vector2(550, 85),
                     "默认按住 G 0.6 秒，每次松开后才可再次打开。\nDefault: hold G for 0.6 s; release before opening again.\n浏览器显示打开时的位置，移动后再次按键更新。\nThe map is a position snapshot; hold again to update.", FLabelAlignment.Left),
-                new OpLabel(new Vector2(25, 130), new Vector2(550, 105),
+                new OpLabel(new Vector2(25, 65), new Vector2(550, 105),
                     "如有新增或修改地形的 MOD，地图信息可能不准确。\n本工具不扫描地形 MOD，不改存档，不使用剪贴板。\nTerrain mods may make map information inaccurate.\nNo terrain mod scanning, save changes or clipboard access.\n联机时浏览器打开不会暂停世界，请先找安全位置。\nOpening a browser does not pause an online world.", FLabelAlignment.Left)
             );
         }

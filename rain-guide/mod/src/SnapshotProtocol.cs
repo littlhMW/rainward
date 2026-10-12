@@ -25,6 +25,7 @@ namespace WhereShouldIGo
         [DataMember] public string mode = "story";
         [DataMember] public bool dlc;
         [DataMember] public bool multiplayer;
+        [DataMember] public bool route = true;
         [DataMember] public string capturedAt;
         [DataMember] public List<PlayerSnapshot> players = new List<PlayerSnapshot>();
         [DataMember] public ProgressSnapshot progress;

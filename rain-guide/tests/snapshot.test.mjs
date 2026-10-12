@@ -22,8 +22,14 @@ test('actual C# gzip/base64url snapshot parses with the same data as direct JSON
   assert.equal(result.capturedAt, '2026-10-13T12:34:56.000Z');
   assert.equal(result.progress.source, 'host');
   assert.equal(result.progress.freshness, 'cycle-start');
+  assert.equal(result.route, true, 'legacy snapshots default to an enabled web-map route');
   assert.deepEqual(result.progress.rooms, ['HI_A01', 'SU_C04', 'SU_S01']);
   assert.deepEqual(result.progress.flags.ghostsTalkedTo, { CC: 2, SI: 1 });
+});
+
+test('route highlighting follows the mod snapshot toggle', () => {
+  assert.equal(normalizeSnapshot({ ...input(), route: false }).route, false);
+  assert.equal(normalizeSnapshot({ ...input(), route: true }).route, true);
 });
 
 test('normalization preserves local, host, and unknown remote players separately', () => {

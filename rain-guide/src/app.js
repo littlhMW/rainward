@@ -238,6 +238,7 @@ function applyLocation(value) {
   if (value.v === 2) {
     if (applyGameProgress(profile(), value.progress)) state.prefs.names = false;
     state.prefs.mask = true;
+    state.prefs.route = value.route !== false;
   }
   profile().current = value.region; selectedRoom = value.room;
   if (!profile().known.includes(value.region)) profile().known.push(value.region);

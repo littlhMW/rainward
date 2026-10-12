@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace WhereShouldIGo
 {
-    [BepInPlugin(ModId, "雨间：我该去哪 / Rainward: Where to Go", "1.1.0")]
+    [BepInPlugin(ModId, "雨间：我该去哪 / Rainward: Where to Go", "1.2.0")]
     [BepInDependency("henpemaz.rainmeadow", BepInDependency.DependencyFlags.SoftDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
@@ -70,6 +70,12 @@ namespace WhereShouldIGo
                 {
                     previousGame = game;
                     hold.Suspend();
+                }
+                var navigationEnabled = options?.EnableGNavigation.Value ?? true;
+                if (!navigationEnabled)
+                {
+                    hold.Suspend();
+                    return;
                 }
                 var key = options?.OpenKey.Value ?? KeyCode.G;
                 var duration = (options?.HoldTenths.Value ?? 6) / 10f;
@@ -139,6 +145,7 @@ namespace WhereShouldIGo
             try
             {
                 var snapshot = SnapshotBuilder.Capture(game, lobby, gameMode, local, campaign, mode);
+                snapshot.route = options?.EnableRouteHighlight.Value ?? true;
                 var json = SnapshotProtocol.Json(snapshot);
                 var url = SnapshotProtocol.Url(json);
                 if (url.Length > SnapshotProtocol.MaxUrlChars)
