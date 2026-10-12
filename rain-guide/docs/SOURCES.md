@@ -60,7 +60,9 @@
 
 ## Watcher 线索与外部地图
 
-[Alduris Watcher Map](https://alduris.github.io/watcher-map/) 是 Wiki 推荐的观望者地图。由于该来源目前没有本项目可确认的复制许可，“雨间”不复制、内嵌或程序化读取其新增地图代码、区域 JSON 和地形瓦片；Watcher 地图区域显示中只保留故事线索、路线方向和指向原站的外部链接。需要详细地图时请在原站查看。完整边界见 [第三方声明](../THIRD-PARTY-NOTICES.md) 与 [上游说明](../upstream/UPSTREAM.md)。
+[Alduris Watcher Map](https://alduris.github.io/watcher-map/) 是 Wiki 推荐的观望者地图。该仓库目前没有独立许可证；“雨间”不复制、内嵌或程序化读取其新增地图代码、区域 JSON 和地形瓦片。Watcher 地图区域显示中只保留故事线索、路线方向和指向原站的外部链接。需要详细地图时请在原站查看。
+
+[Alduris MapExporter](https://github.com/alduris/MapExporter) 的根目录与前端目录均声明 CC0 1.0，可复用其作者创作的导出器代码和前端文件，但不等于授权 Watcher 网站生成的地图数据、瓦片、截图、图标或其他 Rain World 衍生素材。完整边界见 [第三方声明](../THIRD-PARTY-NOTICES.md) 与 [上游说明](../upstream/UPSTREAM.md)。
 
 [Ripple](https://rainworld.miraheze.org/wiki/Ripple)、[Spinning Top](https://rainworld.miraheze.org/wiki/Spinning_Top)、[Warp Point](https://rainworld.miraheze.org/wiki/Warp_Point) 与 [Endings](https://rainworld.miraheze.org/wiki/Endings) 用于核对成长和分支条件。Watcher 的自建、封闭、单向与动态传送无法由静态故事路标推断；跨区建议不声称实时还原传送网络。
 

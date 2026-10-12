@@ -24,7 +24,9 @@
 
 [alduris/watcher-map](https://alduris.github.io/watcher-map/) 的新增地图代码、区域 JSON 和地形瓦片没有在本项目中复制、打包或程序化读取。Watcher 在“雨间”中保留故事线索，并提供指向原站的外部链接；需要查看其地图时请在原站打开。
 
-该来源目前没有可供本项目确认的复制许可声明。公开可访问不等于获得再发布或内嵌授权；若未来要接入其地图数据，应先取得作者明确许可，并重新核对游戏衍生素材的权利范围。
+[alduris/MapExporter](https://github.com/alduris/MapExporter) 的根目录 `LICENSE` 和 `assets/map-frontend/LICENSE` 均声明 **CC0 1.0 Universal**。该许可可以覆盖作者在该仓库中创作的导出器代码和前端文件；本项目若复用这些文件，应继续保留前端所列的 Leaflet、Henpemaz、Alduris 和 Rain World 署名信息。MapExporter 的导出器会在运行时从 Rain World 读取房间、瓦片和对象并生成数据，仓库的 CC0 不会替第三方素材清权。
+
+`alduris/watcher-map` 仓库当前没有 `LICENSE` 文件，GitHub API 也未标注仓库许可。因此，Watcher 地图的区域 JSON、生成的地形瓦片、截图、图标和游戏衍生内容不能仅因 MapExporter 使用 CC0 就视为可再发布。公开可访问不等于获得再发布或内嵌授权；若未来要接入其地图数据，应先取得作者明确许可，并确认许可覆盖 GitHub Pages、Mod、Steam Workshop、修改和再发布。
 
 ## Wiki 资料
 

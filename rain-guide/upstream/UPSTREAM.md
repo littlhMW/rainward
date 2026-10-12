@@ -63,6 +63,8 @@ map.html?slugcat=white&region=SU&room=SU_C04
 
 “雨间”不复制、离线打包或程序化读取该来源的地图代码、数据或瓦片。Watcher 仍保留故事线索和路线方向；需要查看真实地图时，页面只提供指向原站的外部链接。公开可访问不等于获得内嵌或再发布授权。若未来重新考虑接入，应先取得作者明确许可，并重新核对游戏衍生素材范围。
 
+[Alduris MapExporter](https://github.com/alduris/MapExporter) 的根目录和 `assets/map-frontend/LICENSE` 声明 CC0 1.0，可用于复用该仓库作者创作的导出器代码和前端文件；其导出器从游戏运行时生成房间、瓦片和对象数据，CC0 不会替第三方游戏素材清权。`alduris/watcher-map` 当前没有独立许可证，因此不能仅凭 MapExporter 的 CC0 复制 Watcher 网站中的 JSON、瓦片、截图或图标。
+
 ## 玩家坐标的精度边界
 
 可以通过角色、区域与房间代码准确找到房间。普通 `region.json` 只含截图边界和标签位置，不含游戏房间坐标原点，因此不能将游戏内格坐标直接加到截图边界就宣称是精确位置。
