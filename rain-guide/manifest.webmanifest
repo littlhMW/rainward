@@ -1,14 +1,14 @@
 {
   "id": "./",
-  "name": "雨间 · Rainward",
-  "short_name": "雨间",
-  "description": "雨世界防剧透探索指南",
+  "name": "我该去哪儿 · Rain World Map",
+  "short_name": "我该去哪儿",
+  "description": "真实雨世界地图、故事线索与游戏内位置跳转",
   "lang": "zh-CN",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#10191d",
-  "theme_color": "#10191d",
+  "background_color": "#080808",
+  "theme_color": "#080808",
   "icons": [
     {
       "src": "./icon.svg",

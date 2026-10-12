@@ -1,4 +1,4 @@
-name: Deploy Rainward to GitHub Pages
+name: Deploy Where Should I Go to GitHub Pages
 
 on:
   push:
@@ -32,7 +32,8 @@ jobs:
         run: |
           mkdir -p _site/src
           cp rain-guide/index.html rain-guide/icon.svg rain-guide/manifest.webmanifest rain-guide/sw.js _site/
-          cp rain-guide/src/app.js rain-guide/src/engine.js rain-guide/src/data.js rain-guide/src/style.css _site/src/
+          cp rain-guide/src/*.js rain-guide/src/style.css _site/src/
+          cp -R rain-guide/upstream rain-guide/downloads _site/
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload static website

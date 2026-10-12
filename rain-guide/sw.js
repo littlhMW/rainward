@@ -1,12 +1,7 @@
-const CACHE = 'rainward-shell-v1';
-const FILES = ['./', './index.html', './src/app.js', './src/engine.js', './src/data.js', './src/style.css', './icon.svg', './manifest.webmanifest'];
-self.addEventListener('install', event => { event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES))); });
-self.addEventListener('activate', event => { event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('rainward-') && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())); });
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-  if (event.request.method !== 'GET' || url.origin !== self.location.origin || !FILES.some(file => new URL(file, self.registration.scope).pathname === url.pathname)) return;
-  event.respondWith(fetch(event.request).then(response => {
-    if (response.ok) { const copy = response.clone(); event.waitUntil(caches.open(CACHE).then(cache => cache.put(event.request, copy))); }
-    return response;
-  }).catch(() => caches.match(event.request)));
-});
+// Retire Rainward v1's guide-only offline cache. Real maps use upstream data online.
+self.addEventListener('install', event => event.waitUntil(self.skipWaiting()));
+self.addEventListener('activate', event => event.waitUntil((async () => {
+  for (const key of await caches.keys()) if (key.startsWith('rainward-')) await caches.delete(key);
+  await self.clients.claim();
+  await self.registration.unregister();
+})()));

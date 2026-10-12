@@ -1,5 +1,5 @@
-// Original Chinese guidance and schematic positions. Factual references: docs/SOURCES.md.
-// No game screenshots, room geometry, dialogue, or third-party map code is bundled.
+// Original Chinese guidance. Factual references: docs/SOURCES.md.
+// The real renderer is vendored separately in upstream/; map data loads on demand.
 export const DATA_VERSION = '2026-10-12';
 const wiki = (page) => `https://rainworld.miraheze.org/wiki/${page.replaceAll(' ', '_')}`;
 
@@ -174,10 +174,10 @@ export const CAMPAIGNS = [
   { id:'watcher', name:'观望者', english:'WATCHER', dlc:'The Watcher', color:'#9599c2', start:'HI', mapUrl:'https://alduris.github.io/watcher-map/map.html?region=HI', scope:'按 Watcher 1.5 后的四条结局条件整理。提供序章连接、成长会面、动态路标和分支提醒；不把随机或会关闭的传送路径当成固定路线。', graphNote:'序章连线可参考；进入传送阶段后，以你存档中的传送图为准。虚线可能是单向或动态通路。30 个新区域仅提供路标，不计算跨区最短路。', routeMode:'waypoints', edges:[['HI','SU'],['HI','CC'],['HI','SH'],['SU','LF']], regions:['HI','SU','CC','SH','LF',...watcherRegions.map(r=>r[0])], warning:'传送后的疲劳不会因为雨计时重置就消失，仍需要休眠。后期两条分支会相互影响；想同档体验全部路线，先读当前阶段的分支提醒。', food:'4 格休眠 / 最多 7 格', stages:[
     stage('watcher-prologue','完成序章里的三次停留','CC',['先在能够到达的区域里寻找异常环境信号，不必强闯封住的通路。','序章的三次停留分布在高塔、阴影中的城堡和西侧田野；顺序可以调整。','依次找到烟囱天棚最高处、阴影城堡东侧入口下方洞窟、农场阵列东部的特殊会面。需要完成三次后再跟随后续新通路；不是只去其中一个。'],'我已完成序章三次会面，并进入新的旅行方式。'),
     stage('watcher-explore','在新区域里继续相遇','WARF',['新的旅行方式没有固定走法。每到一处，留意熟悉的环境信号。','沿当前存档中的传送图探索不同区域。停留会带来成长，连续传送后要先休息。','需要在不同新区域完成 8 次有效成长会面，把涟漪上限升到 9。可选地点包括以太山脊、荒凉地带、荒芜之地、湍流泵站、灼热沙漠、热力管道、风暴海岸、翠绿水道、信号尖塔、恶臭幽谷、盐化之地与破碎关隘；不要求固定顺序。'],'我的新能力上限已经达到 9。',{destinations:['WARF','WTDB','WBLA','WRFB','WTDA','WARE','WSKC','WVWA','WPTA','WARC','WARB','WVWB']}),
-    stage('watcher-old-friend','按约定，去完成一次会面','WAUA',['当新能力足够稳定时，早先的相遇还有后续。','先去破碎露台，用已经掌握的完整能力寻找平时看不到的会面。','当前涟漪达到 9 时，在破碎露台进入涟漪空间完成会面，再走出现的新通路至古老城区。完成当地连续会面后，醒来还需回到最初的房间，才能完整结束这一支。'],'我已完成这一条会面的收尾，并在醒来后完成回访。'),
-    stage('watcher-outer','留意另一处反复变化的地方','WORA',['有些地方需要在能力成长后再次造访，第一次来没有后续并不代表走错。','当你抵达外环时，留意中央设施上部的对话和新开的侧室。','在外环上部设施完成首次探访；之后分别在上限至少 3、5、7 时返回并完整触发上部对话。四个出口房间全部开放后，再与出现的居民完成至少一次会面。'],'我已开放四处出口，并在此之后完成一次会面。'),
+    stage('watcher-old-friend','按约定，去完成一次会面','WAUA',['当新能力足够稳定时，早先的相遇还有后续。','先用已经掌握的完整能力寻找平时看不到的会面；完成后再沿新出现的通路前进。','当前涟漪达到 9 时，在破碎露台进入涟漪空间完成会面，再走出现的新通路至古老城区。完成当地连续会面后，醒来还需回到最初的房间，才能完整结束这一支。'],'我已完成这一条会面的收尾，并在醒来后完成回访。'),
+    stage('watcher-outer','留意另一处反复变化的地方','WORA',['有些地方需要在能力成长后再次造访，第一次来没有后续并不代表走错。','抵达这条线索指向的区域后，留意中央设施上部的对话和新开的侧室。','在外环上部设施完成首次探访；之后分别在上限至少 3、5、7 时返回并完整触发上部对话。四个出口房间全部开放后，再与出现的居民完成至少一次会面。'],'我已开放四处出口，并在此之后完成一次会面。'),
     stage('watcher-feathers','跟随金色的痕迹','WRSA',['新的痕迹可能只会出现在曾经走过、后来发生变化的通路旁。先查看下面的可选分支，再进行第四次相遇。','在休眠地图上观察区域图标旁的金色羽毛，返回相应区域调查已关闭的自建通路。','让镜头看到已封闭、仍可触发相遇的动态传送点，再跟随涟漪空间中的丝线与光迹。累计完成四次相遇后，按照新指引处理所有应关闭的传送点；外环及涟漪专用通路不计入普通清单。完成该分支后会返回戴蒙。'],'我已完成金色痕迹这一支的收尾。'),
-    stage('watcher-final','确认各条线索已经汇合','WRSA',['这一步需要此前不止一条旅途的进展。没有触发时，先检查遗漏的会面。','确认古老城区的一支、金色痕迹的一支都已收尾，并已在外环变化完成后拜访其居民。','前往戴蒙，检查三座方碑。条件是已完成古老城区分支、已完成金色痕迹分支、并在外环居民出现后至少交谈一次；可选的扩散分支不是必要条件。'],'我已在条件齐备后完成最后的旅途。'),
+    stage('watcher-final','确认各条线索已经汇合','WRSA',['这一步需要此前不止一条旅途的进展。没有触发时，先检查遗漏的会面。','确认早先约定的会面一支、金色痕迹的一支都已收尾，并已在另一处设施变化完成后拜访其居民。','前往戴蒙，检查三座方碑。条件是已完成古老城区分支、已完成金色痕迹分支、并在外环居民出现后至少交谈一次；可选的扩散分支不是必要条件。'],'我已在条件齐备后完成最后的旅途。'),
     optional('watcher-other','保留同一存档里的另一种选择','WORA',['如果你想同一存档体验全部路线，这个提醒应在金色痕迹的第四次相遇之前查看。','两条后期目标会相互影响。先完成涉及扩散的可选目标，再进行第四次金色相遇，会更容易保留全部选择。','可选分支要求把特殊侵染传播至所有可感染区域，再回外环居民处完成会面。第四次与金色痕迹对应居民相遇后，能力会阻碍继续扩散；此支不是最终主线的必需条件。'],'我已决定是否完成这条可选分支，并安排了先后顺序。',{before:'watcher-feathers'}),
   ] },
 ];
@@ -205,8 +205,8 @@ export const SURVIVAL_TIPS = [
 
 export const SOURCES = [
   { title:'Rain World Map', url:'https://rain-world-map.github.io/', note:'用户指定的参考项目；覆盖基础三位及 Downpour 五位角色。外部完整地图会剧透。' },
-  { title:'Rain World Map · GitHub / CC0', url:'https://github.com/rain-world-map/rain-world-map.github.io', note:'参考交互与静态托管方式。站点根许可证为 CC0；不据此推定游戏截图或所有独立数据仓库具有同一许可。' },
-  { title:'Henpemaz 原始地图 · MIT', url:'https://github.com/henpemaz/Rain-World-Interactive-Map', note:'原始项目作者 Henrique Maziero。未复制源代码；若将来复用实质代码须保留 MIT 声明。' },
+  { title:'Rain World Map · GitHub / CC0', url:'https://github.com/rain-world-map/rain-world-map.github.io', note:'直接复用并调整其开源前端，许可与改动见 upstream/UPSTREAM.md；地形数据按需读取。' },
+  { title:'Henpemaz 原始地图 · MIT', url:'https://github.com/henpemaz/Rain-World-Interactive-Map', note:'原始项目作者 Henrique Maziero。下游地图的来源及原始声明保留于 upstream/。' },
   { title:'Official Rain World Wiki · 区域', url:wiki('Regions'), note:'区域名单、DLC 范围、区域关系；页面和图片可能剧透。' },
   { title:'Official Rain World Wiki · 角色', url:wiki('Slugcat'), note:'角色能力、食物与剧情模式边界。常规剧情角色共 9 位；秘密额外角色未纳入本工具。' },
   { title:'Official Rain World Wiki · 故事进度依据', url:wiki('Plot'), note:'用于核对基础角色会面与推荐方向；链接包含严重剧情剧透，默认不嵌入。' },
@@ -214,7 +214,7 @@ export const SOURCES = [
   { title:'Official Rain World Wiki · 休眠', url:wiki('Hibernation'), note:'存档、饥饿休眠、物品留存与失败行为。' },
   { title:'Official Rain World Wiki · 业力门', url:wiki('Karma Gate'), note:'双向不同门槛、每周期一次与僧侣例外。' },
   { title:'Official Rain World Wiki · 传送', url:wiki('Passages'), note:'令牌限制、可用角色与关键物品设置。' },
-  { title:'Watcher Map · Alduris', url:'https://alduris.github.io/watcher-map/', note:'Wiki 指定的 Watcher 完整交互地图，包含新版本区域；未转载其素材或代码。' },
+  { title:'Watcher Map · Alduris', url:'https://alduris.github.io/watcher-map/', note:'通过公开接口按需读取其真实地图数据与瓦片；未复制新增源码或离线打包瓦片。' },
   { title:'Official Rain World Wiki · 观望者', url:wiki('Watcher'), note:'角色机制与当前版本能力；链接含剧透。' },
   { title:'Official Rain World Wiki · 观望者成长', url:wiki('Ripple'), note:'序章三次会面、成长上限、实际能力等级。' },
   { title:'Official Rain World Wiki · 观望者通路', url:wiki('Warp Point'), note:'固定、单向和动态传送的区别；不为未知存档伪造实时路线。' },

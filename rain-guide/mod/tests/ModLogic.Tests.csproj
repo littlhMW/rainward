@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RestorePackagesPath>$(MSBuildThisFileDirectory)../.cache/nuget</RestorePackagesPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../src/LinkProtocol.cs" Link="LinkProtocol.cs" />
+    <Compile Include="../src/MeadowBridge.cs" Link="MeadowBridge.cs" />
+  </ItemGroup>
+</Project>

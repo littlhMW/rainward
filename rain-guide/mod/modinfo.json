@@ -1,0 +1,11 @@
+{
+  "id": "littlhmw.whereshouldigo",
+  "name": "我该去哪儿 / Where Should I Go",
+  "version": "1.0.0",
+  "authors": "littlhMW",
+  "description": "Hold G (configurable in Remix) to open the spoiler-aware Rainward map at your current room and tile. Supports local Rain Meadow avatars. Terrain-changing or custom-region mods may make the map inaccurate; this mod does not scan your mod list. / 按住 G 打开当前位置的防剧透地图，可在 Remix 改键。兼容雨甸本地角色。新增或改动地形的 MOD 可能使地图不准确，不检测地形 MOD 列表。",
+  "requirements": [],
+  "requirements_names": [],
+  "tags": ["Tools", "Accessibility"],
+  "checksum_override_version": false
+}

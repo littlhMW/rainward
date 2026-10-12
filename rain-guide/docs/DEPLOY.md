@@ -1,71 +1,73 @@
-# 免费发布到 GitHub Pages
+# 我该去哪儿：免费发布到 GitHub Pages
 
-雨间是纯静态网页，发布时不需要 Node 服务、数据库、云服务器或付费域名。GitHub Free 账号可以为**公开仓库**免费提供 GitHub Pages。公开仓库中的源代码和提交历史也可被其他人查看；不要上传密码、令牌或个人文件。
+本项目是纯静态网站。GitHub Free 的公开仓库可免费使用 Pages；不需要后端服务器、数据库、付费域名或支付信息。地图 JSON 和地形瓦片由浏览器按需访问上游，网站自身不承载整套大型地图。
 
-**2026-10-12 已验证上线：[https://littlhmw.github.io/rainward/](https://littlhmw.github.io/rainward/)**。公开页面返回 HTTP 200，页面标题正确；[GitHub Actions 运行 38249411917](https://github.com/littlhMW/rainward/actions/runs/38249411917) 的第二次尝试成功。首次尝试发生在 Pages 启用前，配置检查返回 404；启用后重新执行已解决。
+沿用网站地址 [https://littlhmw.github.io/rainward/](https://littlhmw.github.io/rainward/) 与源码仓库 [littlhMW/rainward](https://github.com/littlhMW/rainward)。旧版“雨间”曾成功发布；本次真实地图与 Mod 改版是否上线，以最新 Actions、公开页面和下载包核对结果为准，不能用旧部署记录代替新版验证。
 
-源码位于公开仓库 [littlhMW/rainward](https://github.com/littlhMW/rainward)。当前交付保留父仓库中的 `rain-guide/` 目录，初始分支为 `codex/rainward`，仓库根的工作流负责测试并发布。以下步骤供后续维护或在其他仓库部署时参考。
+## 当前仓库布局
 
-## 通用方式：站点文件位于独立仓库根目录
+源码放在 rain-guide/ 子目录，GitHub 识别的是仓库根目录 .github/workflows/pages.yml。rain-guide/.github/workflows/pages.yml 是将网站单独放到仓库根时使用的模板，不能在父仓库中自行触发发布。
 
-1. 在 GitHub 创建一个公开仓库，例如 `rainward`。名称可以更换。
-2. 将 `rain-guide` 文件夹**里面的内容**放到该仓库根目录，让 `index.html`、`package.json` 和 `.github` 位于根目录。网页使用相对路径，可部署在仓库名称对应的子路径下。
-3. 在仓库 `Settings → Pages → Build and deployment → Source` 中选择 **GitHub Actions**。
-4. 将文件推送到 `main` 或 `codex/rainward` 分支。附带的 `.github/workflows/pages.yml` 会使用 Node.js 20 执行 `npm test`（即跨平台的 `node --test`），测试通过后上传静态页面并发布。也可在 `Actions → Deploy Rainward to GitHub Pages → Run workflow` 手动触发。不需要安装 npm 依赖。
-5. 等待部署任务成功，再到 `Settings → Pages` 打开 GitHub 提供的公开地址。通常形如 `https://你的用户名.github.io/仓库名/`，但最终请以页面显示为准。
+发布分支为 main 或 codex/rainward；推送匹配路径的修改或手动运行 Pages 工作流会触发部署。Pages 设置的 Source 应为 GitHub Actions，部署环境应允许实际使用的分支。
 
-首次部署可能需要几分钟。若部署失败，在 Actions 中查看失败步骤；失败的任务不代表网站已发布。更改网页后再次推送 `main` 或 `codex/rainward` 即可更新。
+发布前应完成：
 
-两份工作流均配置 `branches: [main, 'codex/rainward']`。以后改用其他发布分支时，同步更新触发分支；如 Pages 环境另有分支保护，也需允许实际发布分支。
+1. 在 rain-guide/ 执行 npm test，失败则不发布。
+2. 用本地预览检查新版首页、真实房间/地形加载、遮罩与剧透地名开关、游戏位置链接、Watcher、移动布局和进度导入导出。
+3. 确认静态发布目录包含下表所有必要文件，且没有带入游戏 DLL、构建缓存、测试截图或个人文件。
+4. 如提供 Mod 下载，核对 ZIP 内只包含独立 Mod 文件夹及本项目 DLL/说明，没有游戏或雨甸程序集。Mod 源码编译不等于实机联机验收。
+5. 等待最新部署任务成功，随后验证公开地址显示“我该去哪儿”、地图可加载、Mod 下载可用。只有这些完成后才记录新版已上线。
 
-## 保留在现有仓库的 rain-guide 子目录
+具体测试结论由 [QA 记录](QA.md) 的对应版本注明；不要把旧版测试数量直接写作新版结果。
 
-GitHub 只会识别**仓库根目录**下的 `.github/workflows/`。项目目前位于子目录时，不能只依靠 `rain-guide/.github/workflows/pages.yml` 触发部署。
+## 必要的静态发布内容
 
-当前父仓库根目录的 `.github/workflows/pages.yml` 已配置好以下内容，直接保留即可：
+| 内容 | 原因 |
+| --- | --- |
+| index.html、icon.svg、manifest.webmanifest | 网页入口、图标与网页应用名称 |
+| src/ 中浏览器引用的模块及样式 | 界面、故事数据、位置协议、房间路径与剧透分类 |
+| upstream/ 全部配套文件及许可证 | 同源运行修改后的原地图前端，含 Leaflet 与所需小资源 |
+| sw.js | 保持旧 URL 可更新，用于退役旧版离线缓存及 Service Worker |
+| downloads/WhereShouldIGo.zip（如页面提供下载） | 网站的 Mod 下载入口，来自已核对的构建 ZIP |
+| 页面所链接的来源、许可文件 | 保留第三方署名与许可，避免部署后来源链接失效 |
 
-1. 使用 Node.js 20，在 `rain-guide` 目录运行 `npm test`；失败时不部署。
-2. 只将浏览器需要的以下 8 个文件复制到 `_site`，再以 `path: '_site'` 上传：`index.html`、`icon.svg`、`manifest.webmanifest`、`sw.js`、`src/app.js`、`src/engine.js`、`src/data.js`、`src/style.css`。文档、测试和本地开发服务不会成为网站发布产物；它们仍属于公开仓库中的源码。
-3. 在仓库 Pages 设置中选择 GitHub Actions，然后推送工作流和项目内容。
+不能沿用旧版“仅复制 8 个文件”的发布清单。新增浏览器模块、上游目录或下载文件后，要同步更新两种仓库布局的发布步骤。不要将 mod/ 下整个开发环境、缓存或引用程序集原样复制到站点。
 
-如果以后把项目移到其他仓库，需要将根工作流一起移动，并同步修改测试的 `working-directory` 与复制源路径。新增浏览器必须加载的文件时，也要将其加入工作流复制清单和适用的离线缓存清单。不要覆盖目标仓库中无关的工作流。
+构建准备产生的 _site/ 应只含公开静态文件。位置通过 URL # 片段进入网页，不需要为定位新增服务器、端口、API 密钥或数据库。真实地图依赖上游在线数据，本版不再构建离线地图包。
 
-这种方式会把 `rain-guide` 的内容作为 Pages 站点根目录发布，公开 URL 中通常**不再额外加 `/rain-guide/`**。请使用 GitHub 返回的地址。
+## 在新公开仓库部署
 
-2026-10-12 本地已通过 43 项 Node 测试和 33 项浏览器检查，并完成公开 URL 的 HTTP 状态与标题检查。浏览器检查使用已有 Playwright 与 Edge，由 `scripts/check-browser.mjs` 执行，没有为本项目下载依赖或浏览器；复跑方式见 [README](../README.md#本地运行)。Pages 自动流程执行 Node 测试。详细结果与验证边界见 [QA 记录](QA.md)。
+1. 创建公开仓库，并把 rain-guide/ 中的项目内容放在仓库根，保留所需目录结构。复制前确认不含构建缓存、游戏程序集或本地私密文件。
+2. 使用项目提供的根布局工作流；同步检查其包含上一节的完整发布清单。
+3. 在 Settings → Pages → Source 选择 GitHub Actions。
+4. 推送到工作流允许的分支，等待部署完成。
+5. 使用 Pages 设置实际给出的 URL。网页路径为相对路径，可部署在仓库子路径下。
 
-## 简单方式：网页上传文件 + 从分支部署
+如果保留 rain-guide/ 子目录布局，应使用父仓库工作流及相应 working-directory。不要用根布局模板覆盖其他项目的工作流。
 
-不想使用 Actions 时，可以直接从分支发布：
+也可从分支直接部署静态文件，但要先停用 Actions 发布，避免两个发布源混用；同样必须保留 upstream/、src/、许可和可用的下载路径。
 
-1. 创建公开仓库。将站点文件上传到仓库根目录，确保 `index.html` 位于根目录，并保留代码中引用的目录结构。`scripts`、`tests` 和 `docs` 不是运行网页所必需的文件。
-2. 不上传 `.github/workflows/pages.yml`，或先停用该工作流，避免两种发布方式同时运行。
-3. 到 `Settings → Pages`，选择 `Deploy from a branch`，分支选择 `main`，目录选择 `/ (root)`，保存。
-4. 等待 GitHub 的 Pages 构建完成，打开设置中出现的站点地址。
+## 配置的用途与撤销
 
-浏览器上传通常不方便处理隐藏文件夹。如果需要保留完整版本历史和 Actions，使用 GitHub Desktop 或 Git 命令上传整个项目更合适。
-
-## 每项配置的用途
-
-| 文件或设置 | 用途 | 是否付费／如何撤销 |
+| 配置 | 用途 | 撤销方式 |
 | --- | --- | --- |
-| GitHub 公开仓库 | 保存网页源文件与历史版本 | 免费；可下载备份后删除仓库 |
-| Pages 发布设置 | 为静态文件提供 HTTPS 公开地址 | 公开仓库可免费使用；可取消发布 |
-| `.github/workflows/pages.yml` | 推送后自动上传并发布站点 | 使用 GitHub 提供的 Actions；禁用或删除工作流即可停止自动发布 |
-| `actions/setup-node` 与 `npm test` | 在 GitHub 临时执行器使用 Node.js 20 校验项目，失败时阻止发布 | 不安装到本机，不安装第三方项目依赖 |
-| `_site` 临时目录与显式复制清单 | 只发布浏览器必需的 HTML、样式、脚本、图标、manifest 和 Service Worker | 仅在临时执行器中生成，任务结束后自动清理 |
-| `pages: write` 和 `id-token: write` | 让该工作流部署本站到 Pages | 只授予部署任务；删除工作流即可撤销该配置 |
-| `actions/*` 步骤 | 在 GitHub 临时执行器中取文件、准备 Pages、上传和部署 | 不安装到本机；任务结束后临时执行器被清理 |
-| `manifest.webmanifest` | 提供站点名称、图标、主题与独立窗口信息 | 免费；移除文件和 HTML 引用即可撤销，不等于离线缓存 |
-| `sw.js` | 在本站范围缓存核心向导，实现首次成功访问后的离线使用 | 免费；网页「清除所有」可删除缓存并注销服务，详见卸载说明 |
+| GitHub 公开仓库 | 保存源码及修改历史 | 可备份后删除；停止网站通常无需删仓库 |
+| Pages 发布设置 | 免费 HTTPS 访问地址 | 在 Settings → Pages 取消发布 |
+| Pages 工作流 | 校验并上传静态文件 | 在 Actions 禁用本站工作流或删除对应文件 |
+| actions/setup-node 与 npm test | 在临时执行器中运行已有测试 | 不安装到本机，无需 npm install |
+| _site/ 与发布清单 | 限定上线内容，保留必要第三方许可 | 本地测试生成时可单独删除；GitHub 临时目录随任务清理 |
+| pages: write、id-token: write | 允许部署任务发布到 Pages | 移除工作流中的授权或禁用任务 |
+| manifest.webmanifest | 显示名称、图标与独立窗口信息 | 移除文件与页面引用；不等同离线缓存 |
+| sw.js 退役脚本 | 清除旧缓存，避免旧向导继续覆盖改版 | 迁移期间保留同 URL，旧用户更新后注销；不清除进度笔记 |
+| 仓库级 Git 作者配置 | 提交署名 littlhMW / littlhMW@users.noreply.github.com | 仅作用于当前仓库；不要更改全局配置 |
 
-本项目不配置自定义域名，不需要填写账单信息。GitHub 的服务限额与条款仍适用；若将来选择私有仓库、额外付费服务或自定义域名，应另行确认成本。
+GitHub 服务限额与条款仍适用；本项目不配置自定义域名或收费服务。
 
 ## 撤销发布
 
-1. 在 `Settings → Pages` 使用 **Unpublish site**（如果当前界面提供）。如果从分支发布，也可以将发布分支改为 `None`。
-2. 在 `Actions` 中禁用 Pages 工作流，或删除仓库根目录的 `.github/workflows/pages.yml`，避免下次推送再次发布。
-3. 刷新并确认 Pages 设置显示未发布。GitHub 缓存可能短暂保留旧页面。
-4. 如还要删除源码，在备份需要保留的文件后删除仓库。删除仓库会连同其提交历史一起移除，通常不必为了停止网页发布而删除仓库。
+1. 在 Settings → Pages 使用 Unpublish site；若采用分支发布，也可将发布分支改为 None。
+2. 在 Actions 禁用本站 Pages 工作流，避免之后推送再次上线。
+3. 确认 Pages 设置已显示未发布；边缘缓存可能短暂保留旧页面。
+4. 仅当也不需要源码时，备份后删除仓库。停站本身不要求删除仓库历史。
 
-本地文件与浏览器记录的清理见 [卸载说明](UNINSTALL.md)。
+本地文件、旧缓存、浏览器进度与游戏 Mod 的分别清理见 [UNINSTALL.md](UNINSTALL.md)。

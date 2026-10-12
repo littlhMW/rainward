@@ -1,8 +1,8 @@
 {
   "name": "rainward",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "雨间 · Rainward：面向雨世界新手的防剧透路线与探索指南。",
+  "description": "我该去哪儿：基于 Rain World Map 的真实地图与故事线索",
   "type": "module",
   "engines": {
     "node": ">=18"
