@@ -159,7 +159,7 @@ function getJsonObject(url, cb, async = true) {
         // request first, so that nested load does not abort its own parent.
         if (lastRequest === request) lastRequest = null;
         if (request.status !== 200) {
-            fail(request.status ? '原地图暂未提供这个区域的数据（HTTP ' + request.status + '）。' : '原地图数据加载失败，请检查网络。');
+            fail(request.status ? '原地图暂未提供这个区域的数据。HTTP 状态码：' + request.status + '。' : '原地图数据加载失败，请检查网络。');
             return;
         }
         try {

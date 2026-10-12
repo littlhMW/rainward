@@ -204,8 +204,8 @@ function translateMapError(value) {
   const message = String(value ?? '');
   if (language() !== 'en') return message;
   if (message === '该角色的原图没有收录这个区域。') return 'The source map does not include this region for the selected campaign.';
-  let match = /^原地图暂未提供这个区域的数据（HTTP (\d+)）。$/.exec(message);
-  if (match) return `The source map does not provide data for this region (HTTP ${match[1]}).`;
+  let match = /^原地图暂未提供这个区域的数据。HTTP 状态码：(\d+)。$/.exec(message);
+  if (match) return `The source map does not provide data for this region. HTTP status: ${match[1]}.`;
   if (message === '原地图数据加载失败，请检查网络。') return 'Could not load source map data. Check the network connection.';
   if (message === '原地图数据格式异常，暂时无法显示该区域。') return 'The source map data is invalid; this region cannot be displayed.';
   return message;

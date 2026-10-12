@@ -6,7 +6,7 @@
 
 ## 安装和使用
 
-1. 从网页下载 `WhereShouldIGo.zip`（当前版本 1.1.0），关闭游戏。
+1. 从网页下载版本 1.1.0 的 `WhereShouldIGo.zip`，关闭游戏。
 2. 解压，将里面完整的 `whereshouldigo` 文件夹放入游戏的 `RainWorld_Data/StreamingAssets/mods/`。最终应有 `mods/whereshouldigo/modinfo.json` 和 `mods/whereshouldigo/plugins/WhereShouldIGo.dll`。
 3. 在游戏 Remix 中启用「雨间 · 我该去哪 / Rainward」，应用更改，按游戏提示重启。
 4. 进入故事游戏，在房间内按住 G。Remix 配置页可改键，并调整到 0.2–2.0 秒。
