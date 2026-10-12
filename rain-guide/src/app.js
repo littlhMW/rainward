@@ -79,7 +79,8 @@ function campaign() {
 const gameProgress = () => profile().gameProgress;
 const stage = () => baseCampaign().stages.find(s => s.id === chosenStage) || recommendedStage(baseCampaign(), profile());
 const names = id => REGION_SPOILERS[id] && !state.prefs.names ? tx(`剧透区域 ${id}`,`Spoiler region ${id}`) : `${regionName(baseCampaign(), regionData(), id)} (${id})`;
-const regionIds = () => Object.keys(catalog[MAP_CHARACTERS[state.campaign]]?.regions || {});
+const regionIdsForCampaign = campaignId => campaignId === 'watcher' ? (campaignData().find(c => c.id === 'watcher')?.regions || []) : Object.keys(catalog[MAP_CHARACTERS[campaignId]]?.regions || {});
+const regionIds = () => regionIdsForCampaign(state.campaign);
 const route = () => stage() && state.prefs.route ? findPath(campaign(), profile().current, stage().destination) : [];
 function save() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); storageOK = true; } catch { storageOK = false; }
@@ -101,6 +102,8 @@ function updateControls() {
   const ids = regionIds();
   if (!ids.includes(profile().current)) profile().current = baseCampaign().start;
   $('#region-select').innerHTML = ids.map(id => `<option value="${id}" ${id === profile().current ? 'selected' : ''}>${esc(names(id))}</option>`).join('');
+  const mapUnavailable = state.campaign === 'watcher';
+  for (const id of ['mask-toggle','names-toggle','route-toggle','rooms-toggle','spawns-toggle']) $('#'+id).disabled = mapUnavailable;
   for (const [id,key] of [['mask-toggle','mask'],['names-toggle','names'],['route-toggle','route']]) $('#'+id).checked = state.prefs[key];
   $('#spawns-toggle').checked = layers.spawns;
   $('#rooms-toggle').checked = layers.rooms;
@@ -113,6 +116,14 @@ function chooseRegion(id, room = '') {
 function loadMap() {
   const c = baseCampaign(); mapReady = false;
   $('#map-status').textContent = tx('正在读取地图…','Loading map…');
+  if (c.id === 'watcher') {
+    $('#map-frame').src = './watcher-map-notice.html';
+    $('#map-frame').title = tx('观望者地图外部来源说明','Watcher map source notice');
+    $('#map-status').textContent = tx('观望者的故事线索可用；地图请在原作者网站查看。','Watcher story guidance is available; open the original map site separately.');
+    updatePosition();
+    return;
+  }
+  $('#map-frame').title = tx('雨世界地图：房间、连接与地形','Rain World map: rooms, connections, and terrain');
   const q = new URLSearchParams({ slugcat: MAP_CHARACTERS[c.id], region: profile().current, mask: state.prefs.mask ? '1' : '0', roomnames: layers.rooms ? '1' : '0', view: String(++mapLoadRequest) });
   const point = received?.campaign === c.id && received.region === profile().current ? received : null;
   let hash = '';
@@ -207,7 +218,7 @@ function showStages() {
 }
 function applyLocation(value) {
   if (!value.campaign) throw new Error(tx('尚未收录此角色。','This campaign is not supported.'));
-  if (!Object.hasOwn(catalog[MAP_CHARACTERS[value.campaign]]?.regions || {}, value.region)) throw new Error(tx(`地图数据未收录区域 ${value.region}。`,`The map data does not include region ${value.region}.`));
+  if (!regionIdsForCampaign(value.campaign).includes(value.region)) throw new Error(tx(`地图数据未收录区域 ${value.region}。`,`The map data does not include region ${value.region}.`));
   received = value;
   locationError = '';
   if (state.campaign !== value.campaign) { state.prefs.mask = true; state.prefs.names = false; }
