@@ -60,7 +60,7 @@ function mapErrorText(message) {
   return value;
 }
 const catalog = await fetch('./upstream/slugcats.json').then(r => r.json());
-let state = defaultState(), chosenStage = null, selectedRoom = '', received = null, storageOK = true, mapReady = false, locationError = '', expandedRouteKey = null;
+let state = defaultState(), chosenStage = null, selectedRoom = '', received = null, storageOK = true, mapReady = false, locationError = '', expandedRouteKey = null, manualRoomRoute = null;
 let layers = { rooms: false, spawns: false }, locationRequest = 0, mapLoadRequest = 0;
 try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) state = normalizeState(JSON.parse(raw), CAMPAIGNS, REGIONS); } catch { storageOK = false; }
 // A hint level belongs to the selected clue, which is intentionally not restored.
@@ -112,6 +112,7 @@ function updateControls() {
 }
 function chooseRegion(id, room = '') {
   if (!regionIds().includes(id)) return;
+  if (profile().current !== id) manualRoomRoute = null;
   profile().current = id; if (!profile().known.includes(id)) profile().known.push(id);
   selectedRoom = room; save(); updateControls(); renderStory(); loadMap();
 }
@@ -156,7 +157,7 @@ function sendMap(action = 'settings') {
   const current = received?.campaign === state.campaign;
   $('#map-frame').contentWindow.postMessage({ type: 'where-to-map', action, mask: state.prefs.mask, rooms: layers.rooms, spawns: layers.spawns, nextRegion: route()[1] || null, route: state.prefs.route, room: selectedRoom || (current && received.region === profile().current ? received.room : null), player: current && received.v !== 2 && received.region === profile().current ? received : null,
     players: current && received.v === 2 ? received.players : [], exploredRooms: gameProgress()?.rooms || [], roomOverrides: profile().roomOverrides,
-    names: state.prefs.names, language, regionLabel: names(profile().current), regionLabels: Object.fromEntries(Object.keys(REGIONS).map(id=>[id,names(id)])) }, location.origin);
+    names: state.prefs.names, language, regionLabel: names(profile().current), regionLabels: Object.fromEntries(Object.keys(REGIONS).map(id=>[id,names(id)])), manualRoomRoute }, location.origin);
 }
 function progressText() {
   const p=gameProgress();
@@ -180,6 +181,22 @@ function updateRoomControls() {
   const override=profile().roomOverrides[selectedRoom],visited=gameProgress()?.rooms.includes(selectedRoom);
   $('#room-mask-state').textContent=`${selectedRoom} · ${typeof override==='boolean'?(override?tx('手动显示','Manually revealed'):tx('手动遮住','Manually masked')):visited?tx('存档已探索','Visited in save'):tx('存档未记录探索','Not recorded as visited')}${!state.prefs.mask?` · ${tx('当前全图展开','Full map is visible')}`:''}`;
 }
+function roomRegion(room) {
+  const value = String(room || '').toUpperCase();
+  const gate = /^GATE_([A-Z0-9]+)_/.exec(value);
+  return gate ? gate[1] : value.split('_', 1)[0];
+}
+function navigationStart(c, p) {
+  if (manualRoomRoute?.campaign === c.id && manualRoomRoute.region === p.current && manualRoomRoute.start) return manualRoomRoute.start;
+  if (selectedRoom && roomRegion(selectedRoom) === p.current) return selectedRoom;
+  if (received?.campaign === c.id && received.region === p.current && received.room) return received.room;
+  return '';
+}
+function navigationRouteHTML(c, p) {
+  const current = navigationStart(c, p), target = manualRoomRoute?.campaign === c.id && manualRoomRoute.region === p.current ? manualRoomRoute.target : '';
+  const active = manualRoomRoute?.campaign === c.id && manualRoomRoute.region === p.current;
+  return `<details class="section room-navigation" id="room-navigation" open><summary>${tx('房间导航','Room navigation')}<small>${tx('输入目标房间代码，起点默认使用当前定位。','Enter a destination room. The starting room uses the current location by default.')}</small></summary><form id="room-route-form" class="room-route-form"><label>${tx('起点房间','Starting room')}<input id="room-route-start" maxlength="96" value="${esc(current)}" placeholder="${tx('例如 SU_C04','e.g. SU_C04')}"></label><label>${tx('目标房间','Destination room')}<input id="room-route-target" maxlength="96" value="${esc(target)}" placeholder="${tx('例如 SU_C12','e.g. SU_C12')}"></label><div class="room-route-actions"><button type="submit">${tx('规划路线','Find route')}</button><button type="button" class="text-button" id="clear-room-route">${tx('清除路线','Clear route')}</button></div></form><p class="note" id="manual-route-status">${active ? tx('正在使用当前区域的房间连接规划路线。','A room-connection route is active in this region.') : tx('路线仅作连接参考；实际门槛、方向与角色能力以游戏为准。','Connections are a reference; gates, direction, and character abilities determine access in game.')}</p></details>`;
+}
 async function importGameFile(event) {
   const file=event.target.files[0]; if(!file)return;
   try {
@@ -198,6 +215,7 @@ function renderStory() {
     ${s ? `<p class="hint-level">${tx('提示','Hint')} ${p.hint + 1} / 3 · ${[tx('轻提示','Gentle clue'),tx('方向提示','Direction'),tx('目的地提示','Destination')][p.hint]}</p><button id="more-hint" class="full-button" ${p.hint === 2 ? 'disabled' : ''}>${p.hint === 0 ? tx('再明确一点 →','Reveal a clearer clue →') : p.hint === 1 ? tx('查看目的地提示 →','Show destination hint →') : tx('目的地提示已展开','Destination hint revealed')}</button>${p.hint ? `<button id="less-hint" class="text-button">${tx('收起提示','Hide hint')}</button>` : ''}` : ''}
     <details class="section recommended-route" id="recommended-route" ${expandedRouteKey === routeKey ? 'open' : ''}><summary>${tx('推荐路线','Recommended route')}<small>${tx('展开将显示具体地点名称与区域代码，可能涉及剧透。','Expanding reveals specific place names and region codes and may contain spoilers.')}</small></summary><div class="route">${path.length ? path.map((id,i) => `${i ? '<span>→</span>' : ''}<button data-region="${id}" class="${i === 0 ? 'here' : ''}">${esc(routeName(id))}</button>`).join('') : `<span class="muted">${c.routeMode === 'waypoints' ? tx('传送路径取决于当前存档，请参考游戏内路标。','Warp paths depend on the current save. Follow in-game waypoints.') : !state.prefs.route ? tx('路线显示已关闭。','Route guidance is hidden.') : tx('继续探索当前区域，或查看上方提示。','Explore this region or reveal the next clue.')}</span>`}</div><p class="note" id="room-route-status">${path.length > 1 ? tx('完整地图请打开原作者网站；雨间仅保留区域方向。','Open the source map for room connections; Rainward keeps the regional direction here.') : tx('连接仅供参考；实际通行取决于门槛、方向与角色能力。','Connections are guides. Gates, direction, and character abilities affect access.')}</p></details>
     <div class="section"><h3>${tx('房间代码查询','Room code lookup')}</h3><form id="room-form" class="room-form"><input id="room-query" aria-label="${tx('房间代码','Room code')}" placeholder="${tx('例如 SU_C04','e.g. SU_C04')}" maxlength="96" value="${esc(selectedRoom)}"><button type="submit">${tx('定位','Locate')}</button></form><div id="room-visibility" hidden><p id="room-mask-state" class="note"></p><div class="room-mask-actions"><button id="reveal-room">${tx('显示此房间','Reveal room')}</button><button id="cover-room">${tx('遮罩此房间','Mask room')}</button><button id="follow-room">${tx('跟随探索记录','Follow exploration')}</button></div></div><button class="text-button" id="copy-link">${tx('复制当前位置链接','Copy location link')}</button></div>
+    ${navigationRouteHTML(c, p)}
     ${s && c.stages.some(v => v.before === s.id) ? `<p class="branch-warning">${tx('不同选择会影响后续路线。','Some choices affect later routes.')}<button id="branch-info" class="text-button">${tx('查看提醒 →','View note →')}</button></p>` : ''}
     ${s ? `<button class="full-button complete" id="complete-stage">✓ ${tx('确认完成此线索','Mark clue complete')}</button>` : ''}<p class="note">${tx('探索记录读取自游戏存档。故事建议只依据可识别的标记；到过房间不代表完成互动，无法确认的目标由玩家判断。','Exploration is read from the save. Story guidance uses identifiable flags; visiting a room does not confirm an encounter. Confirm uncertain goals yourself.')}</p><button class="text-button" id="stages-button">${tx('选择其他线索或可选探索','Choose another clue or optional journey')}</button>
     <details class="section"><summary>${tx('角色说明与路线设置','Campaign notes and route settings')}</summary><p class="note">${esc(c.warning)}</p>${c.dlcEdges ? `<label class="note"><input id="dlc-setting" type="checkbox" ${state.prefs.dlc ? 'checked' : ''}> ${tx('已启用 Downpour','Downpour is enabled')}</label><br><label class="note"><input id="outer-setting" type="checkbox" ${state.prefs.outerUnlocked ? 'checked' : ''}> ${tx('当前存档已完成饕餮旅途','Gourmand’s journey is complete in this save')}</label><p class="note">${tx('这些选项只影响路线建议；完整地图请打开原作者网站。','These options affect route guidance only. Open the source site for the complete map.')}</p>` : ''}</details>`;
@@ -214,6 +232,19 @@ function renderStory() {
   updateRoomControls();
   document.querySelectorAll('[data-region]').forEach(b => b.onclick = () => chooseRegion(b.dataset.region));
   $('#room-form').onsubmit = event => { event.preventDefault(); const room = $('#room-query').value.trim().toUpperCase(); if (!/^[A-Z0-9_+.-]{1,96}$/.test(room)) return toast(tx('请输入有效的房间代码，例如 SU_C04。','Enter a valid room code, such as SU_C04.')); selectedRoom = room; sendMap('focus'); updatePosition(); };
+  $('#room-route-form').onsubmit = event => {
+    event.preventDefault();
+    const start = $('#room-route-start').value.trim().toUpperCase(), target = $('#room-route-target').value.trim().toUpperCase();
+    if (!/^[A-Z0-9_+.-]{1,96}$/.test(start) || !/^[A-Z0-9_+.-]{1,96}$/.test(target)) return toast(tx('请输入有效的起点和目标房间代码。','Enter valid starting and destination room codes.'));
+    if (roomRegion(start) !== p.current || roomRegion(target) !== p.current) {
+      $('#manual-route-status').textContent = tx('房间导航目前只计算当前区域，请先切换到目标所在区域。','Room navigation currently works within the selected region. Switch to the target region first.');
+      return;
+    }
+    manualRoomRoute = { campaign:c.id, region:p.current, start, target };
+    sendMap('manual-route');
+    $('#manual-route-status').textContent = tx('正在根据原图连接规划路线…','Planning a route from the source-map connections…');
+  };
+  $('#clear-room-route').onclick = () => { manualRoomRoute = null; sendMap('manual-route'); $('#manual-route-status').textContent = tx('路线已清除。','Route cleared.'); };
   $('#copy-link').onclick = async () => {
     if (!selectedRoom && !(received?.campaign === c.id && received.region === p.current)) return toast(tx('请先选中或输入房间代码，再复制链接。','Select or enter a room code before copying a location link.'));
     const value = { ...(received?.campaign === c.id && received.region === p.current && (!selectedRoom || selectedRoom === received.room) ? received : {}), character: c.english, region: p.current, room: selectedRoom || received.room };
@@ -237,7 +268,7 @@ function applyLocation(value) {
   received = value;
   locationError = '';
   if (state.campaign !== value.campaign) { state.prefs.mask = true; state.prefs.names = false; }
-  state.campaign = value.campaign; chosenStage = null; selectedRoom = '';
+  state.campaign = value.campaign; chosenStage = null; selectedRoom = ''; manualRoomRoute = null;
   if (value.v === 2) {
     if (applyGameProgress(profile(), value.progress)) state.prefs.names = false;
     state.prefs.mask = true;
@@ -251,7 +282,7 @@ function applyLocation(value) {
 }
 async function receiveLocation() {
   const request = ++locationRequest;
-  received = null; locationError = ''; selectedRoom = '';
+  received = null; locationError = ''; selectedRoom = ''; manualRoomRoute = null;
   try {
     if (new URLSearchParams(location.hash.slice(1)).get('sync') === 'file') {
       locationError = tx('快照较大，Mod 已导出 snapshot.json。请在侧栏选择“导入游戏快照”并选取该文件。','The snapshot is too large for a link. The mod exported snapshot.json. Select “Import game snapshot” in the sidebar and choose that file.');
@@ -271,11 +302,12 @@ window.addEventListener('message', event => {
   const message = event.data;
   if (message.event === 'ready') { mapReady = true; $('#map-status').textContent = ''; sendMap(); }
   if (message.event === 'error') $('#map-status').textContent = `${mapErrorText(message.message)} ${tx('可切换区域或重新加载页面。','Select another region or reload the page.')}`;
-  if (message.event === 'room') { $('#map-status').textContent = ''; selectedRoom = message.room; if ($('#room-query')) $('#room-query').value = selectedRoom; updatePosition(); }
+  if (message.event === 'room') { $('#map-status').textContent = ''; selectedRoom = message.room; if ($('#room-query')) $('#room-query').value = selectedRoom; if (!manualRoomRoute && $('#room-route-start')) $('#room-route-start').value = selectedRoom; updatePosition(); }
   if (message.event === 'room-mask') { selectedRoom = message.room; if ($('#room-query')) $('#room-query').value = selectedRoom; setRoomVisibility(message.room,message.visible); updatePosition(); }
   if (message.event === 'route' && $('#room-route-status')) $('#room-route-status').textContent = message.message;
+  if (message.event === 'manual-route' && $('#manual-route-status')) $('#manual-route-status').textContent = message.message;
 });
-$('#character-select').onchange = e => { state.campaign=e.target.value; chosenStage=null; selectedRoom=''; profile().hint=0; state.prefs.mask=true; state.prefs.names=false; save(); updateControls(); renderStory(); loadMap(); };
+$('#character-select').onchange = e => { state.campaign=e.target.value; chosenStage=null; selectedRoom=''; manualRoomRoute=null; profile().hint=0; state.prefs.mask=true; state.prefs.names=false; save(); updateControls(); renderStory(); loadMap(); };
 $('#region-select').onchange = e => chooseRegion(e.target.value);
 $('#mask-toggle').onchange = e => { state.prefs.mask=e.target.checked; save(); updateControls(); updateRoomControls(); sendMap(); };
 $('#names-toggle').onchange = e => { state.prefs.names=e.target.checked; save(); updateControls(); renderStory(); updatePosition(); sendMap(); };

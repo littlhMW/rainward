@@ -2,7 +2,7 @@ name: Deploy Rainward to GitHub Pages
 
 on:
   push:
-    branches: [main, 'codex/rainward']
+    branches: [main]
     paths:
       - 'rain-guide/**'
       - '.github/workflows/pages.yml'
