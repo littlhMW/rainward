@@ -32,7 +32,7 @@
 
 ## 卸载 Mod
 
-在 Remix 中停用「雨间：我该去哪 / Rainward: Where to Go」并关闭游戏，删除 `RainWorld_Data/StreamingAssets/mods/rainward/` 文件夹即可。若要同时移除按键配置，再删除游戏数据目录中的 `ModConfigs/littlhmw.whereshouldigo.txt`；如果曾导出过过长快照，也可以删除 `Rainward/snapshot.json` 及已空的 `Rainward` 文件夹。不要删除其他 Mod 配置或游戏存档。浏览器中的雨间数据可在网页数据面板中清除。
+在 Remix 中停用「雨间：我该去哪 / Rainward: Where to Go」并关闭游戏，删除 `RainWorld_Data/StreamingAssets/mods/rainward/` 文件夹即可。若要同时移除按键配置，再删除游戏数据目录中的 `ModConfigs/littlhmw.rainward.txt`；如果曾导出过过长快照，也可以删除 `Rainward/snapshot.json` 及已空的 `Rainward` 文件夹。不要删除其他 Mod 配置或游戏存档。浏览器中的雨间数据可在网页数据面板中清除。
 
 ## 数据与隐私
 
@@ -57,6 +57,6 @@ The snapshot includes the current region and room, visited rooms recorded by the
 
 If the URL is too long, the complete snapshot is written to `Rainward/snapshot.json` for import from the data panel. Base-game and Downpour map data and terrain tiles load online; Watcher opens its original map site. Browser progress remains local to the current browser and can be backed up or cleared from the data panel.
 
-To remove the mod, disable 「雨间：我该去哪 / Rainward: Where to Go」 in Remix, close the game, and delete `RainWorld_Data/StreamingAssets/mods/rainward/`. To remove its key configuration, delete `ModConfigs/littlhmw.whereshouldigo.txt`; if a long snapshot was exported, delete `Rainward/snapshot.json` and the empty `Rainward` folder. Do not delete other mod settings or save data.
+To remove the mod, disable 「雨间：我该去哪 / Rainward: Where to Go」 in Remix, close the game, and delete `RainWorld_Data/StreamingAssets/mods/rainward/`. To remove its key configuration, delete `ModConfigs/littlhmw.rainward.txt`; if a long snapshot was exported, delete `Rainward/snapshot.json` and the empty `Rainward` folder. Do not delete other mod settings or save data.
 
 The interface defaults to Simplified Chinese and supports English. Reference material: [Rain World Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki) · [简体中文 Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki/zh-hans) · [Desktop Rain World Slugcat Simulation](https://github.com/littlhMW/desktop-rainworld-slugcat-simulation) · [Original map](https://rain-world-map.github.io/) · [Third-party notices](THIRD-PARTY-NOTICES.md)
