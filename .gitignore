@@ -1,3 +1,7 @@
 node_modules/
 rain-guide/test-results/
 _site/
+
+/rain-guide/docs/
+/rain-guide/mod/workshop/
+/rain-guide/upstream/UPSTREAM.md

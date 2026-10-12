@@ -1,6 +1,6 @@
 # 雨间第三方声明
 
-本文件列出“雨间 · 我该去哪”（Rainward）使用或引用的第三方内容、来源和许可边界。它与 [LICENSE](LICENSE) 一起阅读。
+本文件列出“雨间：我该去哪”（Rainward）使用或引用的第三方内容、来源和许可边界。它与 [LICENSE](LICENSE) 一起阅读。
 
 ## Rainward 原创部分
 
@@ -30,7 +30,7 @@
 
 ## Wiki 资料
 
-区域名称、普通/剧透分组及部分路线核对使用 [Rain World Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki) 与 [简体中文 Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki/zh-hans)。Wiki 页面页脚声明 **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)**。本项目对区域分类的摘录、翻译和改编按该许可注明来源，并保留 [地名核对记录](docs/WIKI-SPOILERS.md)；使用者若再分发这些改编内容，应保留署名、许可链接并按相同许可提供改编部分。网页中的原创故事线索由本项目独立撰写，不复制 Wiki 的长段剧情文字或游戏对话。
+区域名称、普通/剧透分组及部分路线核对使用 [Rain World Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki) 与 [简体中文 Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki/zh-hans)。Wiki 页面页脚声明 **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)**。本项目对区域分类的摘录、翻译和改编按该许可注明来源；使用者若再分发这些改编内容，应保留署名、许可链接并按相同许可提供改编部分。网页中的原创故事线索由本项目独立撰写，不复制 Wiki 的长段剧情文字或游戏对话。
 
 ## Rodondo 字体
 
@@ -42,7 +42,7 @@
 
 ## 委托封面与横幅
 
-`mod/workshop/artwork.png`、`mod/thumbnail.png` 以及 README 使用的横幅源自用户提供的 `C:\Users\littlh\Desktop\雨间.png`。用户在本项目委托中明确允许将该图及本项目生成的裁切、放大、补边版本用于：公开 GitHub 仓库展示、GitHub Pages、Rain World Mod 发布、Steam 创意工坊发布，以及为上述用途进行必要的修改和再发布。该授权记录只针对本项目及这些用途；图片不因仓库公开或代码采用 MIT 而自动成为 MIT 或 CC0。原始桌面文件不由本项目修改或删除。
+`mod/thumbnail.png` 以及 README 使用的横幅源自用户提供的 `C:\Users\littlh\Desktop\雨间.png`。用户在本项目委托中明确允许将该图及本项目生成的裁切、放大、补边版本用于：公开 GitHub 仓库展示、GitHub Pages、Rain World Mod 发布、Steam 创意工坊发布，以及为上述用途进行必要的修改和再发布。该授权记录只针对本项目及这些用途；图片不因仓库公开或代码采用 MIT 而自动成为 MIT 或 CC0。原始桌面文件不由本项目修改或删除。
 
 ## 维护者注意事项
 

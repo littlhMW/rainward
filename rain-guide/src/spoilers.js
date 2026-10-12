@@ -1,5 +1,5 @@
 // Region-name classification from the Official Rain World Wiki's RegionNavbox.
-// The Regions gallery itself is NOT spoiler-filtered. See docs/WIKI-SPOILERS.md.
+// The Regions gallery itself is NOT spoiler-filtered. Region groups follow the Wiki navigation template.
 // `major` is this app's hide-by-default flag, not a severity claimed by the Wiki.
 const source = 'https://rainworld.miraheze.org/wiki/Template:RegionNavbox?oldid=324754';
 

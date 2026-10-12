@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>雨间 · 我该去哪</title>
+    <title>雨间：我该去哪</title>
     <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
 
     <meta property="og:image" content="https://rain-world-map.github.io/embed.jpg" />
@@ -251,7 +251,6 @@
 
     <script>
         'use strict';
-        // Where Should I Go: keep the upstream renderer, configure disclosure before data loads.
         window.rwGuide = { mask: new URLSearchParams(location.search).get('mask') !== '0', rooms: new URLSearchParams(location.search).get('roomnames') === '1', spawns: false };
         // misc iconography but mostly Spawns
 
@@ -620,8 +619,6 @@
                 "yellow": "https://raw.githubusercontent.com/rain-world-map/vanilla/main/yellow",
                 "red": "https://raw.githubusercontent.com/rain-world-map/vanilla/main/red",
             };
-            // Watcher is handled by Rainward's source notice. Keep this upstream
-            // page limited to the campaigns covered by the licensed front end.
             if (pdifficulty === "watcher") {
                 console.warn("Watcher map is provided by its original site.");
                 return;

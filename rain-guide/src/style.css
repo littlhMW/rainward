@@ -12,7 +12,7 @@ input[type=checkbox] { accent-color: #dedede; width: 14px; height: 14px; margin:
 :focus-visible { outline: 2px solid #e5d394; outline-offset: 3px; }
 header { min-height: 51px; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 8px 14px; border-bottom: 1px solid #555; }
 h1 { font-size: 19px; font-weight: 500; letter-spacing: 3px; margin: 0; white-space: nowrap; }
-h1 small { margin-left: 14px; color: #aaa; font-size: 12px; letter-spacing: 2px; }
+h1 small { margin-left: 0; color: #aaa; font-size: 12px; letter-spacing: 2px; }
 .header-links { display: flex; align-items: center; gap: 16px; }
 .header-links button { background: none; border-color: transparent; padding-inline: 0; }
 .header-links a { font-size: 12px; text-decoration: none; }

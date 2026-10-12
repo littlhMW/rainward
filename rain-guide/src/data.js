@@ -1,4 +1,4 @@
-// Original Chinese guidance. Factual references: docs/SOURCES.md.
+// Original Chinese guidance. Factual references: THIRD-PARTY-NOTICES.md.
 // The real renderer is vendored separately in upstream/; map data loads on demand.
 export const DATA_VERSION = '2026-10-12';
 const wiki = (page) => `https://rainworld.miraheze.org/wiki/${page.replaceAll(' ', '_')}`;
@@ -205,7 +205,7 @@ export const SURVIVAL_TIPS = [
 
 export const SOURCES = [
   { title:'Rain World Map', url:'https://rain-world-map.github.io/', note:'用户指定的参考项目；覆盖基础三位及 Downpour 五位角色。外部完整地图会剧透。' },
-  { title:'Rain World Map · GitHub / CC0', url:'https://github.com/rain-world-map/rain-world-map.github.io', note:'复用并调整其开源前端，许可与改动见 upstream/UPSTREAM.md；原版与 Downpour 地形数据按需读取。' },
+  { title:'Rain World Map · GitHub / CC0', url:'https://github.com/rain-world-map/rain-world-map.github.io', note:'复用并调整其开源前端；原版与 Downpour 地形数据按需读取。' },
   { title:'Henpemaz 原始地图 · MIT', url:'https://github.com/henpemaz/Rain-World-Interactive-Map', note:'原始项目作者 Henrique Maziero。下游地图的来源及原始声明保留于 upstream/。' },
   { title:'Official Rain World Wiki · 区域', url:wiki('Regions'), note:'区域名单、DLC 范围、区域关系；页面和图片可能剧透。' },
   { title:'Official Rain World Wiki · 角色', url:wiki('Slugcat'), note:'角色能力、食物与剧情模式边界。常规剧情角色共 9 位；秘密额外角色未纳入本工具。' },

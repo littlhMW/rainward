@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace WhereShouldIGo
 {
-    [BepInPlugin(ModId, "雨间 · 我该去哪 / Rainward", "1.1.0")]
+    [BepInPlugin(ModId, "雨间：我该去哪 / Rainward: Where to Go", "1.1.0")]
     [BepInDependency("henpemaz.rainmeadow", BepInDependency.DependencyFlags.SoftDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {

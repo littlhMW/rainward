@@ -1,10 +1,10 @@
 {
   "id": "littlhmw.whereshouldigo",
-  "name": "雨间 · 我该去哪 / Rainward",
+  "name": "雨间：我该去哪 / Rainward: Where to Go",
   "version": "1.1.0",
   "target_game_version": "v1.11.8",
   "authors": "littlhMW",
-  "description": "雨间 · 我该去哪。按住 G 0.6 秒打开 https://littlhmw.github.io/rainward/，同步当前地点、真实房间访问记录与可读取的玩家位置；Remix 可改键。网页依据记录遮罩未探索房间，逐层提供故事线索。雨甸客机只取已同步的房主存档快照，本周期新探索可能滞后，不混入客机存档。未知玩家位置明确标注。需要联网，不是游戏内覆盖层；雨甸接口已核对，尚未实机验收。地形 MOD 可能使信息不准确；不扫描地形 MOD、不改存档或剪贴板。数据过长会完整导出 JSON 供网页导入。打开浏览器不暂停联机世界。",
+  "description": "雨间：我该去哪。按住 G 0.6 秒打开 https://littlhmw.github.io/rainward/，同步当前地点、真实房间访问记录与可读取的玩家位置；Remix 可改键。网页依据记录遮罩未探索房间，逐层提供故事线索。雨甸客机只取已同步的房主存档快照，本周期新探索可能滞后，不混入客机存档。未知玩家位置明确标注。需要联网，不是游戏内覆盖层；雨甸接口已核对，尚未实机验收。地形 MOD 可能使信息不准确；不扫描地形 MOD、不改存档或剪贴板。数据过长会完整导出 JSON 供网页导入。打开浏览器不暂停联机世界。",
   "requirements": [],
   "requirements_names": [],
   "tags": ["Tools", "Accessibility"],

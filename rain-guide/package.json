@@ -2,7 +2,7 @@
   "name": "rainward",
   "version": "2.2.0",
   "private": true,
-  "description": "雨间 · 我该去哪 | Rainward: a bilingual, spoiler-aware map and story guide for Rain World",
+  "description": "雨间：我该去哪 | Rainward: Where to Go — a bilingual, spoiler-aware map and story guide for Rain World",
   "type": "module",
   "engines": {
     "node": ">=18"
