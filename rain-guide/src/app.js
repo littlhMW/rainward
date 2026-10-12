@@ -1,13 +1,14 @@
-import { CAMPAIGNS, REGIONS, SURVIVAL_TIPS } from './data.js?v=2';
-import { STORAGE_KEY, defaultState, defaultProfile, normalizeState, activeStage, regionName, findPath } from './engine.js';
+import { CAMPAIGNS, REGIONS, SURVIVAL_TIPS } from './data.js?v=2.1.0';
+import { STORAGE_KEY, defaultState, defaultProfile, normalizeState, recommendedStage, applyGameProgress, regionName, findPath } from './engine.js?v=2.1.0';
 import { REGION_SPOILERS, SPOILER_POLICY } from './spoilers.js';
-import { MAP_CHARACTERS, parseLocation, locationFragment } from './location.js';
+import { MAP_CHARACTERS, locationFragment } from './location.js';
+import { parseGameLink, normalizeSnapshot, MAX_SNAPSHOT_BYTES } from './snapshot.js?v=2.1.0';
 
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const catalog = await fetch('./upstream/slugcats.json').then(r => r.json());
 let state = defaultState(), chosenStage = null, selectedRoom = '', received = null, storageOK = true, mapReady = false, locationError = '';
-let layers = { rooms: false, spawns: false };
+let layers = { rooms: false, spawns: false }, locationRequest = 0, mapLoadRequest = 0;
 try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) state = normalizeState(JSON.parse(raw), CAMPAIGNS, REGIONS); } catch { storageOK = false; }
 state.prefs.mask = true;
 // A hint level belongs to the selected clue, which is intentionally not restored.
@@ -16,13 +17,16 @@ const baseCampaign = () => CAMPAIGNS.find(c => c.id === state.campaign) || CAMPA
 const profile = () => state.profiles[baseCampaign().id] ||= defaultProfile(baseCampaign());
 function campaign() {
   const base = baseCampaign(), p = profile();
+  const flags = p.gameProgress?.flags || {};
+  const unlocked = { 'gourmand-visit': flags.hasMark, 'artificer-visit': flags.hasRobo && flags.hasMark };
   const c = { ...base, edges: [...(state.prefs.dlc && base.dlcEdges ? base.dlcEdges : base.edges)], directedEdges: [...(base.directedEdges || [])], blockedEdges: [] };
-  for (const edge of c.conditionalEdges || []) if (!p.completed.includes(edge.requires)) c.blockedEdges.push([edge.from, edge.to]);
-  if (c.id === 'saint' && !p.completed.includes('saint-seven')) c.blockedEdges.push(['SB','HR']);
+  for (const edge of c.conditionalEdges || []) if (!p.completed.includes(edge.requires) && !unlocked[edge.requires]) c.blockedEdges.push([edge.from, edge.to]);
+  if (c.id === 'saint' && !p.completed.includes('saint-seven') && !(flags.karmaCap >= 9)) c.blockedEdges.push(['SB','HR']);
   if (state.prefs.dlc && state.prefs.outerUnlocked && ['survivor','monk'].includes(c.id)) { c.edges.push(['SB','OE']); c.directedEdges.push(['OE','SU']); }
   return c;
 }
-const stage = () => baseCampaign().stages.find(s => s.id === chosenStage) || activeStage(baseCampaign(), profile());
+const gameProgress = () => profile().gameProgress;
+const stage = () => baseCampaign().stages.find(s => s.id === chosenStage) || recommendedStage(baseCampaign(), profile());
 const names = id => REGION_SPOILERS[id] && !state.prefs.names ? `剧透区域 (${id})` : `${regionName(baseCampaign(), REGIONS, id)} (${id})`;
 const regionIds = () => Object.keys(catalog[MAP_CHARACTERS[state.campaign]]?.regions || {});
 const route = () => stage() && state.prefs.route ? findPath(campaign(), profile().current, stage().destination) : [];
@@ -47,8 +51,7 @@ function updateControls() {
   if (!ids.includes(profile().current)) profile().current = baseCampaign().start;
   $('#region-select').innerHTML = ids.map(id => `<option value="${id}" ${id === profile().current ? 'selected' : ''}>${esc(names(id))}</option>`).join('');
   for (const [id,key] of [['mask-toggle','mask'],['names-toggle','names'],['route-toggle','route']]) $('#'+id).checked = state.prefs[key];
-  $('#spawns-toggle').disabled = state.prefs.mask;
-  $('#spawns-toggle').checked = layers.spawns && !state.prefs.mask;
+  $('#spawns-toggle').checked = layers.spawns;
   $('#rooms-toggle').checked = layers.rooms;
 }
 function chooseRegion(id, room = '') {
@@ -59,7 +62,7 @@ function chooseRegion(id, room = '') {
 function loadMap() {
   const c = baseCampaign(); mapReady = false;
   $('#map-status').textContent = '正在读取原地图…';
-  const q = new URLSearchParams({ slugcat: MAP_CHARACTERS[c.id], region: profile().current, mask: state.prefs.mask ? '1' : '0', roomnames: layers.rooms ? '1' : '0' });
+  const q = new URLSearchParams({ slugcat: MAP_CHARACTERS[c.id], region: profile().current, mask: state.prefs.mask ? '1' : '0', roomnames: layers.rooms ? '1' : '0', view: String(++mapLoadRequest) });
   const point = received?.campaign === c.id && received.region === profile().current ? received : null;
   let hash = '';
   if (selectedRoom || point?.room) hash = locationFragment({ ...(point && (!selectedRoom || selectedRoom === point.room) ? point : {}), character: c.english, region: profile().current, room: selectedRoom || point.room });
@@ -70,25 +73,68 @@ function updatePosition() {
   $('#location-warning').textContent = locationError;
   const here = received?.campaign === state.campaign && received.region === profile().current;
   $('#player-location').hidden = !received?.campaign;
-  $('#position-text').textContent = here ? `游戏位置：${names(received.region)} / ${received.room}${received.x !== undefined && received.y !== undefined ? ` · 格坐标 ${received.x}, ${received.y}` : ''}${received.mode === 'meadow' ? ' · 雨甸自由模式，无固定故事进度' : ''}` : selectedRoom ? `查询房间：${selectedRoom}` : `${names(profile().current)} · 点击房间可选中；滚轮缩放、拖动平移。`;
+  $('#position-text').textContent = here ? `本地玩家：${names(received.region)} / ${received.room}${received.x !== undefined && received.y !== undefined ? ` · 格坐标 ${received.x}, ${received.y}` : ''}${received.capturedAt ? ` · ${new Date(received.capturedAt).toLocaleTimeString()} 快照` : ''}${received.mode === 'meadow' ? ' · 雨甸自由模式' : ''}` : selectedRoom ? `查询房间：${selectedRoom}` : `${names(profile().current)} · 点击选择，右键切换房间遮罩；滚轮缩放、拖动平移。`;
+  updateRoomControls();
 }
 function sendMap(action = 'settings') {
   if (!mapReady) return;
-  $('#map-frame').contentWindow.postMessage({ type: 'where-to-map', action, mask: state.prefs.mask, rooms: layers.rooms, spawns: layers.spawns && !state.prefs.mask, nextRegion: route()[1] || null, route: state.prefs.route, room: selectedRoom || (received?.campaign === state.campaign && received.region === profile().current ? received.room : null), player: received?.campaign === state.campaign && received.region === profile().current ? received : null }, location.origin);
+  const current = received?.campaign === state.campaign;
+  $('#map-frame').contentWindow.postMessage({ type: 'where-to-map', action, mask: state.prefs.mask, rooms: layers.rooms, spawns: layers.spawns, nextRegion: route()[1] || null, route: state.prefs.route, room: selectedRoom || (current && received.region === profile().current ? received.room : null), player: current && received.v !== 2 && received.region === profile().current ? received : null,
+    players: current && received.v === 2 ? received.players : [], exploredRooms: gameProgress()?.rooms || [], roomOverrides: profile().roomOverrides,
+    names: state.prefs.names, regionLabel: names(profile().current), regionLabels: Object.fromEntries(Object.keys(REGIONS).map(id=>[id,names(id)])) }, location.origin);
+}
+function progressText() {
+  const p=gameProgress();
+  if(!p) return '未导入游戏探索记录。按住游戏内 G 更新，或导入 Mod 导出的 JSON。手动看图不会算作游戏探索。';
+  if(p.source==='unavailable') return '未取得房主探索记录；不会使用客机存档代替。雨甸自由模式可能没有故事存档，可手动开关房间。';
+  const source=p.source==='host'?'房主存档':'单人存档';
+  return `${source} · ${p.rooms.length} 个已访问房间${p.cycle!==null ? ` · 周期 ${p.cycle}` : ''}${p.capturedAt ? ` · ${new Date(p.capturedAt).toLocaleString()} 快照` : ''}。${p.freshness==='cycle-start'?'来自房主已同步记录，本轮新增探索可能尚未同步；不合并客机探索。':'按下 G 时更新，不是持续实时追踪。'}${received?.v===1?' 当前为位置链接，探索记录来自上次导入。':''}`;
+}
+function playersHTML() {
+  if(received?.v!==2 || received.campaign!==state.campaign || !received.players.length) return '';
+  return `<div class="players-list"><h3>玩家位置 · ${received.players.length}</h3>${received.players.map((p,i)=>`<button class="player-row" data-player="${i}" ${!p.available||!regionIds().includes(p.region)?'disabled':''}><span>${esc(p.name)}${p.local?' · 本地':''}${p.host?' · 房主':''}</span><small>${p.available?`${esc(names(p.region))} / ${esc(p.room)}${p.accuracy==='room'?' · 仅房间':''}`:'当前位置不可读取'}</small></button>`).join('')}<p class="note">只显示本机当前能获取的位置快照；其他地区可点击跳转。无法获取的位置不会猜测。</p></div>`;
+}
+function setRoomVisibility(room,visible) {
+  if(!/^[A-Z0-9_+.-]{1,96}$/.test(room) || (visible!==null && typeof visible!=='boolean')) return;
+  if(visible===null) delete profile().roomOverrides[room]; else profile().roomOverrides[room]=visible;
+  state.prefs.mask=true; save(); updateControls(); updateRoomControls(); sendMap();
+}
+function updateRoomControls() {
+  const el=$('#room-visibility'); if(!el)return;
+  el.hidden=!selectedRoom;
+  const override=profile().roomOverrides[selectedRoom],visited=gameProgress()?.rooms.includes(selectedRoom);
+  $('#room-mask-state').textContent=`${selectedRoom} · ${typeof override==='boolean'?(override?'手动显示':'手动遮住'):visited?'存档已探索':'存档未记录探索'}${!state.prefs.mask?' · 当前全图展开':''}`;
+}
+async function importGameFile(event) {
+  const file=event.target.files[0]; if(!file)return;
+  try {
+    if(file.size>MAX_SNAPSHOT_BYTES)throw new Error('文件超过 1 MB。');
+    const value=normalizeSnapshot(JSON.parse(await file.text()));
+    // File import is a fresh snapshot; remove the old URL so refresh cannot replay it.
+    applyLocation(value);
+    history.replaceState(null,'',location.href.split('#')[0]); ++locationRequest;
+    updateControls(); renderStory(); loadMap(); toast('已读取游戏地图快照。');
+  } catch(error) { toast('导入失败：'+error.message); }
 }
 function renderStory() {
   const focus = document.activeElement?.id, c = baseCampaign(), p = profile(), s = stage(), path = route();
-  $('#story').innerHTML = `<p class="story-kicker">故事线索</p><h2>${esc(s?.title || '按自己的节奏继续探索')}</h2><div class="hint-copy" aria-live="polite">${esc(s ? s.hints[p.hint] : '这份向导的主要线索已完成。可以回看已完成的线索，或选择可选探索。')}</div>
+  $('#story').innerHTML = `<div class="game-sync"><p class="note" id="sync-summary">${esc(progressText())}</p><label class="file-label">导入游戏快照<input type="file" id="import-game" accept="application/json,.json"></label></div>${playersHTML()}<p class="story-kicker">故事线索${gameProgress()&&gameProgress().source!=='unavailable'?' · 参考游戏记录':''}</p><h2>${esc(s?.title || '按自己的节奏继续探索')}</h2><div class="hint-copy" aria-live="polite">${esc(s ? s.hints[p.hint] : '这份向导的主要线索已完成。可以回看已完成的线索，或选择可选探索。')}</div>
     ${s ? `<p class="hint-level">提示 ${p.hint + 1} / 3 · ${['轻提示','更明确的方向','目的地提示'][p.hint]}</p><button id="more-hint" class="full-button" ${p.hint === 2 ? 'disabled' : ''}>${p.hint === 0 ? '再明确一点 →' : p.hint === 1 ? '查看目的地提示 →' : '已展开目的地提示'}</button>${p.hint ? '<button id="less-hint" class="text-button">收起提示</button>' : ''}` : ''}
     <div class="section"><h3>线索方向</h3><div class="route">${path.length ? path.map((id,i) => `${i ? '<span>→</span>' : ''}<button data-region="${id}" class="${i === 0 ? 'here' : ''}">${esc(names(id))}</button>`).join('') : `<span class="muted">${c.routeMode === 'waypoints' ? '传送路径由当前存档决定，按上方路标探索。' : !state.prefs.route ? '线索路线已关闭。' : '在当前区域继续探索，或参考上方提示。'}</span>`}</div><p class="note" id="room-route-status">${path.length > 1 ? '地图会标出通向下一地区的门。选中起点房间后，可显示已核实的房间连接参考。' : '连接参考，门槛、方向和能力仍以游戏为准。'}</p></div>
-    <div class="section"><h3>房间定位</h3><form id="room-form" class="room-form"><input id="room-query" aria-label="房间代码" placeholder="例如 SU_C04" maxlength="96" value="${esc(selectedRoom)}"><button type="submit">定位</button></form><button class="text-button" id="copy-link">复制当前查询链接</button></div>
+    <div class="section"><h3>房间定位与遮罩</h3><form id="room-form" class="room-form"><input id="room-query" aria-label="房间代码" placeholder="例如 SU_C04" maxlength="96" value="${esc(selectedRoom)}"><button type="submit">定位</button></form><div id="room-visibility" hidden><p id="room-mask-state" class="note"></p><div class="room-mask-actions"><button id="reveal-room">显示此房间</button><button id="cover-room">遮住此房间</button><button id="follow-room">跟随存档</button></div></div><button class="text-button" id="copy-link">复制当前查询链接</button></div>
     ${s && c.stages.some(v => v.before === s.id) ? '<p class="branch-warning">这里有先后顺序会影响选择的分支。<button id="branch-info" class="text-button">查看提醒 →</button></p>' : ''}
-    ${s ? '<button class="full-button complete" id="complete-stage">✓ 我已完成这条线索</button>' : ''}<button class="text-button" id="stages-button">回看、切换线索 / 可选探索</button>
+    ${s ? '<button class="full-button complete" id="complete-stage">✓ 我已完成这条线索</button>' : ''}<p class="note">探索记录自动读取；故事建议只参考可确认的存档标记。到过房间不等于完成互动，无法判定的目标仍由你确认。</p><button class="text-button" id="stages-button">回看、切换线索 / 可选探索</button>
     <details class="section"><summary>角色提醒与版本设置</summary><p class="note">${esc(c.warning)}</p>${c.dlcEdges ? `<label class="note"><input id="dlc-setting" type="checkbox" ${state.prefs.dlc ? 'checked' : ''}> 我启用了 Downpour</label><br><label class="note"><input id="outer-setting" type="checkbox" ${state.prefs.outerUnlocked ? 'checked' : ''}> 同存档槽已通关饕餮</label><p class="note">这些设置只影响路线建议。真实地图沿用上游角色数据，部分扩展地形需要 DLC。</p>` : ''}</details>`;
   if ($('#more-hint')) $('#more-hint').onclick = () => p.hint === 1 ? confirm('展开目的地提示？', '会给出具体区域和行动条件，可能包含 Wiki 标记的剧透地名。', () => { p.hint = 2; save(); renderStory(); }, '展开提示') : (p.hint = 1, save(), renderStory());
   if ($('#less-hint')) $('#less-hint').onclick = () => { p.hint = 0; save(); renderStory(); };
   if ($('#complete-stage')) $('#complete-stage').onclick = () => confirm('记录线索完成', s.completion, () => { p.completed = [...new Set([...p.completed,s.id])]; chosenStage = null; p.hint = 0; save(); renderStory(); sendMap(); }, '确认完成');
   $('#stages-button').onclick = showStages;
+  $('#import-game').onchange=importGameFile;
+  document.querySelectorAll('[data-player]').forEach(button=>button.onclick=()=>{const player=received.players[Number(button.dataset.player)];chooseRegion(player.region,player.room);});
+  $('#reveal-room').onclick=()=>setRoomVisibility(selectedRoom,true);
+  $('#cover-room').onclick=()=>setRoomVisibility(selectedRoom,false);
+  $('#follow-room').onclick=()=>setRoomVisibility(selectedRoom,null);
+  updateRoomControls();
   document.querySelectorAll('[data-region]').forEach(b => b.onclick = () => chooseRegion(b.dataset.region));
   $('#room-form').onsubmit = event => { event.preventDefault(); const room = $('#room-query').value.trim().toUpperCase(); if (!/^[A-Z0-9_+.-]{1,96}$/.test(room)) return toast('请输入完整房间代码，例如 SU_C04。'); selectedRoom = room; sendMap('focus'); updatePosition(); };
   $('#copy-link').onclick = async () => {
@@ -106,36 +152,55 @@ function showStages() {
   const c = baseCampaign(), p = profile();
   dialog('选择线索', `<p class="note">可直接选择适合当前进度的线索，不会把之前的目标自动记为完成。选中后只显示轻提示。</p><div class="stage-list">${c.stages.map(s => `<button data-stage="${s.id}">${p.completed.includes(s.id) ? '✓ ' : ''}${esc(s.title)}<small>${s.kind === 'optional' ? '可选' : ''}</small></button>`).join('')}</div><div class="section"><button id="reset-role">重置当前角色进度</button></div>`);
   document.querySelectorAll('[data-stage]').forEach(b => b.onclick = () => { chosenStage = b.dataset.stage; p.hint = 0; $('#dialog').close(); save(); renderStory(); sendMap(); });
-  $('#reset-role').onclick = () => confirm('重置当前角色？','将重置线索与探索记录。其他角色不受影响，旧笔记保留。', () => { const notes=p.notes; state.profiles[c.id]=defaultProfile(c); profile().notes=notes; chosenStage=null; selectedRoom=''; save(); updateControls(); renderStory(); loadMap(); });
+  $('#reset-role').onclick = () => confirm('重置当前角色？','将重置线索与探索记录。其他角色不受影响，旧笔记保留。', () => { const notes=p.notes; state.profiles[c.id]=defaultProfile(c); profile().notes=notes; chosenStage=null; selectedRoom=''; received=null;history.replaceState(null,'',location.href.split('#')[0]);++locationRequest; save(); updateControls(); renderStory(); loadMap(); });
 }
-function receiveLocation() {
-  let value; received = null; locationError = '';
-  try { value = parseLocation(location.hash); } catch (e) { locationError = e.message + ' 未定位，请手动选择地图。'; return false; }
-  if (!value) return false;
-  if (!value.campaign) { locationError = '这个角色尚未收录，未定位。当前显示手动参考地图。'; return false; }
-  if (!Object.hasOwn(catalog[MAP_CHARACTERS[value.campaign]]?.regions || {}, value.region)) { locationError = `原图未收录区域 ${value.region}，未定位。当前显示手动参考地图。`; return false; }
+function applyLocation(value) {
+  if (!value.campaign) throw new Error('这个角色尚未收录。');
+  if (!Object.hasOwn(catalog[MAP_CHARACTERS[value.campaign]]?.regions || {}, value.region)) throw new Error(`原图未收录区域 ${value.region}。`);
   received = value;
+  locationError = '';
   if (state.campaign !== value.campaign) { state.prefs.mask = true; state.prefs.names = false; }
   state.campaign = value.campaign; chosenStage = null; selectedRoom = '';
+  if (value.v === 2) {
+    if (applyGameProgress(profile(), value.progress)) state.prefs.names = false;
+    state.prefs.mask = true;
+  }
   profile().current = value.region; selectedRoom = value.room;
   if (!profile().known.includes(value.region)) profile().known.push(value.region);
   if (value.dlc) state.prefs.dlc = true;
-  chosenStage = baseCampaign().stages.find(s => s.destination === value.region && s.kind !== 'optional' && !profile().completed.includes(s.id))?.id || null;
+  if (value.v !== 2) chosenStage = baseCampaign().stages.find(s => s.destination === value.region && s.kind !== 'optional' && !profile().completed.includes(s.id))?.id || null;
   profile().hint = 0; save(); return true;
 }
-window.addEventListener('hashchange', () => { receiveLocation(); updateControls(); renderStory(); loadMap(); });
+async function receiveLocation() {
+  const request = ++locationRequest;
+  received = null; locationError = ''; selectedRoom = '';
+  try {
+    if (new URLSearchParams(location.hash.slice(1)).get('sync') === 'file') {
+      locationError = '快照较大，Mod 已导出 snapshot.json。请在右侧“导入游戏快照”中选择游戏提示的文件。';
+      return;
+    }
+    const value = await parseGameLink(location.hash);
+    if (request !== locationRequest) return;
+    if (value) applyLocation(value);
+  } catch (error) {
+    if (request !== locationRequest) return;
+    locationError = error.message + ' 未定位，已保留本地记录，可手动选择地图。';
+  }
+}
+window.addEventListener('hashchange', async () => { await receiveLocation(); updateControls(); renderStory(); loadMap(); });
 window.addEventListener('message', event => {
   if (event.origin !== location.origin || event.source !== $('#map-frame').contentWindow || event.data?.type !== 'where-to-parent') return;
   const message = event.data;
   if (message.event === 'ready') { mapReady = true; $('#map-status').textContent = ''; sendMap(); }
   if (message.event === 'error') $('#map-status').textContent = `${message.message} 可切换区域或重新加载。`;
   if (message.event === 'room') { $('#map-status').textContent = ''; selectedRoom = message.room; if ($('#room-query')) $('#room-query').value = selectedRoom; updatePosition(); }
+  if (message.event === 'room-mask') { selectedRoom = message.room; if ($('#room-query')) $('#room-query').value = selectedRoom; setRoomVisibility(message.room,message.visible); updatePosition(); }
   if (message.event === 'route' && $('#room-route-status')) $('#room-route-status').textContent = message.message;
 });
 $('#character-select').onchange = e => { state.campaign=e.target.value; chosenStage=null; selectedRoom=''; profile().hint=0; state.prefs.mask=true; state.prefs.names=false; save(); updateControls(); renderStory(); loadMap(); };
 $('#region-select').onchange = e => chooseRegion(e.target.value);
-$('#mask-toggle').onchange = e => { state.prefs.mask=e.target.checked; save(); updateControls(); sendMap(); };
-$('#names-toggle').onchange = e => { state.prefs.names=e.target.checked; save(); updateControls(); renderStory(); updatePosition(); };
+$('#mask-toggle').onchange = e => { state.prefs.mask=e.target.checked; save(); updateControls(); updateRoomControls(); sendMap(); };
+$('#names-toggle').onchange = e => { state.prefs.names=e.target.checked; save(); updateControls(); renderStory(); updatePosition(); sendMap(); };
 $('#route-toggle').onchange = e => { state.prefs.route=e.target.checked; save(); renderStory(); sendMap(); };
 $('#rooms-toggle').onchange = e => { layers.rooms=e.target.checked; sendMap(); };
 $('#spawns-toggle').onchange = e => { layers.spawns=e.target.checked; sendMap(); };
@@ -151,13 +216,13 @@ function exportProgress() {
   const url=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'})); const a=document.createElement('a'); a.href=url; a.download='where-should-i-go-progress.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 $('#about-button').onclick = () => {
-  dialog('我该去哪儿', `<p class="dialog-copy">直接基于 Rain World Map 前端修改，使用原地图的房间、连接、地形与瓦片。遮罩默认只显示真实连接和房间节点；关掉遮罩即可看地形。</p><p class="note">${esc(SPOILER_POLICY.rule)} <a href="${SPOILER_POLICY.source}" target="_blank" rel="noopener noreferrer">Wiki 分组依据 ↗</a><br>图片内容、房间代码和已主动展开的剧情提示不在地名开关的范围内。</p><div class="section"><h3>游戏内定位</h3><p class="dialog-copy">下载并解压 Mod，将 whereshouldigo 文件夹放到 Rain World/RainWorld_Data/StreamingAssets/mods/，在 Remix 启用。默认按住 G 0.6 秒打开浏览器；Remix 的“我该去哪儿”设置中可改键和时长。位置随链接传入，不自动改剪贴板、不需要账户或后台服务器。</p><p class="note">雨甸使用本地玩家，不拿房主的位置；自由模式没有固定故事任务。Mod 已编译并核对接口，尚未实机单人/联机验证。</p><a href="./downloads/WhereShouldIGo.zip" download>下载 Mod 安装包</a> · <a href="https://github.com/littlhMW/rainward/tree/codex/rainward/rain-guide/mod" target="_blank" rel="noopener noreferrer">源码、安装与卸载说明</a></div><div class="section"><h3>本地数据</h3><div class="data-actions"><button id="export-progress">导出进度</button><label class="file-label">导入备份<input type="file" id="import-progress" accept="application/json,.json"></label><button id="clear-data">清除本站数据</button></div><p id="import-status" role="status" class="note"></p><details><summary>保留的旅途笔记</summary><textarea class="old-notes" id="old-notes" maxlength="12000" aria-label="当前角色笔记">${esc(profile().notes)}</textarea></details></div><div class="section"><p class="note">原创改动 MIT；上游 CC0；Leaflet BSD-2-Clause。游戏美术属于相应权利人。地图按需从原作者服务器读取，需联网。<a href="./upstream/UPSTREAM.md" target="_blank">来源、许可证与下载用途</a>。本次没有安装系统服务或新运行依赖，删除 Mod 文件夹即可卸载，配置与网页数据可单独清理。</p></div>`);
+  dialog('雨间', `<p class="dialog-copy">直接基于 Rain World Map 前端修改，使用原地图的房间、连接、地形与瓦片。遮罩默认保留真实连接和房间节点；导入游戏快照后，已探索房间自动显示地形。右键房间可单独显示、遮住或跟随存档；关闭总开关可展开全图。</p><p class="note">${esc(SPOILER_POLICY.rule)} <a href="${SPOILER_POLICY.source}" target="_blank" rel="noopener noreferrer">Wiki 分组依据 ↗</a><br>图片内容、房间代码和已主动展开的剧情提示不在地名开关的范围内。</p><p class="dialog-copy"><a href="https://github.com/littlhMW/rainward" target="_blank" rel="noopener noreferrer">GitHub 项目 ↗</a> · <a href="https://github.com/littlhMW/rainward/blob/codex/rainward/rain-guide/docs/WORKSHOP.md" target="_blank" rel="noopener noreferrer">Steam 工坊上传教程 ↗</a></p><div class="section"><h3>游戏内定位</h3><p class="dialog-copy">下载并解压 Mod，将 whereshouldigo 文件夹放到 Rain World/RainWorld_Data/StreamingAssets/mods/，在 Remix 启用。默认按住 G 0.6 秒打开浏览器；Remix 的“雨间”设置中可改键和时长。位置随链接传入，不自动改剪贴板、不需要账户或后台服务器。</p><p class="note">雨甸显示本机能读到的所有玩家位置，探索进度只使用房主记录。客机取得的是已同步的房主快照，本轮新探索可能尚未同步；无法取得时不使用客机记录代替。自由模式没有固定故事任务。数据随链接传入，过大时改为本地 JSON；仅更新按键时的快照。Mod 已编译并核对接口，尚未实机单人/联机验证。</p><a href="./downloads/WhereShouldIGo.zip" download>下载 Mod 安装包</a> · <a href="https://github.com/littlhMW/rainward/tree/codex/rainward/rain-guide/mod" target="_blank" rel="noopener noreferrer">源码、安装与卸载说明</a></div><div class="section"><h3>本地数据</h3><div class="data-actions"><button id="export-progress">导出进度</button><label class="file-label">导入备份<input type="file" id="import-progress" accept="application/json,.json"></label><button id="clear-data">清除本站数据</button></div><p id="import-status" role="status" class="note"></p><details><summary>保留的旅途笔记</summary><textarea class="old-notes" id="old-notes" maxlength="12000" aria-label="当前角色笔记">${esc(profile().notes)}</textarea></details></div><div class="section"><p class="note">原创改动 MIT；上游 CC0；Leaflet BSD-2-Clause。游戏美术属于相应权利人。地图按需从原作者服务器读取，需联网。<a href="./upstream/UPSTREAM.md" target="_blank">来源、许可证与下载用途</a>。本次没有安装系统服务或新运行依赖，删除 Mod 文件夹即可卸载，配置与网页数据可单独清理。</p></div>`);
   $('#export-progress').onclick=exportProgress;
   $('#old-notes').oninput=e=>{profile().notes=e.target.value;save();};
-  $('#import-progress').onchange=async e=>{const file=e.target.files[0]; if(!file)return;try{if(file.size>500000)throw new Error('文件大于 500 KB');const next=normalizeState(JSON.parse(await file.text()),CAMPAIGNS,REGIONS);confirm('替换本地进度？','这会替换所有角色记录，建议先导出备份。',()=>{state=next;for(const p of Object.values(state.profiles))p.hint=0;state.prefs.mask=true;state.prefs.names=false;chosenStage=null;selectedRoom='';save();updateControls();renderStory();loadMap();});}catch(err){$('#import-status').textContent='导入失败：'+err.message;}};
-  $('#clear-data').onclick=()=>confirm('清除本站数据？','会清除所有角色记录、笔记与旧版离线缓存，不改动游戏存档。',async()=>{try{localStorage.removeItem(STORAGE_KEY);for(const key of await caches.keys())if(key.startsWith('rainward-'))await caches.delete(key);state=defaultState();chosenStage=null;selectedRoom='';received=null;history.replaceState(null,'',location.href.split('#')[0]);updateControls();renderStory();loadMap();toast('已清理本站本地数据。');}catch{toast('浏览器阻止清理，请在站点设置中移除数据。');}});
+  $('#import-progress').onchange=async e=>{const file=e.target.files[0]; if(!file)return;try{if(file.size>12000000)throw new Error('文件大于 12 MB');const next=normalizeState(JSON.parse(await file.text()),CAMPAIGNS,REGIONS);confirm('替换本地进度？','这会替换所有角色记录，建议先导出备份。',()=>{state=next;received=null;history.replaceState(null,'',location.href.split('#')[0]);++locationRequest;for(const p of Object.values(state.profiles))p.hint=0;state.prefs.mask=true;state.prefs.names=false;chosenStage=null;selectedRoom='';save();updateControls();renderStory();loadMap();});}catch(err){$('#import-status').textContent='导入失败：'+err.message;}};
+  $('#clear-data').onclick=()=>confirm('清除本站数据？','会清除所有角色记录、笔记与旧版离线缓存，不改动游戏存档。',async()=>{try{localStorage.removeItem(STORAGE_KEY);for(const key of await caches.keys())if(key.startsWith('rainward-'))await caches.delete(key);state=defaultState();chosenStage=null;selectedRoom='';received=null;locationError='';++locationRequest;history.replaceState(null,'',location.href.split('#')[0]);updateControls();renderStory();loadMap();toast('已清理本站本地数据。');}catch{toast('浏览器阻止清理，请在站点设置中移除数据。');}});
 };
-receiveLocation(); updateControls(); renderStory(); loadMap();
+await receiveLocation(); updateControls(); renderStory(); loadMap();
 if(!storageOK)$('#save-status').textContent='本地存储不可用，请导出备份';
 // Retire the old cache directly. Registering a retirement worker on every visit
 // can revive an already unregistered worker without running activate again.

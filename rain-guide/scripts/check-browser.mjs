@@ -39,7 +39,7 @@ try {
   await screenshot('desktop-terrain');
   await page.locator('#spawns-toggle').check(); await frame().waitForFunction(()=>map.hasLayer(densLayer));
   await page.locator('#mask-toggle').check(); await frame().waitForFunction(()=>!map.hasLayer(tileLayer) && !map.hasLayer(geometryLayer) && !map.hasLayer(densLayer));
-  check('mask removes terrain and creature layers',await page.locator('#spawns-toggle').isDisabled());
+  check('mask removes undiscovered terrain and creature layers',!await page.locator('#spawns-toggle').isDisabled());
   await page.locator('#room-query').fill('SU_C04'); await page.locator('#room-form button').click();
   await page.waitForFunction(()=>document.querySelector('#room-route-status').textContent.includes('12 段'));
   check('SU_C04 to HI highlights 12 real connections',true);
@@ -54,7 +54,7 @@ try {
   check('Watcher expansion schema loads',await frame().evaluate(()=>rwRoomJSON.room_features.length>0));
   await page.goto(base+'#v=1&character=Survivor&region=SU&room=SU_C04&x=12&y=7&px=250.5&py=140.25&cx=-40&cy=0&mode=meadow'); await ready();
   await frame().waitForFunction(()=>document.querySelector('.guide-position'));
-  check('Mod location selects correct room and local-player pin',await frame().evaluate(()=>focusedRoom.feature.properties.name==='SU_C04' && [...document.querySelectorAll('.leaflet-tooltip')].some(e=>e.textContent.includes('玩家位置'))) && (await page.locator('#position-text').innerText()).includes('雨甸自由模式'));
+  check('Mod location selects correct room and local-player pin',await frame().evaluate(()=>focusedRoom.feature.properties.name==='SU_C04' && [...document.querySelectorAll('.leaflet-tooltip')].some(e=>e.textContent.includes('本地'))) && (await page.locator('#position-text').innerText()).includes('雨甸自由模式'));
   const other=await frame().evaluate(()=>rwRoomJSON.room_features.find(f=>f.properties.name!=='SU_C04').properties.name);
   await page.locator('#room-query').fill(other); await page.locator('#room-form button').click(); await page.locator('#copy-link').click();
   const copied=await page.evaluate(()=>navigator.clipboard.readText());

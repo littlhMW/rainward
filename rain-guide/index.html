@@ -4,29 +4,29 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080808">
-  <meta name="description" content="我该去哪儿：基于 Rain World Map 的真实雨世界地图，配合逐级故事线索与游戏内位置跳转。">
+  <meta name="description" content="雨间：基于 Rain World Map 的真实雨世界地图，配合逐级故事线索与游戏内位置跳转。">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./src/style.css?v=2">
-  <title>我该去哪儿 · Rain World Map</title>
+  <link rel="stylesheet" href="./src/style.css?v=2.1.0">
+  <title>雨间 · 我该去哪</title>
 </head>
 <body>
   <a class="skip-link" href="#story">跳到故事线索</a>
   <header>
-    <h1>我该去哪儿 <small>RAIN WORLD MAP</small></h1>
-    <div class="header-links"><button id="help-button">生存帮助</button><a href="./downloads/WhereShouldIGo.zip" id="download-mod" download>下载 Mod</a><button id="about-button">说明 / 数据</button><button id="story-toggle" aria-expanded="true" aria-controls="story">收起线索 »</button></div>
+    <h1>雨间 <small>我该去哪</small></h1>
+    <div class="header-links"><a id="github-project" href="https://github.com/littlhMW/rainward" target="_blank" rel="noopener noreferrer">GitHub 项目 ↗</a><button id="help-button">生存帮助</button><a href="./downloads/WhereShouldIGo.zip" id="download-mod" download>下载 Mod</a><button id="about-button">说明 / 数据</button><button id="story-toggle" aria-expanded="true" aria-controls="story">收起线索 »</button></div>
   </header>
   <div class="toolbar" aria-label="地图设置">
     <label>角色 <select id="character-select" aria-label="角色"></select></label>
     <label>区域 <select id="region-select" aria-label="区域"></select></label>
-    <label><input type="checkbox" id="mask-toggle" checked> 遮罩地形</label>
+    <label><input type="checkbox" id="mask-toggle" checked> 遮罩未探索房间</label>
     <label><input type="checkbox" id="names-toggle"> 剧透地名</label>
     <label><input type="checkbox" id="route-toggle" checked> 线索路线</label>
     <label><input type="checkbox" id="rooms-toggle"> 房间编号</label>
     <label><input type="checkbox" id="spawns-toggle"> 生物标记</label>
     <button id="world-view">区域全图</button>
   </div>
-  <p class="mod-notice">有新增或修改地形的 Mod 时，地图、坐标和路线可能不准确。本站不扫描 Mod；雨甸使用本地玩家的位置。</p>
+  <p class="mod-notice">有新增或修改地形的 Mod 时，地图、坐标和路线可能不准确。雨甸按房主探索记录遮罩，显示可获取的所有玩家位置；按住 G 更新快照。</p>
   <main id="layout">
     <section class="map-area" aria-label="雨世界真实地图">
       <iframe id="map-frame" title="Rain World Map：真实房间、连接和地形" referrerpolicy="no-referrer" src="about:blank"></iframe>
@@ -40,6 +40,6 @@
   <dialog id="dialog" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
   <div id="toast" role="status"></div>
   <noscript>需要启用 JavaScript 才能查看互动地图。</noscript>
-  <script type="module" src="./src/app.js?v=2.0.1"></script>
+  <script type="module" src="./src/app.js?v=2.1.0"></script>
 </body>
 </html>

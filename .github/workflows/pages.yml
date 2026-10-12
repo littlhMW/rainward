@@ -1,4 +1,4 @@
-name: Deploy Where Should I Go to GitHub Pages
+name: Deploy Rainward to GitHub Pages
 
 on:
   push:

@@ -1,11 +1,12 @@
 using System;
+using System.IO;
 using BepInEx;
 using RWCustom;
 using UnityEngine;
 
 namespace WhereShouldIGo
 {
-    [BepInPlugin(ModId, "Where Should I Go", "1.0.0")]
+    [BepInPlugin(ModId, "雨间 · 我该去哪 / Rainward", "1.1.0")]
     [BepInDependency("henpemaz.rainmeadow", BepInDependency.DependencyFlags.SoftDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
@@ -90,6 +91,7 @@ namespace WhereShouldIGo
         private void OpenMap(RainWorldGame game)
         {
             AbstractCreature local = null;
+            object gameMode = null;
             string campaign = game.StoryCharacter?.value;
             string mode = "story";
             if (!MeadowBridge.TryGetLobby(out var lobby))
@@ -99,7 +101,7 @@ namespace WhereShouldIGo
             }
             if (lobby != null)
             {
-                if (!MeadowBridge.TryLocalAvatar(lobby, out local, out var gameMode))
+                if (!MeadowBridge.TryLocalAvatar(lobby, out local, out gameMode))
                 {
                     Notify(game, "本地角色暂不可定位，请离开管道后重试 / Local avatar unavailable; retry outside a pipe.");
                     return;
@@ -134,23 +136,30 @@ namespace WhereShouldIGo
                 Notify(game, "当前位置暂不可用，请进入房间后重试 / Position unavailable; retry inside a room.");
                 return;
             }
-            var room = creature.room;
-            var tile = room.GetTilePosition(creature.mainBodyChunk.pos);
-            var avatarName = creature is Player slugcat ? slugcat.SlugCatClass?.value : local.creatureTemplate.type.value;
-            float? cameraX = null, cameraY = null;
-            if (room.cameraPositions?.Length > 0)
+            try
             {
-                var cameraMin = room.cameraPositions[0];
-                foreach (var position in room.cameraPositions)
-                    cameraMin = Vector2.Min(cameraMin, position);
-                cameraX = cameraMin.x;
-                cameraY = cameraMin.y;
+                var snapshot = SnapshotBuilder.Capture(game, lobby, gameMode, local, campaign, mode);
+                var json = SnapshotProtocol.Json(snapshot);
+                var url = SnapshotProtocol.Url(json);
+                if (url.Length > SnapshotProtocol.MaxUrlChars)
+                {
+                    var directory = Path.Combine(Application.persistentDataPath, "Rainward");
+                    Directory.CreateDirectory(directory);
+                    var path = Path.Combine(directory, "snapshot.json");
+                    File.WriteAllBytes(path, json);
+                    Notify(game, "数据较多，已完整导出，请在网页导入 / Import snapshot: " + path);
+                    Logger.LogInfo("Rainward snapshot exported to " + path);
+                    Application.OpenURL(LinkProtocol.Website + "#sync=file");
+                    return;
+                }
+                Notify(game, "正在打开同步地图；地形 MOD 可能使信息不准确 / Opening snapshot; terrain mods may affect accuracy.");
+                Application.OpenURL(url);
             }
-            var url = LinkProtocol.Build(campaign, room.world.region?.name, room.abstractRoom.name,
-                tile.x, tile.y, avatarName, mode, ModManager.MSC,
-                creature.mainBodyChunk.pos.x, creature.mainBodyChunk.pos.y, cameraX, cameraY);
-            Notify(game, "正在打开地图；地形 MOD 可能使信息不准确 / Opening map; terrain mods may make it inaccurate.");
-            Application.OpenURL(url);
+            catch (Exception error)
+            {
+                Logger.LogError(error);
+                Notify(game, "无法生成地图快照，未截断进度 / Snapshot unavailable: " + error.Message);
+            }
         }
 
         private static void Notify(RainWorldGame game, string message)

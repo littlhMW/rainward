@@ -1,6 +1,6 @@
-# 我该去哪儿：卸载与清理
+# 雨间：卸载与清理
 
-网页与游戏 Mod 可以独立移除。所有下载和构建文件限定在项目目录；没有新建系统服务、自启动项、全局 npm 包或后台位置服务器。先备份要保留的网页记录，再按需要清理，避免删除游戏存档及其他项目文件。
+网页与游戏 Mod 可以独立移除。下载和构建文件限定在项目目录；本次另将本工具的 5 个发布文件复制到游戏的独立 mods/whereshouldigo/ 目录，供 Remix 识别与工坊上传准备。没有新建系统服务、自启动项、全局 npm 包或后台位置服务器。先备份要保留的网页记录，再按需要清理，避免删除游戏存档及其他项目文件。
 
 ## 下载和配置分别做什么
 
@@ -15,9 +15,12 @@
 | sw.js 与旧 rainward- 缓存 | 新版仅用于退役旧版离线功能，防止旧缓存持续覆盖新界面 | 正常更新后清除旧缓存并撤销旧服务；必要时用下文手动清理 |
 | manifest.webmanifest | 提供网页名称、图标和独立窗口展示信息 | 不安装服务；若曾安装网页应用，在浏览器应用管理移除 |
 | mod/dist/ 的 DLL、完整 Mod 文件夹与 ZIP | 可分发的游戏定位工具 | 未安装时直接删除构建包；已安装按下文移除独立 Mod 目录 |
+| 本次复制到游戏的 mods/whereshouldigo/ | 让 Remix 识别本地 Mod，并准备上传工坊；仅含 modinfo.json、plugins/WhereShouldIGo.dll、thumbnail.png、README.md、LICENSE | 完整路径见下文；退出游戏后只删除此独立目录，不动其他 Mod |
+| mod/workshop/description.txt、thumbnail.svg 与 mod/thumbnail.png | 工坊介绍文案、可编辑封面源图和实际发布 PNG；PNG 已随本工具复制到游戏 | 均为项目文件，可分别删除；不影响游戏存档，未创建工坊条目 |
 | mod/.cache/rain-meadow/ | 下载公开源码片段以核对雨甸接口 | 开发资料，不进发布包；直接删除此项目子目录 |
 | mod/bin/、mod/obj/、mod/tests/bin/、mod/tests/obj/、mod/.cache/nuget/ | 编译、测试及限定的构建缓存位置 | 如存在可删除这些项目子目录；不影响游戏与源码 |
 | ModConfigs/littlhmw.whereshouldigo.txt | 保存 Mod 按键与长按时长 | 只删除这一配置文件，不删除整个 ModConfigs |
+| 游戏数据目录 Rainward/snapshot.json | 压缩链接过长时完整保存访问记录和玩家位置，供网页手动导入 | 只删除这个文件；若 Rainward 文件夹空了，可删除空文件夹，不碰游戏存档 |
 | GitHub Pages 与部署工作流 | 免费托管与推送后发布静态网页 | 取消发布并禁用本站工作流；不必删除源码仓库 |
 | 仓库级 Git 作者配置 | 提交署名 littlhMW / littlhMW@users.noreply.github.com | 仅在本仓库 .git/config，不修改全局；共享父仓库配置不要随子项目删除 |
 
@@ -45,16 +48,19 @@
 
 下载到电脑的 JSON 备份、Mod ZIP 和浏览器历史不会随着网页清理自动删除。需要时单独删除。位置链接的 URL # 片段会保留在历史或分享链接里；可在浏览器中删除相关历史。
 
-若曾安装旧“雨间”或新“我该去哪儿”网页应用，在浏览器应用管理中移除，快捷方式也可单独删除。
+若曾安装“雨间”网页应用，在浏览器应用管理中移除，快捷方式也可单独删除。
 
 ## 卸载游戏 Mod
 
 详细步骤以 [Mod README](../mod/README.md#卸载与清理) 为准：
 
-1. 在 Remix 取消启用“我该去哪儿”，退出游戏。
+本次准备上传时使用的本地目录为：D:/Steam/steamapps/common/Rain World/RainWorld_Data/StreamingAssets/mods/whereshouldigo/。仅放入 1.1.0 的上述 5 个发布文件，未复制游戏程序集或雨甸程序集。本轮更新没有启动或启用游戏；此前为查看 Remix 上传入口启动过游戏，但尚未进入存档进行单人或联机功能实测。工坊准备与发布步骤见 [WORKSHOP.md](WORKSHOP.md)。
+
+1. 在 Remix 取消启用“雨间 · 我该去哪 / Rainward”（如果已启用），退出游戏。
 2. 只删除游戏目录中的 RainWorld_Data/StreamingAssets/mods/whereshouldigo/。
 3. 如要恢复按键配置的初始状态，只删除游戏数据目录里的 ModConfigs/littlhmw.whereshouldigo.txt。
-4. 不再需要时删除下载的 ZIP；网页进度按上节单独清理。
+4. 若生成过长链接导出，删除游戏数据目录中的 Rainward/snapshot.json；文件夹已空时可删除该空文件夹，不删除游戏数据目录。
+5. 不再需要时删除下载的 ZIP；网页进度按上节单独清理。
 
 不要删除 Rain Meadow、BepInEx、游戏原有 DLL、整个 mods/、ModConfigs/ 或存档目录。本工具不修改游戏存档，也不会卸载其他 Mod。
 

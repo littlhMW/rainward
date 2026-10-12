@@ -106,6 +106,6 @@ server.on('error', (error) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`我该去哪儿 本地预览：http://${host}:${port}/`);
+  console.log(`雨间 本地预览：http://${host}:${port}/`);
   console.log('按 Ctrl+C 停止。仅本机可访问；无需安装 npm 依赖。');
 });

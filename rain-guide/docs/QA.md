@@ -1,31 +1,34 @@
-# 我该去哪儿 2.0：验证记录
+# 雨间 2.1.0：验证记录
 
-验证日期：2026-10-12。网站：[littlhmw.github.io/rainward](https://littlhmw.github.io/rainward/)，[发布工作流](https://github.com/littlhMW/rainward/actions/workflows/pages.yml)。本记录对应真实地图改版，替代旧版抽象区域图的检查结果。
+验证日期：2026-10-12。网站：[littlhmw.github.io/rainward](https://littlhmw.github.io/rainward/)，[发布工作流](https://github.com/littlhMW/rainward/actions/workflows/pages.yml)。本记录对应网页 2.1.0 / Mod 1.1.0 的真实地图与游戏探索快照；上线状态仍需由本版部署任务及公开页面确认。
 
 ## 实际检查
 
 | 检查 | 结果与范围 |
 | --- | --- |
-| Node 单元与数据检查 | 62 项通过：九角色故事数据、区域条件、进度备份、位置协议、坐标换算、真实房间连接算法 |
-| Edge / Playwright 浏览器检查 | 38 项通过：真实上游数据、九角色地图、Watcher HI/WPTA、遮罩、房间路线、定位、非法位置、导入导出、移动布局及断网报错 |
+| Node 单元与数据检查 | 93 项通过：九角色故事数据、区域条件、进度备份、v1/v2 协议、真实 C# gzip 样本、解压与输入上限、房主来源约束、存档替换、单房间遮罩、坐标换算、真实房间连接算法 |
+| Edge / Playwright 原图浏览器检查 | 本轮最终界面与缓存版本下 38 项通过：真实上游数据、九角色地图、Watcher HI/WPTA、遮罩、房间路线、定位、非法位置、导入导出、移动布局及断网报错 |
 | 原图实际路线 | SU_C04 到 GATE_SU_HI，标出 12 段原始连接；无需虚构房间连线 |
-| 地形加载 | 真实上游瓦片成功显示；遮罩时移除瓦片、内部几何、生物，保留房间节点和连接 |
+| 地形加载 | 真实上游瓦片成功显示；局部遮罩以已访问房间边界裁切地形、内部几何与开启的生物图层，保留未探索房间节点和连接；无可见房间时不挂载地形 |
 | 默认防剧透 | 普通区域名可见；Wiki 分类的 17 个地区名隐藏。更换角色时重置，刷新不会把另一线索的深提示带过来 |
 | 桌面与窄屏 | 1440px 时地图宽度超过 75%；320px、390px 无页面横向溢出，窄屏线索位于地图下方 |
-| Mod 编译与逻辑 | 使用已有 .NET SDK 和本机正版游戏程序集，零警告、零错误；30 项逻辑与本机雨甸接口检查通过 |
+| Mod 编译与逻辑 | 使用已有 .NET SDK 和本机正版游戏程序集，零警告、零错误；53 项逻辑与本机雨甸接口检查通过 |
 | Mod → 网页协议 | 12 项交叉检查通过：九角色、雨甸默认自由模式、不同本地生物、自定义角色保留、像素与摄像机偏移 |
 | 原图加载异常 | 8 项模拟检查：同步依赖失败、异步失败、JSON 格式异常、回调异常、正常请求取消等；3 个非法角色参数检查通过 |
 
+v2 浏览器检查 scripts/check-snapshot-browser.mjs **37 项通过**：顶部 GitHub 项目入口、四位玩家（同区、跨区、未知位置）、跨区跳转、昵称文本防注入、房间显示/遮住/跟随、右键回传与刷新、缺少房主探索、320px/390px 移动界面。真实地形像素审计覆盖总览、缩放、拖动和开启生物图层，四种状态遮罩外像素变化均为 0。
+
 网页浏览器测试使用已有 Playwright 和 Edge，没有安装浏览器或新 npm 依赖。九角色检查各加载一个区域，Watcher 另查 WPTA，不代表每一个地区或每张瓦片都完整验收。
 
-Mod 发布包：downloads/WhereShouldIGo.zip，13,267 bytes。
+Mod 发布包：downloads/WhereShouldIGo.zip，版本 1.1.0，43,628 bytes。ZIP 只含 whereshouldigo/ 内的 README.md、LICENSE、modinfo.json、thumbnail.png、plugins/WhereShouldIGo.dll。
 
-SHA256：18D6D5AF8BA54EEF6F9AC431991DC7225FEB694F893DB776C1B3E7CC901BB9A7。
+SHA256：321B0C2E8D149461E37396C1BB59CA81095C2D0E169B36CE72082B80B893B0EE。
 
 ## 验证边界
 
-- **没有安装、启动游戏或进行真实单人／雨甸联机验收。** 已实现雨甸本地角色所有权筛选并核对已安装程序集，但自动检查不等于实机兼容保证。
-- Mod 传递按键时的位置快照；没有持续追踪，不扫描地形模组，不读取剧情完成状态。缺少精确换算数据时只标房间，未知角色/区域/房间显示限制，不制造当前位置。
+- **未进入游戏存档进行单人或雨甸联机功能实测；工坊未上传。** 本机独立 mods/whereshouldigo/ 目录已放入 1.1.0 的五个发布文件，供 Remix 识别及上传准备；本轮没有运行或启用游戏。已核对安装的雨甸程序集及公开源码，但编译、元数据与协议检查不等于实机兼容保证。
+- Mod 传递按键时的位置、已访问房间与少量原始剧情记录；不持续追踪，不扫描地形模组，不改写游戏存档。会面次数等只用于线索建议，不直接宣告任务完成。缺少精确换算数据时只标房间，未知角色/区域/房间显示限制，不制造当前位置。
+- 雨甸显示所有可获取玩家的位置。客机探索只取已同步的房主周期起点快照，本周期新探索与故事变化可能延迟；不可用时保持未知，不混入客机存档。自由模式可定位玩家，但没有可确认的探索及故事记录。
 - 房间路线基于原图真实连接，不保证门槛、方向、角色能力、天气或地形 Mod 条件下可通过。没有逐房间游戏实跑。
 - Watcher 动态传送依赖当前存档，不计算虚构的跨区最短路。
 - 地图需要网络，受上游服务可用性影响。新版只退役旧离线缓存，不再承诺离线地图。
@@ -33,8 +36,8 @@ SHA256：18D6D5AF8BA54EEF6F9AC431991DC7225FEB694F893DB776C1B3E7CC901BB9A7。
 
 ## 复跑与清理
 
-在 rain-guide 运行 npm test，无需 npm install。已有 Playwright/Edge 环境中先启动 npm run serve，再运行 scripts/check-browser.mjs；可用 PLAYWRIGHT_MODULE、BROWSER_PATH、SITE_URL 指定现有工具和目标网址。浏览器截图在忽略的 test-results/，可单独删除。
+在 rain-guide 运行 npm test，无需 npm install。已有 Playwright/Edge 环境中先启动 npm run serve，再分别运行 scripts/check-browser.mjs、scripts/check-snapshot-browser.mjs；可用 PLAYWRIGHT_MODULE、BROWSER_PATH、SITE_URL 指定现有工具和目标网址。浏览器截图在忽略的 test-results/，可单独删除。
 
-Mod 的构建、30 项逻辑检查和12项协议交叉检查见 [Mod README](../mod/README.md) 与 mod/tests/。Pages 自动工作流执行 Node 检查，然后仅发布网页源码、上游静态前端与下载 ZIP，测试和游戏程序集不进入网页产物。
+Mod 的构建、53 项逻辑检查和 12 项 v1 协议交叉检查见 [Mod README](../mod/README.md) 与 mod/tests/；v2 的真实 C# 压缩样本由网页单元检查读取。Pages 自动工作流执行 Node 检查，然后仅发布网页源码、上游静态前端与下载 ZIP，测试和游戏程序集不进入网页产物。
 
 下载、配置、测试产物的意义与安全移除方式见 [卸载说明](UNINSTALL.md)。

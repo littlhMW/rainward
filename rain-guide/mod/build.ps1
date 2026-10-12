@@ -17,17 +17,17 @@ try {
     $pluginRoot = Join-Path $packageRoot 'plugins'
     New-Item -ItemType Directory -Force -Path $pluginRoot | Out-Null
     Copy-Item -LiteralPath 'bin/Release/net48/WhereShouldIGo.dll' -Destination (Join-Path $pluginRoot 'WhereShouldIGo.dll') -Force
-    foreach ($file in @('modinfo.json', 'README.md', 'LICENSE')) {
+    foreach ($file in @('modinfo.json', 'README.md', 'LICENSE', 'thumbnail.png')) {
         Copy-Item -LiteralPath (Join-Path $modRoot $file) -Destination (Join-Path $packageRoot $file) -Force
     }
     # Create a zip from an explicit allowlist; never include game libraries or source caches.
     Add-Type -AssemblyName System.IO.Compression
-    $archivePath = Join-Path $modRoot 'dist/WhereShouldIGo-1.0.0.zip'
+    $archivePath = Join-Path $modRoot 'dist/WhereShouldIGo-1.1.0.zip'
     $archiveStream = [IO.File]::Open($archivePath, [IO.FileMode]::Create)
     try {
         $archive = [IO.Compression.ZipArchive]::new($archiveStream, [IO.Compression.ZipArchiveMode]::Create)
         try {
-            foreach ($relativePath in @('plugins/WhereShouldIGo.dll', 'modinfo.json', 'README.md', 'LICENSE')) {
+            foreach ($relativePath in @('plugins/WhereShouldIGo.dll', 'modinfo.json', 'README.md', 'LICENSE', 'thumbnail.png')) {
                 $entry = $archive.CreateEntry('whereshouldigo/' + $relativePath)
                 $entryStream = $entry.Open()
                 $sourceStream = [IO.File]::OpenRead((Join-Path $packageRoot $relativePath))

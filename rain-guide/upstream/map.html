@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="utf-8">
-    <title>我该去哪儿 · 原地图</title>
+    <title>雨间 · 我该去哪</title>
     <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
 
     <meta property="og:image" content="https://rain-world-map.github.io/embed.jpg" />
@@ -216,6 +216,16 @@
 .leaflet-control-attribution a{color:#bbb!important}
 .room-labels{font:11px monospace;border-radius:0!important}
 .guide-room-node{cursor:pointer}.guide-position{pointer-events:none}
+.guide-region-label{font:600 26px/1.35 sans-serif;letter-spacing:.14em;color:#ddd;background:transparent;border:0;box-shadow:none;text-shadow:0 1px 4px #000;pointer-events:none;opacity:.58!important;white-space:nowrap}
+.guide-region-label:before,.guide-gate-label:before,.guide-player-label:before{display:none}
+.guide-gate-label{font:12px/1.4 sans-serif;color:#ccc;background:#080808d9;border:0;border-radius:0;box-shadow:none;pointer-events:none}
+.guide-player-label{font:12px/1.4 sans-serif;color:#eee;background:#080808e6;border:1px solid #777;border-radius:0;box-shadow:none;pointer-events:none;white-space:pre-line;text-align:center;width:max-content;max-width:240px;overflow-wrap:anywhere}
+.guide-player-label.local{border-color:#e4ce90;color:#f3e2ad}
+.guide-room-menu{min-width:190px;font:13px/1.5 sans-serif;color:#eee}
+.guide-room-menu strong,.guide-room-menu p{display:block;margin:0 0 8px}
+.guide-room-menu button{display:block;width:100%;margin:5px 0;padding:7px 10px;border:1px solid #777;border-radius:0;background:#111;color:#eee;text-align:left;cursor:pointer}
+.guide-room-menu button:disabled{opacity:.45;cursor:default}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#111;color:#eee;border-radius:0}
 </style>
 </head>
 
@@ -443,8 +453,8 @@
         // Room hover & select stuff
         var hilightedRoom;
         function hilightRoom(e) {
-            if (window.rwGuide.mask) return;
             if (e.target) e = e.target;
+            if (window.rwGuide.mask && !window.rwRoomVisible?.(e.feature?.properties?.name)) return;
             resetHilight();
             hilightedRoom = e;
             if (map.getZoom() < 0 && hilightedRoom != focusedRoom) {
@@ -455,8 +465,8 @@
         }
 
         function updateHilight() {
-            if (window.rwGuide.mask) return;
             if (hilightedRoom == null) return;
+            if (window.rwGuide.mask && !window.rwRoomVisible?.(hilightedRoom.feature?.properties?.name)) return;
             if (map.getZoom() < 0 && hilightedRoom != focusedRoom) {
                 hilightedRoom.setStyle({
                     fillOpacity: 0.2
@@ -522,7 +532,18 @@
             maxZoom: 3, // 8x
             crs: L.CRS.Simple,
             zoomControl: false,
+            // Detailed layers are clipped in map layer coordinates. Avoid
+            // intermediate zoom transforms temporarily outrunning their clip.
+            zoomAnimation: false,
+            fadeAnimation: false,
+            markerZoomAnimation: false,
         });
+        for (const [name, zIndex] of [['guideTerrain', 200], ['guideGeometry', 210], ['guideSpawns', 550]]) {
+            map.createPane(name).style.zIndex = zIndex;
+            map.getPane(name).style.pointerEvents = 'none';
+            // Fail closed until the bridge has built the explored-room clip.
+            if (window.rwGuide.mask) map.getPane(name).style.visibility = 'hidden';
+        }
         map.attributionControl.setPrefix('Powered by <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &amp <a href="https://github.com/henpemaz" title="Gamedev &amp associated arts enthusiast">Henpemaz</a>')
         map.setView([0, 0], -5);
 
@@ -616,6 +637,7 @@
                 // Tileset layer
                 if (tileLayer != null) map.removeLayer(tileLayer);
                 tileLayer = L.tileLayer(`${roompath}/{z}/{x}_{y}.png`, {
+                    pane: 'guideTerrain',
                     attribution: "<a href=\"https://store.steampowered.com/app/312520/Rain_World/\">Rain World</a> by <a href=\"https://twitter.com/VideocultMedia\">Videocult</a>",
                     minZoom: -7,
                     maxZoom: 3,
@@ -686,6 +708,7 @@
                     map.removeLayer(geometryLayer);
                 }
                 geometryLayer = L.geoJSON(roomjson["geo_features"], {
+                    pane: 'guideGeometry',
                     interactive: false,
                     color: 'rgb(' + json["geocolor"].join(',') + ')',
                     weight: 2,
@@ -753,6 +776,7 @@
                             }
                         }
                         return L.marker(latlng, {
+                            pane: 'guideSpawns',
                             icon: L.divIcon({
                                 className: 'spawn-divs',
                                 html: divhtml,
@@ -800,7 +824,7 @@
         }
 
     </script>
-    <script type="module" src="../src/map-bridge.js"></script>
+    <script type="module" src="../src/map-bridge.js?v=2.1.0"></script>
 </body>
 
 </html>

@@ -22,7 +22,7 @@ namespace WhereShouldIGo
             base.Initialize();
             Tabs = new[] { new OpTab(this, "地图 / Map") };
             Tabs[0].AddItems(
-                new OpLabel(new Vector2(20, 535), new Vector2(560, 40), "我该去哪儿 / Where Should I Go", FLabelAlignment.Center, true),
+                new OpLabel(new Vector2(20, 535), new Vector2(560, 40), "雨间 · 我该去哪 / Rainward", FLabelAlignment.Center, true),
                 new OpLabel(25, 465, "打开地图 / Open map"),
                 new OpKeyBinder(OpenKey, new Vector2(330, 460), new Vector2(180, 30), false),
                 new OpLabel(25, 385, "按住时长 ×0.1 秒 / Hold ×0.1 s"),

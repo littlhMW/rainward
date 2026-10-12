@@ -12,7 +12,7 @@ input[type=checkbox] { accent-color: #dedede; width: 14px; height: 14px; margin:
 :focus-visible { outline: 2px solid #e5d394; outline-offset: 3px; }
 header { min-height: 51px; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 8px 14px; border-bottom: 1px solid #555; }
 h1 { font-size: 19px; font-weight: 500; letter-spacing: 3px; margin: 0; white-space: nowrap; }
-h1 small { margin-left: 16px; color: #888; font: 10px/1 monospace; letter-spacing: 2px; }
+h1 small { margin-left: 14px; color: #aaa; font-size: 12px; letter-spacing: 2px; }
 .header-links { display: flex; align-items: center; gap: 16px; }
 .header-links button { background: none; border-color: transparent; padding-inline: 0; }
 .header-links a { font-size: 12px; text-decoration: none; }
@@ -48,6 +48,15 @@ h1 small { margin-left: 16px; color: #888; font: 10px/1 monospace; letter-spacin
 .room-form { display: flex; gap: 7px; }
 .room-form input { min-width: 0; width: 100%; padding: 6px 8px; }
 .room-form button { flex-shrink: 0; }
+.game-sync { border-bottom: 1px solid #444; margin: -8px 0 20px; padding-bottom: 14px; }
+.game-sync .file-label { display: inline-block; font-size: 11px; }
+.file-label:focus-within { outline: 2px solid #e5d394; outline-offset: 3px; }
+.players-list { border-bottom: 1px solid #444; margin-bottom: 20px; padding-bottom: 12px; }
+.players-list h3 { font-size: 12px; font-weight: 500; }
+.player-row { display: block; width: 100%; text-align: left; margin: 6px 0; overflow-wrap: anywhere; }
+.player-row small { display: block; font-size: 10px; color: #aaa; }
+.room-mask-actions { display: flex; flex-wrap: wrap; gap: 5px; }
+.room-mask-actions button { font-size: 11px; padding: 3px 6px; }
 .complete { margin-top: 20px; border-color: #aaa; }
 details { margin-top: 12px; } summary { color: #bbb; font-size: 12px; }
 .branch-warning { border: 1px solid #857752; padding: 10px; color: #d8c999; font-size: 12px; margin-top: 15px; }
@@ -72,7 +81,7 @@ dialog::backdrop { background: #000b; }
 #toast:empty { display: none; }
 .skip-link { position: fixed; top: -60px; left: 10px; background: black; padding: 10px; z-index: 10001; }
 .skip-link:focus { top: 0; }
-@media(max-width: 1100px) { h1 small { display: none; } .toolbar { gap: 8px 12px; } #layout { height: calc(100dvh - 190px); grid-template-columns: minmax(0,1fr) 275px; } }
+@media(max-width: 1100px) { .toolbar { gap: 8px 12px; } #layout { height: calc(100dvh - 190px); grid-template-columns: minmax(0,1fr) 275px; } }
 @media(max-width: 700px) {
   header { flex-wrap: wrap; gap: 6px; padding: 8px 10px; } h1 { font-size: 18px; } .header-links { gap: 12px; flex-wrap: wrap; } .header-links button, .header-links a { font-size: 11px; }
   .toolbar { padding: 8px 10px; gap: 8px 12px; } .toolbar select { margin-left: 3px; } #region-select { width: 167px; } #character-select { width: 92px; }

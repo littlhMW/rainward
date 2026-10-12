@@ -1,7 +1,8 @@
+import { normalizeProgress, normalizeRoomOverrides, suggestedStage } from './snapshot.js?v=2.1.0';
 export const STORAGE_KEY = 'rainward.progress.v1';
 export const VERSION = 1;
 export function defaultProfile(campaign) {
-  return { current: campaign.start, known: [campaign.start], completed: [], hint: 0, notes: '', checklist: [] };
+  return { current: campaign.start, known: [campaign.start], completed: [], hint: 0, notes: '', checklist: [], gameProgress: null, roomOverrides: {} };
 }
 export function defaultState() {
   return { version: VERSION, campaign: 'survivor', profiles: {}, prefs: { mask: true, names: false, route: true, dlc: false, outerUnlocked: false } };
@@ -20,6 +21,22 @@ export function campaignNodes(campaign) {
 export function activeStage(campaign, profile) {
   return campaign.stages.find(stage => stage.kind !== 'optional' && !profile.completed.includes(stage.id)) || null;
 }
+export function recommendedStage(campaign, profile) {
+  const index = campaign.stages.findIndex(stage => stage.id === suggestedStage(campaign.id, profile.gameProgress));
+  return index < 0 ? activeStage(campaign, profile) : campaign.stages.slice(index).find(stage => stage.kind !== 'optional' && !profile.completed.includes(stage.id)) || null;
+}
+export function applyGameProgress(profile, progress) {
+  const old = profile.gameProgress;
+  const sameSave = old?.source === progress.source && progress.saveId && old.saveId === progress.saveId;
+  if (!sameSave) {
+    profile.roomOverrides = {};
+    profile.completed = [];
+    profile.hint = 0;
+  }
+  // A fresh snapshot replaces history; never merge different saves or guests.
+  profile.gameProgress = progress;
+  return !sameSave;
+}
 export function normalizeState(input, campaigns, regions) {
   if (!input || typeof input !== 'object' || input.version !== VERSION) throw new Error('这不是受支持的雨间进度文件（需要版本 1）。');
   const state = defaultState();
@@ -36,6 +53,8 @@ export function normalizeState(input, campaigns, regions) {
     profile.hint = Number.isInteger(value.hint) ? Math.max(0, Math.min(value.hint, 2)) : 0;
     profile.notes = typeof value.notes === 'string' ? value.notes.slice(0, 12000) : '';
     profile.checklist = Array.isArray(value.checklist) ? value.checklist.filter(v => ['food', 'shelter', 'rain', 'hands'].includes(v)) : [];
+    profile.gameProgress = normalizeProgress(value.gameProgress);
+    profile.roomOverrides = normalizeRoomOverrides(value.roomOverrides);
     state.profiles[campaign.id] = profile;
   }
   return state;

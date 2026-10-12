@@ -8,5 +8,7 @@
   <ItemGroup>
     <Compile Include="../src/LinkProtocol.cs" Link="LinkProtocol.cs" />
     <Compile Include="../src/MeadowBridge.cs" Link="MeadowBridge.cs" />
+    <Compile Include="../src/SnapshotProtocol.cs" Link="SnapshotProtocol.cs" />
+    <Compile Include="../src/SaveSnapshotReader.cs" Link="SaveSnapshotReader.cs" />
   </ItemGroup>
 </Project>

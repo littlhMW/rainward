@@ -3,6 +3,17 @@ using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 using WhereShouldIGo;
 
+if (args.Length == 1 && args[0] == "--snapshot-fixture")
+{
+    var snapshot = SnapshotCases.Example();
+    var json = SnapshotProtocol.Json(snapshot);
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new
+    {
+        url = SnapshotProtocol.Url(json), json = System.Text.Encoding.UTF8.GetString(json)
+    }));
+    return;
+}
+
 if (args.Length == 1 && args[0] == "--protocol-fixtures")
 {
     CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
@@ -84,6 +95,7 @@ bool reflectionStopped = false;
 try { MeadowBridge.TryLocalAvatar(lobby, out _, out _); }
 catch (System.Reflection.TargetInvocationException) { reflectionStopped = true; }
 Check(reflectionStopped, "reflection exception stops selection instead of falling back to a remote player");
+SnapshotCases.Run(Check);
 if (args.Length == 1)
 {
     using var stream = File.OpenRead(args[0]);
@@ -100,6 +112,11 @@ if (args.Length == 1)
     Check(Field("OnlineGameMode", "avatars") && Property("OnlineEntity", "isMine"), "installed Meadow local avatar ownership API matches");
     Check(Property("OnlineCreature", "isAvatar") && Property("OnlineCreature", "abstractCreature"), "installed Meadow avatar and creature API matches");
     Check(Field("StoryGameMode", "currentCampaign"), "installed Meadow campaign selection API matches");
+    Check(Field("StoryGameMode", "saveStateString") && Type("RainMeadow").GetMethods().Select(metadata.GetMethodDefinition)
+        .Any(m => metadata.GetString(m.Name) == "InflateJoarXML"), "installed Meadow host snapshot and inflate APIs exist without requiring newer appliedSaveStateString");
+    Check(Field("Lobby", "clientSettings") && Field("ClientSettings", "avatars") && Field("ClientSettings", "inGame"), "installed Meadow full player roster API matches");
+    Check(Field("OnlinePlayer", "inLobbyId") && Field("OnlinePlayer", "isMe") && Property("MeadowPlayerId", "DisplayName")
+        && Property("OnlineResource", "isOwner"), "installed Meadow anonymous-aware names and host identity APIs match");
 }
 Console.WriteLine($"{passed} checks passed. These are logic/API-shape tests, not in-game multiplayer tests.");
 
