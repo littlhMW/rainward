@@ -6,11 +6,13 @@ using UnityEngine;
 
 namespace Rainward
 {
-    [BepInPlugin(ModId, "Rainward: Where to Go", "1.3.2")]
+    [BepInPlugin(ModId, "Rainward: Where to Go", "1.3.3")]
     [BepInDependency("henpemaz.rainmeadow", BepInDependency.DependencyFlags.SoftDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
-        public const string ModId = "littlhmw.whereshouldigo";
+        private const string LegacyModId = "littlhmw.whereshouldigo";
+
+        public const string ModId = "littlhmw.rainward";
         private readonly HoldGesture hold = new HoldGesture();
         private MapOptions options;
         private bool registered;
@@ -54,8 +56,25 @@ namespace Rainward
         private void RegisterOptions()
         {
             if (registered) return;
+            MigrateLegacyConfig();
             if (options == null) options = new MapOptions();
             registered = MachineConnector.SetRegisteredOI(ModId, options);
+        }
+
+        private static void MigrateLegacyConfig()
+        {
+            try
+            {
+                var directory = Path.Combine(Application.persistentDataPath, "ModConfigs");
+                var legacyPath = Path.Combine(directory, LegacyModId + ".txt");
+                var currentPath = Path.Combine(directory, ModId + ".txt");
+                if (!File.Exists(currentPath) && File.Exists(legacyPath))
+                    File.Copy(legacyPath, currentPath);
+            }
+            catch (Exception error)
+            {
+                Debug.LogWarning("[Rainward] Could not migrate the previous configuration: " + error.Message);
+            }
         }
 
         private void Update()
@@ -110,14 +129,14 @@ namespace Rainward
             string mode = "story";
             if (!MeadowBridge.TryGetLobby(out var lobby))
             {
-                Notify(game, "littlhmw.whereshouldigo-meadow-api");
+                Notify(game, "littlhmw.rainward-meadow-api");
                 return;
             }
             if (lobby != null)
             {
                 if (!MeadowBridge.TryLocalAvatar(lobby, out local, out gameMode))
                 {
-                    Notify(game, "littlhmw.whereshouldigo-avatar-unavailable");
+                    Notify(game, "littlhmw.rainward-avatar-unavailable");
                     return;
                 }
                 var storyCampaign = MeadowBridge.Member(gameMode, "currentCampaign") as SlugcatStats.Name;
@@ -147,7 +166,7 @@ namespace Rainward
             var creature = local?.realizedCreature;
             if (creature?.room == null || creature.inShortcut || creature.mainBodyChunk == null)
             {
-                Notify(game, "littlhmw.whereshouldigo-position-unavailable");
+                Notify(game, "littlhmw.rainward-position-unavailable");
                 return;
             }
             try
@@ -164,18 +183,18 @@ namespace Rainward
                     Directory.CreateDirectory(directory);
                     var path = Path.Combine(directory, "snapshot.json");
                     File.WriteAllBytes(path, json);
-                    Notify(game, "littlhmw.whereshouldigo-snapshot-exported", path);
+                    Notify(game, "littlhmw.rainward-snapshot-exported", path);
                     Logger.LogInfo("Rainward snapshot exported to " + path);
                     Application.OpenURL(LinkProtocol.Website + "#sync=file");
                     return;
                 }
-                Notify(game, "littlhmw.whereshouldigo-opening-snapshot");
+                Notify(game, "littlhmw.rainward-opening-snapshot");
                 Application.OpenURL(url);
             }
             catch (Exception error)
             {
                 Logger.LogError(error);
-                Notify(game, "littlhmw.whereshouldigo-snapshot-unavailable", error.Message);
+                Notify(game, "littlhmw.rainward-snapshot-unavailable", error.Message);
             }
         }
 

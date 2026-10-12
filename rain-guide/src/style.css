@@ -58,7 +58,7 @@ h1 small { margin-left: 0; color: #aaa; font-size: 12px; letter-spacing: 2px; }
 .room-mask-actions { display: flex; flex-wrap: wrap; gap: 5px; }
 .room-mask-actions button { font-size: 11px; padding: 3px 6px; }
 .complete { margin-top: 20px; border-color: #aaa; }
-details { margin-top: 12px; } summary { color: #bbb; font-size: 12px; }
+details { margin-top: 12px; } summary { color: #bbb; font-size: 12px; } .recommended-route summary small { display: block; margin-left: 17px; color: #888; font-size: 10px; font-weight: 400; }
 .branch-warning { border: 1px solid #857752; padding: 10px; color: #d8c999; font-size: 12px; margin-top: 15px; }
 .stage-list button { display: block; width: 100%; text-align: left; border: 0; border-bottom: 1px solid #444; background: none; padding: 10px 0; }
 .stage-list small { color: #888; float: right; }
