@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace WhereShouldIGo
 {
-    [BepInPlugin(ModId, "雨间：我该去哪 / Rainward: Where to Go", "1.2.0")]
+    [BepInPlugin(ModId, "雨间：我该去哪 / Rainward: Where to Go", "1.3.0")]
     [BepInDependency("henpemaz.rainmeadow", BepInDependency.DependencyFlags.SoftDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
@@ -22,6 +22,7 @@ namespace WhereShouldIGo
         {
             hold.Suspend();
             On.RainWorld.OnModsInit += ModsInit;
+            On.HUD.Map.Draw += MapDraw;
         }
 
         private void OnDisable()
@@ -29,6 +30,7 @@ namespace WhereShouldIGo
             hold.Suspend();
             previousGame = null;
             On.RainWorld.OnModsInit -= ModsInit;
+            On.HUD.Map.Draw -= MapDraw;
         }
 
         private void OnApplicationFocus(bool focused)
@@ -94,6 +96,11 @@ namespace WhereShouldIGo
             }
         }
 
+        private void MapDraw(On.HUD.Map.orig_Draw orig, HUD.Map map, float timeStacker)
+        {
+            HudMapHighlighter.Draw(orig, map, timeStacker, options?.EnableRouteHighlight.Value ?? true);
+        }
+
         private void OpenMap(RainWorldGame game)
         {
             AbstractCreature local = null;
@@ -145,7 +152,9 @@ namespace WhereShouldIGo
             try
             {
                 var snapshot = SnapshotBuilder.Capture(game, lobby, gameMode, local, campaign, mode);
-                snapshot.route = options?.EnableRouteHighlight.Value ?? true;
+                // The web map keeps its own route control. This Remix option
+                // only changes the in-game HUD map overlay.
+                snapshot.route = true;
                 var json = SnapshotProtocol.Json(snapshot);
                 var url = SnapshotProtocol.Url(json);
                 if (url.Length > SnapshotProtocol.MaxUrlChars)

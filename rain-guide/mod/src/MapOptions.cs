@@ -18,7 +18,7 @@ namespace WhereShouldIGo
                 new ConfigurableInfo("按住时长，单位 0.1 秒 / Hold duration in tenths of a second.",
                     new ConfigAcceptableRange<int>(2, 20)));
             EnableRouteHighlight = config.Bind("EnableRouteHighlight", true,
-                new ConfigurableInfo("在雨间网页地图中高亮推荐路线 / Highlight the recommended route on the Rainward web map."));
+                new ConfigurableInfo("在游戏内地图中高亮推荐路线 / Highlight the recommended route on the in-game map."));
             EnableGNavigation = config.Bind("EnableGNavigation", true,
                 new ConfigurableInfo("启用 G 键长按打开地图 / Enable hold-G navigation."));
         }
@@ -34,7 +34,7 @@ namespace WhereShouldIGo
                 new OpLabel(25, 385, "按住时长 ×0.1 秒 / Hold ×0.1 s"),
                 new OpSlider(HoldTenths, new Vector2(330, 385), 200),
                 new OpCheckBox(EnableRouteHighlight, new Vector2(25, 320)),
-                new OpLabel(60, 320, "启用高亮路线 / Highlight recommended route"),
+                new OpLabel(60, 320, "启用高亮路线 / Highlight route in the in-game map"),
                 new OpCheckBox(EnableGNavigation, new Vector2(25, 285)),
                 new OpLabel(60, 285, "启用 G 键导航 / Enable G-key navigation"),
                 new OpLabel(new Vector2(25, 190), new Vector2(550, 85),

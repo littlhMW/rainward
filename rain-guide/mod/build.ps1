@@ -22,7 +22,7 @@ try {
     }
     # Create a zip from an explicit allowlist; never include game libraries or source caches.
     Add-Type -AssemblyName System.IO.Compression
-    $archivePath = Join-Path $modRoot 'dist/WhereShouldIGo-1.2.0.zip'
+    $archivePath = Join-Path $modRoot 'dist/WhereShouldIGo-1.3.0.zip'
     $archiveStream = [IO.File]::Open($archivePath, [IO.FileMode]::Create)
     try {
         $archive = [IO.Compression.ZipArchive]::new($archiveStream, [IO.Compression.ZipArchiveMode]::Create)

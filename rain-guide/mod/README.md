@@ -8,7 +8,7 @@
 2. 将其中的 `whereshouldigo` 文件夹放入游戏目录 `RainWorld_Data/StreamingAssets/mods/`。
 3. 在 Remix 中启用「雨间：我该去哪 / Rainward: Where to Go」，按提示重启游戏。
 
-更新时关闭游戏，用新版本替换 `whereshouldigo` 文件夹。Remix 中可以修改打开地图的按键和长按时间，并分别启用或停用高亮路线与 G 键导航。高亮只作用于雨间打开的地图，不改变游戏内地形、入口或出口。
+更新时关闭游戏，用新版本替换 `whereshouldigo` 文件夹。Remix 中可以修改打开地图的按键和长按时间，并分别启用或停用游戏内地图高亮与 G 键导航。高亮只作用于游戏内 HUD 地图，不改变地形、入口或出口。
 
 ## 地图与位置
 
@@ -16,7 +16,7 @@
 
 按住快捷键时生成一次位置快照，不会持续追踪游戏。浏览器打开时，联机游戏仍会继续运行，请先停在安全位置。使用新增或修改地形、房间或连接的 Mod 时，地图信息可能不准确；本工具不扫描已安装的 Mod。
 
-快照默认启用网页中的黄色推荐路线；关闭 Remix 的「启用高亮路线」后，地图仍会显示当前位置和遮罩，但不绘制推荐路线。关闭「启用 G 键导航」后，长按 G 不会打开地图。
+打开网页时仍会显示网页自身的推荐路线。启用 Remix 的「启用高亮路线」后，长按游戏地图键打开的 HUD 地图会以黄色标出当前区域内通往推荐方向的连接；关闭后不添加该叠加层。关闭「启用 G 键导航」后，长按 G 不会打开网页地图。
 
 雨甸中会显示当前可读取的玩家位置，探索记录只使用房主存档。客机收到的房主记录可能晚于当前周期；自由模式可以提供位置，但没有可确认的探索和剧情记录。无法读取的位置会标为未知。
 
@@ -42,7 +42,7 @@ Base-game and Downpour maps retain rooms, connections, terrain, dragging, zoomin
 
 The mod does not modify saves, access the clipboard, send Steam IDs, or continuously track the game. The website requires an internet connection. In Rain Meadow, exploration uses the host's save; the current cycle may not yet be synchronized. Mods that change terrain, rooms, or connections can make map information inaccurate.
 
-The snapshot enables the yellow recommended route on the web map by default. Remix can disable route highlighting or G-key navigation independently; route highlighting only changes the Rainward map and does not alter in-game terrain, entrances, or exits.
+The web map keeps its own route display. With “Highlight recommended route” enabled, the in-game HUD map marks connections toward the recommended direction in yellow; disabling it removes only that overlay. “Enable G-key navigation” controls opening the web map. Neither option changes terrain, entrances, or exits.
 
 To uninstall, disable the mod and delete `RainWorld_Data/StreamingAssets/mods/whereshouldigo/`. Remove the optional `ModConfigs/littlhmw.whereshouldigo.txt` and `Rainward/snapshot.json` files separately if present. Browser progress can be cleared from the website's data panel.
 
