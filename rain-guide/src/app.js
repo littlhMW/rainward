@@ -1,4 +1,4 @@
-import { CAMPAIGNS, REGIONS, SURVIVAL_TIPS } from './data.js';
+import { CAMPAIGNS, REGIONS, SURVIVAL_TIPS } from './data.js?v=2';
 import { STORAGE_KEY, defaultState, defaultProfile, normalizeState, activeStage, regionName, findPath } from './engine.js';
 import { REGION_SPOILERS, SPOILER_POLICY } from './spoilers.js';
 import { MAP_CHARACTERS, parseLocation, locationFragment } from './location.js';
