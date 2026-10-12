@@ -8,7 +8,7 @@
 <p align="center">
   <a href="https://littlhmw.github.io/rainward/">打开网页</a> ·
   <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3818768169">Steam 创意工坊</a> ·
-  <a href="https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip">下载游戏 Mod</a> ·
+  <a href="https://github.com/littlhMW/rainward/releases">下载Mod压缩包</a> ·
   <a href="https://github.com/littlhMW/rainward">GitHub 仓库</a>
 </p>
 
@@ -42,7 +42,7 @@
 你可以选择通过 Steam 创意工坊订阅，或手动下载压缩包安装。
 
 - **Steam 创意工坊：** [订阅 Rainward: Where to Go](https://steamcommunity.com/sharedfiles/filedetails/?id=3818768169)
-- **手动安装：** [下载 Mod 压缩包](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip) 并解压。
+- **手动安装：** [下载 Mod 压缩包](https://github.com/littlhMW/rainward/releases) 并解压。
 
 手动安装步骤：
 
@@ -71,7 +71,7 @@
 <p align="center">
   <a href="https://littlhmw.github.io/rainward/">Open Web Map</a> ·
   <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3818768169">Steam Workshop</a> ·
-  <a href="https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip">Download Mod</a> ·
+  <a href="https://github.com/littlhMW/rainward/releases">Download Mod zip</a> ·
   <a href="https://github.com/littlhMW/rainward">GitHub Repository</a>
 </p>
 
@@ -96,7 +96,7 @@
 Choose either Steam Workshop or manual installation.
 
 - **Steam Workshop:** [Subscribe to Rainward: Where to Go](https://steamcommunity.com/sharedfiles/filedetails/?id=3818768169)
-- **Manual download:** [Download the mod ZIP](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip) and extract it.
+- **Manual download:** [Download the mod ZIP](https://github.com/littlhMW/rainward/releases) and extract it.
 
 For manual installation:
 
