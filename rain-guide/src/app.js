@@ -63,7 +63,6 @@ const catalog = await fetch('./upstream/slugcats.json').then(r => r.json());
 let state = defaultState(), chosenStage = null, selectedRoom = '', received = null, storageOK = true, mapReady = false, locationError = '';
 let layers = { rooms: false, spawns: false }, locationRequest = 0, mapLoadRequest = 0;
 try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) state = normalizeState(JSON.parse(raw), CAMPAIGNS, REGIONS); } catch { storageOK = false; }
-state.prefs.mask = true;
 // A hint level belongs to the selected clue, which is intentionally not restored.
 for (const p of Object.values(state.profiles)) p.hint = 0;
 const baseCampaign = () => campaignData().find(c => c.id === state.campaign) || campaignData()[0];
