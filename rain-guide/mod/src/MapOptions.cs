@@ -13,34 +13,41 @@ namespace WhereShouldIGo
         internal MapOptions()
         {
             OpenKey = config.Bind("OpenMapKey", KeyCode.G,
-                new ConfigurableInfo("按住此键打开当前位置网页 / Hold to open your current position."));
+                new ConfigurableInfo("littlhmw.whereshouldigo-open-map"));
             HoldTenths = config.Bind("HoldTenths", 6,
-                new ConfigurableInfo("按住时长，单位 0.1 秒 / Hold duration in tenths of a second.",
+                new ConfigurableInfo("littlhmw.whereshouldigo-hold-duration",
                     new ConfigAcceptableRange<int>(2, 20)));
             EnableRouteHighlight = config.Bind("EnableRouteHighlight", true,
-                new ConfigurableInfo("在游戏内地图中高亮推荐路线 / Highlight the recommended route on the in-game map."));
+                new ConfigurableInfo("littlhmw.whereshouldigo-highlight-route"));
             EnableGNavigation = config.Bind("EnableGNavigation", true,
-                new ConfigurableInfo("启用 G 键长按打开地图 / Enable hold-G navigation."));
+                new ConfigurableInfo("littlhmw.whereshouldigo-g-navigation"));
         }
 
         public override void Initialize()
         {
             base.Initialize();
-            Tabs = new[] { new OpTab(this, "地图 / Map") };
+            Tabs = new[] { new OpTab(this, Translate("littlhmw.whereshouldigo-map")) };
             Tabs[0].AddItems(
-                new OpLabel(new Vector2(20, 535), new Vector2(560, 40), "雨间：我该去哪 / Rainward: Where to Go", FLabelAlignment.Center, true),
-                new OpLabel(25, 465, "打开地图 / Open map"),
-                new OpKeyBinder(OpenKey, new Vector2(330, 460), new Vector2(180, 30), false),
-                new OpLabel(25, 385, "按住时长 ×0.1 秒 / Hold ×0.1 s"),
-                new OpSlider(HoldTenths, new Vector2(330, 385), 200),
-                new OpCheckBox(EnableRouteHighlight, new Vector2(25, 320)),
-                new OpLabel(60, 320, "启用高亮路线 / Highlight route in the in-game map"),
-                new OpCheckBox(EnableGNavigation, new Vector2(25, 285)),
-                new OpLabel(60, 285, "启用 G 键导航 / Enable G-key navigation"),
+                new OpLabel(new Vector2(20, 535), new Vector2(560, 40), Translate("littlhmw.whereshouldigo-name"), FLabelAlignment.Center, true),
+                new OpLabel(25, 465, Translate("littlhmw.whereshouldigo-open-map-label")),
+                new OpKeyBinder(OpenKey, new Vector2(330, 460), new Vector2(180, 30), false)
+                    { description = Translate("littlhmw.whereshouldigo-open-map") },
+                new OpLabel(25, 385, Translate("littlhmw.whereshouldigo-hold-duration-label")),
+                new OpSlider(HoldTenths, new Vector2(330, 385), 200)
+                    { description = Translate("littlhmw.whereshouldigo-hold-duration") },
+                new OpCheckBox(EnableRouteHighlight, new Vector2(25, 320))
+                    { description = Translate("littlhmw.whereshouldigo-highlight-route") },
+                new OpLabel(60, 320, Translate("littlhmw.whereshouldigo-highlight-route-label")),
+                new OpCheckBox(EnableGNavigation, new Vector2(25, 285))
+                    { description = Translate("littlhmw.whereshouldigo-g-navigation") },
+                new OpLabel(60, 285, Translate("littlhmw.whereshouldigo-g-navigation-label")),
                 new OpLabel(new Vector2(25, 190), new Vector2(550, 85),
-                    "默认按住 G 0.6 秒，每次松开后才可再次打开。\nDefault: hold G for 0.6 s; release before opening again.\n浏览器显示打开时的位置，移动后再次按键更新。\nThe map is a position snapshot; hold again to update.", FLabelAlignment.Left),
+                    Translate("littlhmw.whereshouldigo-default-help") + "\n" +
+                    Translate("littlhmw.whereshouldigo-snapshot-help"), FLabelAlignment.Left),
                 new OpLabel(new Vector2(25, 65), new Vector2(550, 105),
-                    "如有新增或修改地形的 MOD，地图信息可能不准确。\n本工具不扫描地形 MOD，不改存档，不使用剪贴板。\nTerrain mods may make map information inaccurate.\nNo terrain mod scanning, save changes or clipboard access.\n联机时浏览器打开不会暂停世界，请先找安全位置。\nOpening a browser does not pause an online world.", FLabelAlignment.Left)
+                    Translate("littlhmw.whereshouldigo-terrain-warning") + "\n" +
+                    Translate("littlhmw.whereshouldigo-no-mod-scan") + "\n" +
+                    Translate("littlhmw.whereshouldigo-browser-online"), FLabelAlignment.Left)
             );
         }
     }

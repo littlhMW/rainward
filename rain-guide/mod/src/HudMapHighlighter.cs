@@ -21,28 +21,37 @@ namespace WhereShouldIGo
         private static readonly FieldInfo DotAField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("dotA", Instance);
         private static readonly FieldInfo DotBField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("dotB", Instance);
         private static readonly Color Highlight = new Color(1f, 0.82f, 0.08f, 1f);
-        private static HUD.Map activeMap;
-        private static string activeSignature;
-        private static HashSet<string> activePairs = new HashSet<string>(StringComparer.Ordinal);
+        private static readonly Dictionary<HUD.Map, MapState> states = new Dictionary<HUD.Map, MapState>();
 
         internal static void Draw(On.HUD.Map.orig_Draw orig, HUD.Map map, float timeStacker, bool enabled)
         {
+            MapState state = null;
+            if (map != null && states.TryGetValue(map, out state))
+            {
+                try { state.Tint.Restore(); }
+                catch { states.Remove(map); state = null; }
+            }
             orig(map, timeStacker);
             try
             {
-                // The overlay is active only while Rain World is showing its
-                // map. The vanilla Draw call above restores base colours.
-                if (!enabled || map?.hud?.owner == null || !map.hud.owner.RevealMap) { Clear(); return; }
-                if (!ReferenceEquals(activeMap, map)) { Clear(); activeMap = map; activeSignature = null; }
-                var signature = Signature(map);
-                if (!String.Equals(signature, activeSignature, StringComparison.Ordinal))
+                if (!enabled || map?.hud?.owner == null || !map.hud.owner.RevealMap)
                 {
-                    activePairs = BuildRoutePairs(map);
-                    activeSignature = signature;
+                    ClearMap(map);
+                    return;
                 }
-                ApplyColors(map);
+                if (state == null) states.Add(map, state = new MapState());
+                var signature = Signature(map);
+                if (!String.Equals(signature, state.Signature, StringComparison.Ordinal))
+                {
+                    state.Pairs = BuildRoutePairs(map);
+                    state.Signature = signature;
+                }
+                ApplyColors(map, state);
             }
-            catch { Clear(); }
+            catch
+            {
+                ClearMap(map);
+            }
         }
 
         private static string Signature(HUD.Map map)
@@ -53,7 +62,10 @@ namespace WhereShouldIGo
             var game = rainWorld?.processManager?.currentMainLoop as RainWorldGame;
             var character = game?.StoryCharacter?.value ?? "";
             var region = map?.RegionName ?? "";
-            return room + "|" + character + "|" + region;
+            var connections = ConnectionsField?.GetValue(map) as ICollection;
+            var data = MapDataField?.GetValue(map);
+            var gates = data == null ? null : GateDataField?.GetValue(data) as ICollection;
+            return room + "|" + character + "|" + region + "|" + (connections?.Count ?? -1) + "|" + (gates?.Count ?? -1);
         }
 
         private static HashSet<string> BuildRoutePairs(HUD.Map map)
@@ -207,19 +219,19 @@ namespace WhereShouldIGo
             }
         }
 
-        private static void ApplyColors(HUD.Map map)
+        private static void ApplyColors(HUD.Map map, MapState state)
         {
             var list = ConnectionsField?.GetValue(map) as IEnumerable;
-            var data = MapDataField?.GetValue(map);
             if (list == null) return;
+            map.hud.rainWorld.Shaders.TryGetValue("Basic", out var shader);
             foreach (var connection in list)
             {
                 var a = ReadIndex(RoomAField?.GetValue(connection));
                 var b = ReadIndex(RoomBField?.GetValue(connection));
-                var highlight = activePairs.Contains(Pair(a, b));
-                SetSprite(LineField?.GetValue(connection) as FSprite, highlight);
-                SetSprite(DotAField?.GetValue(connection) as FSprite, highlight);
-                SetSprite(DotBField?.GetValue(connection) as FSprite, highlight);
+                if (!state.Pairs.Contains(Pair(a, b))) continue;
+                state.Tint.Apply(LineField?.GetValue(connection) as FSprite, shader, Highlight);
+                state.Tint.Apply(DotAField?.GetValue(connection) as FSprite, shader, Highlight);
+                state.Tint.Apply(DotBField?.GetValue(connection) as FSprite, shader, Highlight);
             }
         }
 
@@ -228,22 +240,27 @@ namespace WhereShouldIGo
             return raw is int value ? value : -1;
         }
 
-        private static void SetSprite(FSprite sprite, bool highlight)
-        {
-            // The vanilla Draw call has already applied the current fade and
-            // map-layer colour. Preserve that state for non-route connections
-            // and only replace RGB on the selected route.
-            if (sprite == null || !highlight) return;
-            sprite.color = new Color(Highlight.r, Highlight.g, Highlight.b, sprite.color.a);
-        }
-
         private static string Pair(int a, int b) => a + ":" + b;
 
-        private static void Clear()
+        internal static void ClearMap(HUD.Map map)
         {
-            activeMap = null;
-            activeSignature = null;
-            activePairs.Clear();
+            if (map == null || !states.TryGetValue(map, out var state)) return;
+            try { state.Tint.Restore(); } catch { }
+            states.Remove(map);
+        }
+
+        internal static void Reset()
+        {
+            foreach (var state in states.Values)
+                try { state.Tint.Restore(); } catch { }
+            states.Clear();
+        }
+
+        private sealed class MapState
+        {
+            internal readonly HudRouteTint Tint = new HudRouteTint();
+            internal string Signature;
+            internal HashSet<string> Pairs = new HashSet<string>(StringComparer.Ordinal);
         }
 
         private sealed class Edge

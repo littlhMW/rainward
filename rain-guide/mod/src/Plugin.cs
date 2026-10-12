@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace WhereShouldIGo
 {
-    [BepInPlugin(ModId, "雨间：我该去哪 / Rainward: Where to Go", "1.3.0")]
+    [BepInPlugin(ModId, "Rainward: Where to Go", "1.3.1")]
     [BepInDependency("henpemaz.rainmeadow", BepInDependency.DependencyFlags.SoftDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
@@ -28,6 +28,7 @@ namespace WhereShouldIGo
         private void OnDisable()
         {
             hold.Suspend();
+            HudMapHighlighter.Reset();
             previousGame = null;
             On.RainWorld.OnModsInit -= ModsInit;
             On.HUD.Map.Draw -= MapDraw;
@@ -109,14 +110,14 @@ namespace WhereShouldIGo
             string mode = "story";
             if (!MeadowBridge.TryGetLobby(out var lobby))
             {
-                Notify(game, "雨甸接口已变化，无法确认本地角色 / Meadow API changed; local player unavailable.");
+                Notify(game, "littlhmw.whereshouldigo-meadow-api");
                 return;
             }
             if (lobby != null)
             {
                 if (!MeadowBridge.TryLocalAvatar(lobby, out local, out gameMode))
                 {
-                    Notify(game, "本地角色暂不可定位，请离开管道后重试 / Local avatar unavailable; retry outside a pipe.");
+                    Notify(game, "littlhmw.whereshouldigo-avatar-unavailable");
                     return;
                 }
                 var storyCampaign = MeadowBridge.Member(gameMode, "currentCampaign") as SlugcatStats.Name;
@@ -146,7 +147,7 @@ namespace WhereShouldIGo
             var creature = local?.realizedCreature;
             if (creature?.room == null || creature.inShortcut || creature.mainBodyChunk == null)
             {
-                Notify(game, "当前位置暂不可用，请进入房间后重试 / Position unavailable; retry inside a room.");
+                Notify(game, "littlhmw.whereshouldigo-position-unavailable");
                 return;
             }
             try
@@ -163,25 +164,25 @@ namespace WhereShouldIGo
                     Directory.CreateDirectory(directory);
                     var path = Path.Combine(directory, "snapshot.json");
                     File.WriteAllBytes(path, json);
-                    Notify(game, "数据较多，已完整导出，请在网页导入 / Import snapshot: " + path);
+                    Notify(game, "littlhmw.whereshouldigo-snapshot-exported", path);
                     Logger.LogInfo("Rainward snapshot exported to " + path);
                     Application.OpenURL(LinkProtocol.Website + "#sync=file");
                     return;
                 }
-                Notify(game, "正在打开同步地图；地形 MOD 可能使信息不准确 / Opening snapshot; terrain mods may affect accuracy.");
+                Notify(game, "littlhmw.whereshouldigo-opening-snapshot");
                 Application.OpenURL(url);
             }
             catch (Exception error)
             {
                 Logger.LogError(error);
-                Notify(game, "无法生成地图快照，未截断进度 / Snapshot unavailable: " + error.Message);
+                Notify(game, "littlhmw.whereshouldigo-snapshot-unavailable", error.Message);
             }
         }
 
-        private static void Notify(RainWorldGame game, string message)
+        private static void Notify(RainWorldGame game, string message, string detail = null)
         {
             if (game.cameras?.Length > 0)
-                game.cameras[0].hud?.textPrompt?.AddMessage(message, 0, 180, false, false);
+                game.cameras[0].hud?.textPrompt?.AddMessage(OptionInterface.Translate(message) + (detail == null ? "" : " " + detail), 0, 180, false, false);
         }
     }
 }

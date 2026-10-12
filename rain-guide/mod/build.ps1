@@ -20,14 +20,19 @@ try {
     foreach ($file in @('modinfo.json', 'README.md', 'LICENSE', 'thumbnail.png')) {
         Copy-Item -LiteralPath (Join-Path $modRoot $file) -Destination (Join-Path $packageRoot $file) -Force
     }
+    foreach ($language in @('text_chi', 'text_eng')) {
+        $languageRoot = Join-Path $packageRoot ('text/' + $language)
+        New-Item -ItemType Directory -Force -Path $languageRoot | Out-Null
+        Copy-Item -LiteralPath (Join-Path $modRoot ('text/' + $language + '/strings.txt')) -Destination (Join-Path $languageRoot 'strings.txt') -Force
+    }
     # Create a zip from an explicit allowlist; never include game libraries or source caches.
     Add-Type -AssemblyName System.IO.Compression
-    $archivePath = Join-Path $modRoot 'dist/WhereShouldIGo-1.3.0.zip'
+    $archivePath = Join-Path $modRoot 'dist/WhereShouldIGo-1.3.1.zip'
     $archiveStream = [IO.File]::Open($archivePath, [IO.FileMode]::Create)
     try {
         $archive = [IO.Compression.ZipArchive]::new($archiveStream, [IO.Compression.ZipArchiveMode]::Create)
         try {
-            foreach ($relativePath in @('plugins/WhereShouldIGo.dll', 'modinfo.json', 'README.md', 'LICENSE', 'thumbnail.png')) {
+            foreach ($relativePath in @('plugins/WhereShouldIGo.dll', 'modinfo.json', 'README.md', 'LICENSE', 'thumbnail.png', 'text/text_chi/strings.txt', 'text/text_eng/strings.txt')) {
                 $entry = $archive.CreateEntry('whereshouldigo/' + $relativePath)
                 $entryStream = $entry.Open()
                 $sourceStream = [IO.File]::OpenRead((Join-Path $packageRoot $relativePath))

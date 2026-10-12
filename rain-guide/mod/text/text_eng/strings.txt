@@ -1,0 +1,22 @@
+0littlhmw.whereshouldigo-name|Rainward: Where to Go
+littlhmw.whereshouldigo-description|Rainward: Where to Go is a route and exploration companion mod for Rain World, designed to work with the Rainward web map. It highlights exploration routes in-game and lets you hold G while inside a room to open your current location on the web map.
+littlhmw.whereshouldigo-map|Map
+littlhmw.whereshouldigo-open-map-label|Open web map
+littlhmw.whereshouldigo-hold-duration-label|Hold duration ×0.1 s
+littlhmw.whereshouldigo-highlight-route-label|Enable route highlighting
+littlhmw.whereshouldigo-g-navigation-label|Enable G-key navigation
+littlhmw.whereshouldigo-open-map|Hold this key to open your current location on the web map.
+littlhmw.whereshouldigo-hold-duration|Hold duration in tenths of a second.
+littlhmw.whereshouldigo-highlight-route|Highlight the recommended route on the in-game map.
+littlhmw.whereshouldigo-g-navigation|Hold the navigation key to open the web map. The default key is G.
+littlhmw.whereshouldigo-default-help|Default: hold G for 0.6 s; release before opening again.
+littlhmw.whereshouldigo-snapshot-help|The web map shows a location snapshot; hold again to update.
+littlhmw.whereshouldigo-terrain-warning|Terrain mods may make map information inaccurate.
+littlhmw.whereshouldigo-no-mod-scan|No terrain mod scanning, save changes or clipboard access.
+littlhmw.whereshouldigo-browser-online|Opening a browser does not pause an online world.
+littlhmw.whereshouldigo-meadow-api|Meadow API changed; local player unavailable.
+littlhmw.whereshouldigo-avatar-unavailable|Local avatar unavailable; retry outside a pipe.
+littlhmw.whereshouldigo-position-unavailable|Position unavailable; retry inside a room.
+littlhmw.whereshouldigo-snapshot-exported|The full snapshot has been exported. Import it on the web map:
+littlhmw.whereshouldigo-opening-snapshot|Opening snapshot; terrain mods may affect accuracy.
+littlhmw.whereshouldigo-snapshot-unavailable|Unable to generate a map snapshot:
