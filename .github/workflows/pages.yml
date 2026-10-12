@@ -32,6 +32,7 @@ jobs:
         run: |
           mkdir -p _site/src
           cp rain-guide/index.html rain-guide/icon.svg rain-guide/manifest.webmanifest rain-guide/sw.js _site/
+          cp rain-guide/mod/thumbnail.png _site/social-preview.png
           cp rain-guide/src/*.js rain-guide/src/style.css _site/src/
           cp -R rain-guide/upstream rain-guide/downloads _site/
       - name: Configure GitHub Pages

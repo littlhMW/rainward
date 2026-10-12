@@ -16,7 +16,7 @@
 | manifest.webmanifest | 提供网页名称、图标和独立窗口展示信息 | 不安装服务；若曾安装网页应用，在浏览器应用管理移除 |
 | mod/dist/ 的 DLL、完整 Mod 文件夹与 ZIP | 可分发的游戏定位工具 | 未安装时直接删除构建包；已安装按下文移除独立 Mod 目录 |
 | 本次复制到游戏的 mods/whereshouldigo/ | 让 Remix 识别本地 Mod，并准备上传工坊；仅含 modinfo.json、plugins/WhereShouldIGo.dll、thumbnail.png、README.md、LICENSE | 完整路径见下文；退出游戏后只删除此独立目录，不动其他 Mod |
-| mod/workshop/description.txt、thumbnail.svg 与 mod/thumbnail.png | 工坊介绍文案、可编辑封面源图和实际发布 PNG；PNG 已随本工具复制到游戏 | 均为项目文件，可分别删除；不影响游戏存档，未创建工坊条目 |
+| mod/workshop/description.txt、artwork.png 与 mod/thumbnail.png | 工坊文案、用户原图在项目内的副本，以及以已有 Pillow 最近邻放大并黑底补边的 1120×630 封面；封面也用于 GitHub README 横幅并已复制到游戏 | 均为项目文件，可分别删除；不会修改或删除桌面的 C:/Users/littlh/Desktop/雨间.png 原图，不影响游戏存档，未创建工坊条目；没有安装新依赖 |
 | mod/.cache/rain-meadow/ | 下载公开源码片段以核对雨甸接口 | 开发资料，不进发布包；直接删除此项目子目录 |
 | mod/bin/、mod/obj/、mod/tests/bin/、mod/tests/obj/、mod/.cache/nuget/ | 编译、测试及限定的构建缓存位置 | 如存在可删除这些项目子目录；不影响游戏与源码 |
 | ModConfigs/littlhmw.whereshouldigo.txt | 保存 Mod 按键与长按时长 | 只删除这一配置文件，不删除整个 ModConfigs |
@@ -25,6 +25,8 @@
 | 仓库级 Git 作者配置 | 提交署名 littlhMW / littlhMW@users.noreply.github.com | 仅在本仓库 .git/config，不修改全局；共享父仓库配置不要随子项目删除 |
 
 完整取用来源与许可见 [上游说明](../upstream/UPSTREAM.md)，Mod 的构建和清理说明见 [Mod README](../mod/README.md)。Node、.NET SDK、Edge 等已有通用工具可能被其他项目使用，卸载本工具不需要删除它们。发布包不包含游戏或雨甸 DLL。
+
+用户提供 artwork.png / thumbnail.png 供本项目使用，尚未单独声明第三方再利用许可；仓库代码 MIT 许可不自动适用于这两张图片。卸载本项目时只移除项目副本与生成封面，不删除桌面原图。
 
 ## 停止本地预览
 

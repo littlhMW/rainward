@@ -12,7 +12,7 @@
 | 地形加载 | 真实上游瓦片成功显示；局部遮罩以已访问房间边界裁切地形、内部几何与开启的生物图层，保留未探索房间节点和连接；无可见房间时不挂载地形 |
 | 默认防剧透 | 普通区域名可见；Wiki 分类的 17 个地区名隐藏。更换角色时重置，刷新不会把另一线索的深提示带过来 |
 | 桌面与窄屏 | 1440px 时地图宽度超过 75%；320px、390px 无页面横向溢出，窄屏线索位于地图下方 |
-| Mod 编译与逻辑 | 使用已有 .NET SDK 和本机正版游戏程序集，零警告、零错误；53 项逻辑与本机雨甸接口检查通过 |
+| Mod 编译与逻辑 | 使用已有 .NET SDK 和本机正版游戏程序集，零警告、零错误；45 项逻辑与本机雨甸接口检查通过 |
 | Mod → 网页协议 | 12 项交叉检查通过：九角色、雨甸默认自由模式、不同本地生物、自定义角色保留、像素与摄像机偏移 |
 | 原图加载异常 | 8 项模拟检查：同步依赖失败、异步失败、JSON 格式异常、回调异常、正常请求取消等；3 个非法角色参数检查通过 |
 
@@ -20,9 +20,11 @@ v2 浏览器检查 scripts/check-snapshot-browser.mjs **37 项通过**：顶部 
 
 网页浏览器测试使用已有 Playwright 和 Edge，没有安装浏览器或新 npm 依赖。九角色检查各加载一个区域，Watcher 另查 WPTA，不代表每一个地区或每张瓦片都完整验收。
 
-Mod 发布包：downloads/WhereShouldIGo.zip，版本 1.1.0，43,628 bytes。ZIP 只含 whereshouldigo/ 内的 README.md、LICENSE、modinfo.json、thumbnail.png、plugins/WhereShouldIGo.dll。
+封面使用用户提供的 `C:/Users/littlh/Desktop/雨间.png`（459×310），项目副本为 mod/workshop/artwork.png。用已有 Pillow 最近邻放大两倍至 918×620，并在 **1120×630 的 16:9 黑底**居中，左右各补 101 像素、上下各补 5 像素。成品 thumbnail.png 为 **109,324 字节**，供 GitHub README 横幅和 Mod 工坊封面使用；桌面原图没有修改，未安装新图形依赖。图片用于本项目，未单独声明第三方再利用许可；代码 MIT 不自动适用于图片。
 
-SHA256：321B0C2E8D149461E37396C1BB59CA81095C2D0E169B36CE72082B80B893B0EE。
+Mod 发布包：downloads/WhereShouldIGo.zip，版本 1.1.0，封面变更后 **128,580 字节**。ZIP 只含 whereshouldigo/ 内的 README.md、LICENSE、modinfo.json、thumbnail.png、plugins/WhereShouldIGo.dll。
+
+SHA256：DF8DC470D0AC25F34010D326C23A6EBAE718DD7CBFD9317EA69786BA4C00D7C6。构建包与网页下载副本已核对一致。
 
 ## 验证边界
 
@@ -38,6 +40,6 @@ SHA256：321B0C2E8D149461E37396C1BB59CA81095C2D0E169B36CE72082B80B893B0EE。
 
 在 rain-guide 运行 npm test，无需 npm install。已有 Playwright/Edge 环境中先启动 npm run serve，再分别运行 scripts/check-browser.mjs、scripts/check-snapshot-browser.mjs；可用 PLAYWRIGHT_MODULE、BROWSER_PATH、SITE_URL 指定现有工具和目标网址。浏览器截图在忽略的 test-results/，可单独删除。
 
-Mod 的构建、53 项逻辑检查和 12 项 v1 协议交叉检查见 [Mod README](../mod/README.md) 与 mod/tests/；v2 的真实 C# 压缩样本由网页单元检查读取。Pages 自动工作流执行 Node 检查，然后仅发布网页源码、上游静态前端与下载 ZIP，测试和游戏程序集不进入网页产物。
+Mod 的构建、45 项逻辑检查和 12 项 v1 协议交叉检查见 [Mod README](../mod/README.md) 与 mod/tests/；v2 的真实 C# 压缩样本由网页单元检查读取。Pages 自动工作流执行 Node 检查，然后仅发布网页源码、上游静态前端与下载 ZIP，测试和游戏程序集不进入网页产物。
 
 下载、配置、测试产物的意义与安全移除方式见 [卸载说明](UNINSTALL.md)。

@@ -22,14 +22,16 @@
 
 当前版本为 **1.1.0**，显示名称为“雨间 · 我该去哪 / Rainward”，稳定 Mod ID 为 littlhmw.whereshouldigo。该版传入真实已访问房间、少量故事状态和所有可获取玩家位置；客机仅采用房主周期起点探索记录，可能晚于本轮实际进度。不要把项目源码目录、ZIP、bin/obj、游戏 DLL 或雨甸 DLL 塞进这个上传目录。
 
-封面必须放在 Mod 根目录并命名为 thumbnail.png。Wiki 要求 16:9、建议至少 640×360、文件小于 1 MB；本次 PNG 已核对为 **960×540，30,459 字节**。
+封面必须放在 Mod 根目录并命名为 thumbnail.png。Wiki 要求 16:9、建议至少 640×360、文件小于 1 MB。本次以用户提供的 **459×310** 桌面绘画 `C:/Users/littlh/Desktop/雨间.png` 为原图，先在项目内保留一份副本，再用已有 Pillow 以最近邻放大两倍为 918×620，居中置于 **1120×630（16:9）** 黑底，左右各补 101 像素、上下各补 5 像素。生成的 PNG 为 **109,324 字节**，用于 GitHub README 横幅和工坊封面；原始桌面文件不修改。
 
 可编辑的上传材料保留在源码项目：
 
 - [description.txt](../mod/workshop/description.txt)：工坊介绍文字，可直接复制到说明框。
-- [thumbnail.svg](../mod/workshop/thumbnail.svg)：封面源图，方便后续编辑；不是 Remix 使用的 PNG。
-- [thumbnail.png](../mod/thumbnail.png)：实际发布封面，已复制到上述游戏目录。
+- [artwork.png](../mod/workshop/artwork.png)：用户原始绘画在项目内的副本，供以后重新生成封面；不放入 Mod 发布包，桌面原图保留不变。
+- [thumbnail.png](../mod/thumbnail.png)：由原图生成的 16:9 实际发布封面，同时用于 GitHub README 横幅；已复制到上述游戏目录。
 - [modinfo.json](../mod/modinfo.json)：本地标题、版本、作者和标签来源；代码功能在 plugins/WhereShouldIGo.dll 中。
+
+用户提供图片供本项目使用，未单独声明第三方再利用许可；**代码的 MIT 许可不会自动适用于 artwork.png 或 thumbnail.png**。请勿因为仓库公开就推定可二次分发或改作其他项目。
 
 ## 在游戏里上传
 
@@ -48,7 +50,7 @@
 
 - **列表找不到 Mod**：确认不是多套了一层目录，modinfo.json 应直接位于 whereshouldigo/ 根目录，DLL 位于 plugins/。修改文件后返回主菜单或重启游戏刷新。
 - **上传箭头不可用或提示 Steam 未初始化**：确认 Steam 已运行并登录，用 Steam 库重新启动游戏，再查看具体错误。不要因此安装第三方上传器或把账号密码写进脚本。
-- **封面不显示**：确认文件名是 thumbnail.png、16:9、小于 1 MB，并且不是把 SVG 改名成 PNG。本次提供的 PNG 满足这些条件。
+- **封面不显示**：确认文件名是 thumbnail.png、16:9、小于 1 MB，并且是真正的 PNG 文件。本次提供的 PNG 满足这些条件。
 - **页面提示协议未接受**：由账号本人在 Steam 页面处理；文件上传成功不等于条目已公开可用。
 - **条目已生成但可见性不对**：在条目管理页核实和修改，不要反复创建新的同名条目。
 
@@ -59,7 +61,7 @@
 | 内容或动作 | 意义 | 干净移除方式 |
 | --- | --- | --- |
 | 复制 5 个文件到游戏独立目录 | Remix 读取本地 Mod，并提供上传内容 | 若启用先在 Remix 禁用，退出游戏后仅删除 whereshouldigo/；不删其他 Mod 或存档 |
-| description.txt 与 SVG/PNG 封面 | 准备可审核的说明与封面，PNG 符合 Remix 格式 | 都在本项目内，可单独删除；本次未安装图形工具或额外上传程序 |
+| description.txt、artwork.png 副本与 thumbnail.png 封面 | 准备可审核的说明、保留用户绘画副本，并生成兼作 README 横幅的 16:9 工坊封面 | 都在本项目内，可单独删除；桌面原图不受影响，使用已有 Pillow，没有安装图形工具或额外上传程序 |
 | 启动已有 Steam/游戏 | 使用游戏内置上传入口并初始化 Steam | 退出游戏即可；不是安装后台服务，没有新建自启动项 |
 | 首次 Unlisted 可见性 | 先供链接检查，避免直接进入公开列表 | 上传后可在工坊条目管理调整；本说明本身没有创建该配置 |
 | 接受工坊协议 | Steam 账号本人授权分享内容 | 由本人阅读和操作，不属于文件清理；不代为接受 |

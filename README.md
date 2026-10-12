@@ -1,5 +1,7 @@
 # 雨间 · 我该去哪 / Rainward
 
+![雨间 · 我该去哪](rain-guide/mod/thumbnail.png)
+
 直接基于 [Rain World Map](https://rain-world-map.github.io/) 开源前端调整的《雨世界》地图工具：真实地形与房间连接，附带逐层展开的故事线索。
 
 **网站地址：[littlhmw.github.io/rainward](https://littlhmw.github.io/rainward/)** · **[源码仓库](https://github.com/littlhMW/rainward)**
@@ -13,4 +15,4 @@
 
 **[下载 Mod 安装包](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip)**。网页顶部有直接 GitHub 项目入口。源码在 [rain-guide](rain-guide/)，参阅 [运行说明](rain-guide/README.md)、[Mod 安装](rain-guide/mod/README.md)、[Steam 工坊上传教程](rain-guide/docs/WORKSHOP.md)、[来源与许可](rain-guide/upstream/UPSTREAM.md)、[验证记录](rain-guide/docs/QA.md)及[下载用途与完整卸载](rain-guide/docs/UNINSTALL.md)。工坊尚未上传。
 
-已下载的上游前端与小资源集中在 rain-guide/upstream/，原始约 506 KB；上游 CC0、Leaflet BSD-2-Clause、原创修改 MIT、Wiki 分类摘录 CC BY-SA 4.0。游戏和第三方素材仍属各自权利人。固定地形 Mod 提醒不会扫描玩家的 Mod 列表。
+已下载的上游前端与小资源集中在 rain-guide/upstream/，原始约 506 KB；上游 CC0、Leaflet BSD-2-Clause、原创代码修改 MIT、Wiki 分类摘录 CC BY-SA 4.0。横幅与 Mod 封面由用户提供给本项目使用，未另行声明第三方再利用许可；代码 MIT 不自动覆盖图片。游戏和第三方素材仍属各自权利人。固定地形 Mod 提醒不会扫描玩家的 Mod 列表。

@@ -1,5 +1,7 @@
 # 雨间 · 我该去哪 / Rainward
 
+![雨间 · 我该去哪](mod/thumbnail.png)
+
 《雨世界》地图与故事线索工具。直接基于 [Rain World Map](https://rain-world-map.github.io/) 的开源前端调整，以真实房间、连接和地形为主体，使用简洁的黑白、方角界面。
 
 **网站地址：[littlhmw.github.io/rainward](https://littlhmw.github.io/rainward/)** · **[源码](https://github.com/littlhMW/rainward)**
@@ -52,6 +54,6 @@ Mod 已成功编译并核对公开接口，**尚未完成单机或真实联机�
 
 Mod 快照使用 URL # 片段传入，HTTP 请求不会把该片段发送给托管服务器；网页脚本、浏览器历史及分享链接仍可看到位置、玩家显示名及访问记录。地图请求会访问上游服务，本项目没有账户、后台位置服务器或定时上传。旧 v1 位置链接仍可使用，但不会假装更新游戏探索进度。
 
-下载的上游静态前端与配套小资源原始约 506 KB，集中在 upstream/。上游代码为 CC0，随附 Leaflet 为 BSD-2-Clause，保留各自许可证及作者来源；游戏美术仍属相应权利人。原创修改为 MIT；Wiki 分类摘录按 CC BY-SA 4.0，不能用项目 MIT 覆盖第三方内容。
+下载的上游静态前端与配套小资源原始约 506 KB，集中在 upstream/。上游代码为 CC0，随附 Leaflet 为 BSD-2-Clause，保留各自许可证及作者来源；游戏美术仍属相应权利人。原创代码修改为 MIT；Wiki 分类摘录按 CC BY-SA 4.0。横幅与 Mod 封面由用户提供给本项目使用，未另行声明第三方再利用许可；代码 MIT 不自动覆盖图片。
 
 [来源及许可证](upstream/UPSTREAM.md) · [资料范围](docs/SOURCES.md) · [免费部署](docs/DEPLOY.md) · [下载用途与完整卸载](docs/UNINSTALL.md)

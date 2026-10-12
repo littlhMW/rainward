@@ -6,7 +6,7 @@
 
 ## 安装和使用
 
-1. 下载 `WhereShouldIGo-1.1.0.zip`，关闭游戏。
+1. 从网页下载 `WhereShouldIGo.zip`（当前版本 1.1.0），关闭游戏。
 2. 解压，将里面完整的 `whereshouldigo` 文件夹放入游戏的 `RainWorld_Data/StreamingAssets/mods/`。最终应有 `mods/whereshouldigo/modinfo.json` 和 `mods/whereshouldigo/plugins/WhereShouldIGo.dll`。
 3. 在游戏 Remix 中启用「雨间 · 我该去哪 / Rainward」，应用更改，按游戏提示重启。
 4. 进入故事游戏，在房间内按住 G。Remix 配置页可改键，并调整到 0.2–2.0 秒。
@@ -92,4 +92,4 @@ dotnet run --project tests/ModLogic.Tests.csproj -c Release
 | 源码目录 `.cache/nuget/` | 构建时将来若有包缓存的限定位置；本版无外部包 | 如存在，直接删除此目录 |
 | 源码目录 `dist/` | 可分发 DLL 与 ZIP | 删除此目录，不影响源码或游戏 |
 
-源码依据仓库 MIT 许可发布。Rain World 归其权利人所有；雨甸只进行可选 API 调用，未把雨甸源码或 DLL 编入发布包。
+源码依据仓库 MIT 许可发布。封面图片由用户提供给本项目使用，未另行声明第三方再利用许可；代码 MIT 不自动覆盖图片。Rain World 归其权利人所有；雨甸只进行可选 API 调用，未把雨甸源码或 DLL 编入发布包。
