@@ -1,6 +1,6 @@
-# 雨间 · 我该去哪 / Rainward
+# 雨间 我该去哪 / Rainward where to go
 
-![雨间 · 我该去哪](mod/thumbnail.png)
+![雨间 我该去哪](mod/thumbnail.png)
 
 《雨世界》地图与故事线索工具。直接基于 [Rain World Map](https://rain-world-map.github.io/) 的开源前端调整，以真实房间、连接和地形为主体，使用简洁的黑白、方角界面。
 
