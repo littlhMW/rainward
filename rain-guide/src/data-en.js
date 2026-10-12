@@ -65,16 +65,16 @@ const story = {
   'high-visit': {
     title: 'Continue toward higher ground',
     hints: [
-      'After the first encounter, the journey points upward. Prepare for darkness and climbing.',
+      'After the first encounter, the journey leads the character upward. Prepare for darkness and climbing.',
       'Enter Shaded Citadel from Shoreline and climb through Memory Crypts to The Exterior. This story route takes patience; it is not the shortest path.',
-      'The Exterior → Five Pebbles. Explore upward inside until the full encounter is complete and you receive new guidance. Some internal branches can be bypassed; you do not need to tackle every dangerous route.',
+      'The Exterior → Five Pebbles. Explore upward inside until the encounter is complete and you receive new guidance. Some internal branches can be bypassed; there is no need to tackle every dangerous route.',
     ],
     completion: 'The encounter above is complete, and I received guidance for what comes next.',
   },
   'far-journey': {
     title: 'Continue with your new guidance',
     hints: [
-      'Continue in the direction you have just received. Make any desired return visits before setting out.',
+      'Continue in the direction given earlier. Make any desired return visits before setting out.',
       'Travel west and look for a way underground. A common regional route is The Exterior → Chimney Canopy → Sky Islands → Farm Arrays.',
       'Travel from Farm Arrays into Subterranean and continue deeper. Confirm that the previous encounter is complete. If the route remains blocked, return and check the growth requirement.',
     ],
@@ -85,7 +85,7 @@ const story = {
     hints: [
       'After the encounter above, you can revisit an inhabitant you met earlier.',
       'Retrace your route toward the eastern water. You do not need to reset your save.',
-      'Return to the easternmost structure in Shoreline. Bring only an item you want to ask about; this is an optional story branch.',
+      'Return to the easternmost structure in Shoreline. You may bring an item you want to ask about; this is an optional story branch.',
     ],
     completion: 'I completed a return visit I wanted to make.',
   },
@@ -103,7 +103,7 @@ const story = {
     hints: [
       'This character has a limited number of cycles. Keep the starting items and plan the important stops as part of the route.',
       'Travel from Farm Arrays toward Sky Islands and watch for a special environmental signal as you approach higher ground.',
-      'A growth encounter is high in Sky Islands near the Farm Arrays connection. Hunter does not need to activate it first, but still needs enough current Karma. Check whether your Karma cap increased afterward.',
+      'A growth encounter is high in Sky Islands near the Farm Arrays connection. Hunter does not need to activate it first, but still needs to meet the current Karma requirement. Check whether the cap increased afterward.',
     ],
     completion: 'I completed the special Sky Islands encounter or reached equivalent growth.',
   },
@@ -164,7 +164,7 @@ const story = {
   'gourmand-west': {
     title: 'Travel toward the distant exit',
     hints: [
-      'Follow your new guidance to begin crossing beyond the familiar world.',
+      'Follow the earlier guidance to begin crossing beyond the familiar world.',
       'Travel west and look for the special entrance at the far western end of Subterranean.',
       'Enter Outer Expanse from Subterranean and continue west toward the end of the journey. The entrance requires the encounter above; the food quest does not need to be complete first.',
     ],
@@ -173,9 +173,9 @@ const story = {
   'gourmand-food': {
     title: 'Record the flavors along the way',
     hints: [
-      'The food record in the hibernation menu is an optional goal that you can work on over time.',
-      'Use the list to collect foods you have already discovered. The last few require the outer region, so not seeing them yet does not mean you missed anything.',
-      'The list requires 22 food types. A complete list reveals creatures and locations, so it is not expanded here by default. If you want this branch, finish the list before reaching the end of Outer Expanse.',
+      'The food record in the hibernation menu is an optional goal that can be completed over the course of the journey.',
+      'Use the list to collect foods already discovered. The last few require the outer region, so their absence does not mean anything was missed.',
+      'The list requires 22 food types. A complete list reveals creatures and locations, so it is not expanded here by default. To complete this branch, finish the list before reaching the end of Outer Expanse.',
     ],
     completion: 'I chose to complete the food quest and confirmed it before the journey’s end.',
   },
@@ -198,7 +198,7 @@ const story = {
     completion: 'I completed the encounter above and the companion device is guiding me again.',
   },
   'artificer-city': {
-    title: 'Pass through the door opened for you',
+    title: 'Pass through the opened door',
     hints: [
       'After the encounter, an entrance that was previously unusable has a purpose.',
       'Return to the outer passages above and look for the special gate that requires your companion device.',
@@ -234,16 +234,16 @@ const story = {
     completion: 'I completed the encounter above and learned what to bring next.',
   },
   'rivulet-carry': {
-    title: 'Carry what this journey requires',
+    title: 'Carry the required items',
     hints: [
       'Wait for the current encounter to finish, then confirm that the quest item is actually in your hands. Reaching a region entrance does not complete the task.',
-      'Follow the guidance and continue exploring the same structure to find the item you were asked to retrieve.',
-      'Still in The Rot: find and carry the Rarefaction Cell, then prepare to return. If it is lost, check the key-item tracker if enabled. Do not set out for the next deep-water structure empty-handed.',
+      'Follow the earlier guidance and continue exploring the same structure to find the requested item.',
+      'Still in The Rot: find and carry the Rarefaction Cell, then prepare to return. If it is lost, check the key-item tracker if enabled. Carry the quest item when setting out for the next deep-water structure.',
     ],
     completion: 'I am carrying the item this task requires.',
   },
   'rivulet-deep': {
-    title: 'Bring it to its destination',
+    title: 'Deliver the quest item',
     hints: [
       'Follow the original direction back to the water. This time, go farther than you did on your first visit.',
       'Carry the quest item to Shoreline and look for the entrance to the underwater structure.',
@@ -272,7 +272,7 @@ const story = {
   'spear-deliver': {
     title: 'Deliver what was left for you',
     hints: [
-      'The next step is a delivery. Do not lose the item you just received to free a hand.',
+      'The next step is a delivery. Keep the item received for this purpose.',
       'From The Exterior, cross the intact bridge route into Waterfront Facility and look for a way up to another structure.',
       'Waterfront Facility → Looks to the Moon. Complete the encounter with the important pearl. Wait for all item-related interactions to finish before taking it and leaving.',
     ],
@@ -288,9 +288,9 @@ const story = {
     completion: 'I brought the correct quest item to its final destination.',
   },
   'spear-early': {
-    title: 'You can listen to another visitor first',
+    title: 'Visit another inhabitant first',
     hints: [
-      'If you want more context for this journey, visit another inhabitant before completing the errand above.',
+      'For additional context, visit another inhabitant before completing the errand above.',
       'Travel from Outskirts through Industrial Complex and Garbage Wastes to Waterfront Facility, then look for a way upward.',
       'Visiting Looks to the Moon before your first trip to Five Pebbles can provide useful context. The main journey still requires you to obtain the item in Five Pebbles and return here afterward.',
     ],
@@ -380,7 +380,7 @@ const story = {
   'watcher-prologue': {
     title: 'Complete the three stops in the prologue',
     hints: [
-      'Look for unusual environmental signals in reachable regions. There is no need to force your way through a closed passage.',
+      'Look for unusual environmental signals in reachable regions. Do not force entry into a closed passage.',
       'The prologue’s three stops are in a tower, a castle in shadow, and the western fields. You can visit them in any order.',
       'Find the encounter at the top of Chimney Canopy, in the cave below the eastern entrance of Shaded Citadel, and in eastern Farm Arrays. Complete all three before following the later route; visiting only one is not enough.',
     ],
@@ -434,7 +434,7 @@ const story = {
   'watcher-other': {
     title: 'Keep another choice open in the same save',
     hints: [
-      'If you want to see every route in one save, check this reminder before the fourth golden encounter.',
+      'To see every route in one save, check this reminder before the fourth golden encounter.',
       'The two later objectives affect each other. Complete the optional spread objective before the fourth golden encounter to preserve more choices.',
       'The optional branch requires spreading the special infection to every region it can reach, then completing an encounter with the Outer Rim inhabitant. After the fourth encounter with the inhabitant tied to the golden traces, your ability will prevent further spread. This branch is not required for the final main route.',
     ],
