@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "雨间 · Rainward",
+  "short_name": "雨间",
+  "description": "雨世界防剧透探索指南",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10191d",
+  "theme_color": "#10191d",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

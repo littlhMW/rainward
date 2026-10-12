@@ -1,0 +1,55 @@
+name: Deploy Rainward to GitHub Pages
+
+on:
+  push:
+    branches: [main, 'codex/rainward']
+    paths:
+      - 'rain-guide/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rainward-pages
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify guide
+        working-directory: rain-guide
+        run: npm test
+      - name: Prepare static website
+        run: |
+          mkdir -p _site/src
+          cp rain-guide/index.html rain-guide/icon.svg rain-guide/manifest.webmanifest rain-guide/sw.js _site/
+          cp rain-guide/src/app.js rain-guide/src/engine.js rain-guide/src/data.js rain-guide/src/style.css _site/src/
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload static website
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+  deploy:
+    needs: upload
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
