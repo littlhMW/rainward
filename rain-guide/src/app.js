@@ -159,5 +159,14 @@ $('#about-button').onclick = () => {
 };
 receiveLocation(); updateControls(); renderStory(); loadMap();
 if(!storageOK)$('#save-status').textContent='本地存储不可用，请导出备份';
-// The real map depends on upstream data; retire the former guide-only offline cache.
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+// Retire the old cache directly. Registering a retirement worker on every visit
+// can revive an already unregistered worker without running activate again.
+(async () => {
+  if ('serviceWorker' in navigator) {
+    const scope = new URL('./', location.href).href;
+    for (const registration of await navigator.serviceWorker.getRegistrations())
+      if (registration.scope === scope) await registration.unregister();
+  }
+  if ('caches' in window) for (const key of await caches.keys())
+    if (key.startsWith('rainward-')) await caches.delete(key);
+})().catch(()=>{});
