@@ -1,4 +1,4 @@
-# 雨间 我该去哪 / Rainward where to go
+# 雨间 · 我该去哪 | Rainward · Where Should I Go
 
 《雨世界》PC Remix/BepInEx 小工具：**按住 G 0.6 秒**，系统默认浏览器打开 [雨间](https://littlhmw.github.io/rainward/)，带上当前地点、游戏实际记录的已访问房间、少量剧情状态和可读取的玩家位置。网页据此遮罩未探索房间，并提供逐层展开的故事线索。
 
