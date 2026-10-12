@@ -1,5 +1,7 @@
 # 雨间 · Rainward
 
+**直接使用：[雨间 · Rainward](https://littlhmw.github.io/rainward/)**。2026-10-12 已验证上线，公开页面返回 HTTP 200，页面标题正确。[查看源码](https://github.com/littlhMW/rainward)。
+
 一个面向《Rain World／雨世界》新手的中文探索指南。默认从「幸存者、尚未探索」开始，用区域连接关系帮助决定下一步；详细地图通过遮罩开关按需查看，剧情信息逐层揭示。
 
 项目参考 [Rain World Interactive Map](https://rain-world-map.github.io/) 的地图导航方式，并使用官方社区 Wiki 等公开资料核对信息。这是独立的非官方指南，与游戏开发者及原地图维护者没有隶属关系。
@@ -56,9 +58,9 @@ node scripts/check-browser.mjs
 
 该项目是纯静态网页，可由 GitHub Pages 免费托管。无需服务器、付费域名、数据库或支付信息。
 
-具体步骤见 [免费发布说明](docs/DEPLOY.md)。**项目文件已准备好不等于已上线；只有 Pages 部署成功后，GitHub 显示的 URL 才是公开访问地址。**
+2026-10-12 已通过 GitHub Pages 发布并验证公开访问：[打开网页](https://littlhmw.github.io/rainward/) · [源码仓库](https://github.com/littlhMW/rainward)。
 
-预计发布目标（尚未完成公开访问验证）：[源码仓库](https://github.com/littlhMW/rainward) · [网页地址](https://littlhmw.github.io/rainward/)。当前初始分支为 `codex/rainward`，工作流同时接受它和 `main` 的更新。
+当前初始分支为 `codex/rainward`，工作流同时接受它和 `main` 的更新。发布与撤销方法见 [免费发布说明](docs/DEPLOY.md)，验证结果与范围见 [QA 记录](docs/QA.md)。
 
 ## 隐私与清理
 

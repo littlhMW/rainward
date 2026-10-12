@@ -67,8 +67,10 @@ function toggle(id, checked, title, subtitle) {
 }
 function render() {
   const activeId = document.activeElement?.id;
+  const wasInMain = $('#main').contains(document.activeElement);
   renderContent();
   if (activeId && document.getElementById(activeId) && !document.getElementById(activeId).disabled) document.getElementById(activeId).focus({ preventScroll: true });
+  else if (wasInMain) $('#main').focus({ preventScroll: true });
 }
 function renderContent() {
   const c = campaign(), p = profile();

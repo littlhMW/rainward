@@ -2,9 +2,9 @@
 
 雨间是纯静态网页，发布时不需要 Node 服务、数据库、云服务器或付费域名。GitHub Free 账号可以为**公开仓库**免费提供 GitHub Pages。公开仓库中的源代码和提交历史也可被其他人查看；不要上传密码、令牌或个人文件。
 
-以下步骤是发布方法，不表示当前项目已经部署成功。公开地址以 GitHub 仓库 Pages 设置中实际显示的地址为准。
+**2026-10-12 已验证上线：[https://littlhmw.github.io/rainward/](https://littlhmw.github.io/rainward/)**。公开页面返回 HTTP 200，页面标题正确；[GitHub Actions 运行 38249411917](https://github.com/littlhMW/rainward/actions/runs/38249411917) 的第二次尝试成功。首次尝试发生在 Pages 启用前，配置检查返回 404；启用后重新执行已解决。
 
-预计发布目标是公开仓库 [littlhMW/rainward](https://github.com/littlhMW/rainward) 和网页 [https://littlhmw.github.io/rainward/](https://littlhmw.github.io/rainward/)，**目前仍待部署与公开访问验证**。仓库认证、创建或上传成功都不等于网页已上线。当前交付保留父仓库中的 `rain-guide/` 目录，初始分支为 `codex/rainward`，仓库根已提供与这一结构配套的工作流。
+源码位于公开仓库 [littlhMW/rainward](https://github.com/littlhMW/rainward)。当前交付保留父仓库中的 `rain-guide/` 目录，初始分支为 `codex/rainward`，仓库根的工作流负责测试并发布。以下步骤供后续维护或在其他仓库部署时参考。
 
 ## 通用方式：站点文件位于独立仓库根目录
 
@@ -32,7 +32,7 @@ GitHub 只会识别**仓库根目录**下的 `.github/workflows/`。项目目前
 
 这种方式会把 `rain-guide` 的内容作为 Pages 站点根目录发布，公开 URL 中通常**不再额外加 `/rain-guide/`**。请使用 GitHub 返回的地址。
 
-2026-10-12 本地已通过 43 项 Node 测试和 33 项浏览器检查。浏览器检查使用已有 Playwright 与 Edge，由 `scripts/check-browser.mjs` 执行，没有为本项目下载依赖或浏览器；复跑方式见 [README](../README.md#本地运行)。Pages 自动流程执行 Node 测试；本地浏览器检查通过不能代替部署后公开 URL 的验收。
+2026-10-12 本地已通过 43 项 Node 测试和 33 项浏览器检查，并完成公开 URL 的 HTTP 状态与标题检查。浏览器检查使用已有 Playwright 与 Edge，由 `scripts/check-browser.mjs` 执行，没有为本项目下载依赖或浏览器；复跑方式见 [README](../README.md#本地运行)。Pages 自动流程执行 Node 测试。详细结果与验证边界见 [QA 记录](QA.md)。
 
 ## 简单方式：网页上传文件 + 从分支部署
 
