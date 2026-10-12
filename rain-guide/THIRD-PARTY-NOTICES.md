@@ -42,7 +42,7 @@
 
 ## 委托封面与横幅
 
-`mod/thumbnail.png` 以及 README 使用的横幅源自用户提供的 `C:\Users\littlh\Desktop\雨间.png`。用户在本项目委托中明确允许将该图及本项目生成的裁切、放大、补边版本用于：公开 GitHub 仓库展示、GitHub Pages、Rain World Mod 发布、Steam 创意工坊发布，以及为上述用途进行必要的修改和再发布。该授权记录只针对本项目及这些用途；图片不因仓库公开或代码采用 MIT 而自动成为 MIT 或 CC0。原始桌面文件不由本项目修改或删除。
+`mod/thumbnail.png` 以及 README 使用的横幅源自littlh创作。允许将该图及本项目生成的裁切、放大、补边版本用于：公开 GitHub 仓库展示、GitHub Pages、Rain World Mod 发布、Steam 创意工坊发布，以及为上述用途进行必要的修改和再发布。该授权记录只针对本项目及这些用途；图片不因仓库公开或代码采用 MIT 而自动成为 MIT 或 CC0。
 
 ## 维护者注意事项
 
