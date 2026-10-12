@@ -1,6 +1,6 @@
-# 雨间 2.1.0：验证记录
+# 雨间 2.2.0：验证记录
 
-验证日期：2026-10-12。网站：[littlhmw.github.io/rainward](https://littlhmw.github.io/rainward/)，[发布工作流](https://github.com/littlhMW/rainward/actions/workflows/pages.yml)。本记录对应网页 2.1.0 / Mod 1.1.0 的真实地图与游戏探索快照；上线状态仍需由本版部署任务及公开页面确认。
+验证日期：2026-10-12。网站：[littlhmw.github.io/rainward](https://littlhmw.github.io/rainward/)，[发布工作流](https://github.com/littlhMW/rainward/actions/workflows/pages.yml)。本记录对应网页 2.2.0 / Mod 1.1.0 的双语地图与游戏探索快照。
 
 ## 实际检查
 
@@ -16,7 +16,7 @@
 | Mod → 网页协议 | 12 项交叉检查通过：九角色、雨甸默认自由模式、不同本地生物、自定义角色保留、像素与摄像机偏移 |
 | 原图加载异常 | 8 项模拟检查：同步依赖失败、异步失败、JSON 格式异常、回调异常、正常请求取消等；3 个非法角色参数检查通过 |
 
-v2 浏览器检查 scripts/check-snapshot-browser.mjs **37 项通过**：顶部 GitHub 项目入口、四位玩家（同区、跨区、未知位置）、跨区跳转、昵称文本防注入、房间显示/遮住/跟随、右键回传与刷新、缺少房主探索、320px/390px 移动界面。真实地形像素审计覆盖总览、缩放、拖动和开启生物图层，四种状态遮罩外像素变化均为 0。
+v2 浏览器检查 scripts/check-snapshot-browser.mjs **37 项通过**：顶部 GitHub 项目入口、四位玩家（同区、跨区、未知位置）、跨区跳转、昵称文本防注入、房间显示/遮住/跟随、右键回传与刷新、缺少房主探索、320px/390px 移动界面。双语检查覆盖标题、角色与区域名称、故事提示、地图标签、右键菜单、Wiki 链接和语言偏好持久化。真实地形像素审计覆盖总览、缩放、拖动和开启生物图层，四种状态遮罩外像素变化均为 0。
 
 网页浏览器测试使用已有 Playwright 和 Edge，没有安装浏览器或新 npm 依赖。九角色检查各加载一个区域，Watcher 另查 WPTA，不代表每一个地区或每张瓦片都完整验收。
 

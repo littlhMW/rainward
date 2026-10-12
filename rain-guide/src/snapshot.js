@@ -48,7 +48,7 @@ export function normalizeRoomOverrides(input) {
 }
 
 export function normalizeSnapshot(input) {
-  if (!record(input) || input.v !== 2) throw new Error('不是受支持的游戏地图快照（需要版本 2）。');
+  if (!record(input) || input.v !== 2) throw new Error('目前仅支持版本 2 的游戏地图快照。');
   const params = new URLSearchParams({v:'1', character:input.character ?? '',region:input.region ?? '',room:input.room ?? ''});
   for (const key of ['x','y','px','py','cx','cy','mode','avatar']) if (input[key] !== undefined && input[key] !== null) params.set(key,String(input[key]));
   if (input.dlc === true) params.set('dlc','downpour');

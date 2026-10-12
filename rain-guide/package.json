@@ -1,8 +1,8 @@
 {
   "name": "rainward",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
-  "description": "雨间：基于 Rain World Map 的真实地图与故事线索",
+  "description": "雨间 · 我该去哪 | Rainward: a bilingual, spoiler-aware map and story guide for Rain World",
   "type": "module",
   "engines": {
     "node": ">=18"

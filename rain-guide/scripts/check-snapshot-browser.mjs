@@ -169,7 +169,7 @@ try {
   const unavailable={...snapshot,capturedAt:'2026-10-12T15:00:00Z',progress:{source:'unavailable',rooms:['SU_C04',metadata.near],flags:{hasMark:true}}};
   await importSnapshot(unavailable);
   await frame().waitForFunction(()=>document.querySelectorAll('#guide-visible-rooms path').length===0&&!map.hasLayer(tileLayer));
-  check('unavailable host clears old exploration, ignoring submitted client rooms',(await state()).profiles.survivor.gameProgress.rooms.length===0 && (await page.locator('#sync-summary').innerText()).includes('未取得房主'));
+  check('unavailable host clears old exploration, ignoring submitted client rooms',(await state()).profiles.survivor.gameProgress.rooms.length===0 && (await page.locator('#sync-summary').innerText()).includes('无法读取房主探索记录'));
   check('unavailable host does not remove valid position snapshots',await frame().locator('.guide-position').count()===2);
   await shot('host-unavailable');
   await importSnapshot({...snapshot,capturedAt:'2026-10-12T16:00:00Z'});

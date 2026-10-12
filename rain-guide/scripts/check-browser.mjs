@@ -63,7 +63,7 @@ try {
   check('return to player restores game room',await frame().evaluate(()=>focusedRoom.feature.properties.name==='SU_C04'));
   for(const suffix of ['character=ModCat&region=SU&room=SU_C04','character=Survivor&region=ZZZ&room=ZZZ_A01']) {
     await page.goto(base+'#v=1&'+suffix); await ready();
-    check('unsupported location labelled: '+suffix,(await page.locator('#location-warning').innerText()).includes('未定位') && await frame().locator('.guide-position').count()===0 && !await page.locator('#player-location').isVisible());
+    check('unsupported location labelled: '+suffix,(await page.locator('#location-warning').innerText()).includes('未完成定位') && await frame().locator('.guide-position').count()===0 && !await page.locator('#player-location').isVisible());
   }
   await page.goto(base+'#v=1&character=Survivor&region=SU&room=SU_NOT_REAL');
   await page.waitForFunction(()=>document.querySelector('#map-status').textContent.includes('没有房间'));
@@ -76,7 +76,7 @@ try {
   check('Mod link to a different campaign resets spoiler names',!await page.locator('#names-toggle').isChecked());
   await page.locator('#character-select').selectOption('survivor'); await ready();
   await page.goto(base); await ready();
-  await page.locator('#about-button').click(); await page.locator('summary').filter({hasText:'保留的旅途笔记'}).click();
+  await page.locator('#about-button').click(); await page.locator('summary').filter({hasText:'旅途笔记'}).click();
   await page.locator('#old-notes').fill('测试笔记 <script>window.BAD=true</script>');
   const pending=page.waitForEvent('download'); await page.locator('#export-progress').click();
   const download=await pending,backup=JSON.parse(await readFile(await download.path(),'utf8'));

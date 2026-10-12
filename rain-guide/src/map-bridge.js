@@ -1,11 +1,17 @@
 import { parseLocation, playerPoint } from './location.js';
 import { findRoomRoute, gateRooms } from './room-route.js';
-import { roomKey, visibleRoomNames, roomPolygons, roomClipPaths, canPlacePrecisely } from './room-visibility.js?v=2.1.0';
+import { roomKey, visibleRoomNames, roomPolygons, roomClipPaths, canPlacePrecisely } from './room-visibility.js?v=2.2.0';
 
 // The CC0 upstream owns terrain and connection rendering; this adapter controls
 // disclosure, room overrides, names, player snapshots and existing route lines.
 const notify = (event, data = {}) => parent.postMessage({ type:'where-to-parent', event, ...data }, location.origin);
-let settings = { ...window.rwGuide, route:true, nextRegion:null, room:null, player:null, players:[], exploredRooms:[], roomOverrides:{}, names:false, regionLabel:'', regionLabels:{} };
+let parentLanguage = 'zh';
+try { parentLanguage = parent.document.documentElement.lang === 'en' ? 'en' : 'zh'; } catch { /* Same-origin parent language is optional; Chinese remains the default. */ }
+const initialLanguage = window.rwGuide?.language === 'en' || window.rwGuide?.language === 'zh' ? window.rwGuide.language : parentLanguage;
+let settings = { ...window.rwGuide, language:initialLanguage, route:true, nextRegion:null, room:null, player:null, players:[], exploredRooms:[], roomOverrides:{}, names:false, regionLabel:'', regionLabels:{} };
+const language = () => settings.language === 'en' ? 'en' : 'zh';
+const tx = (zh, en) => language() === 'en' ? en : zh;
+document.documentElement.lang = language();
 try { settings.player = parseLocation(location.hash); settings.room = settings.player?.room || null; } catch { /* Parent validates external location links. */ }
 let nodes, direction, playerMarkers, geographicNames, clipPath, loaded = false, insideFocus = false, zooming = false;
 let visible = new Set();
@@ -79,9 +85,9 @@ function roomMenu(name, at) {
   const box = document.createElement('div'); box.className = 'guide-room-menu';
   const title = document.createElement('strong'); title.textContent = key; box.append(title);
   const status = document.createElement('p');
-  status.textContent = settings.mask ? (visible.has(key) ? '这个房间的地形已显示' : '这个房间的地形已遮罩') : '全图已揭开；单独设置会在重新开启遮罩后生效。';
+  status.textContent = settings.mask ? (visible.has(key) ? tx('这个房间的地形已显示','Terrain in this room is visible.') : tx('这个房间的地形已遮罩','Terrain in this room is masked.')) : tx('全图已揭开；单独设置会在重新开启遮罩后生效。','The full map is visible. This room setting will apply when the mask is enabled.');
   box.append(status);
-  for (const [label, value] of [['显示这个房间',true],['遮罩这个房间',false],['跟随存档探索记录',null]]) {
+  for (const [label, value] of [[tx('显示这个房间','Reveal this room'),true],[tx('遮罩这个房间','Mask this room'),false],[tx('跟随存档探索记录','Follow save exploration'),null]]) {
     const button = document.createElement('button'); button.type = 'button'; button.textContent = label;
     button.addEventListener('click', () => {
       const overrides = { ...settings.roomOverrides };
@@ -100,7 +106,7 @@ function openRoomMenu(event, name, point) {
 function drawPlayers() {
   if (playerMarkers) window.map.removeLayer(playerMarkers);
   playerMarkers = window.L.layerGroup().addTo(window.map);
-  const players = settings.players.length ? settings.players : settings.player ? [{...settings.player, name:'你', local:true}] : [];
+  const players = settings.players.length ? settings.players : settings.player ? [{...settings.player, name:tx('你','You'), local:true}] : [];
   const overlaps = new Map();
   for (const player of players) {
     if (!player || (player.region && String(player.region).toUpperCase() !== window.loadedRegion)) continue;
@@ -110,8 +116,8 @@ function drawPlayers() {
     const key = roomKey(player.room), index = overlaps.get(key) || 0;
     overlaps.set(key, index + 1);
     const local = player.local === true, host = player.host === true;
-    const name = typeof player.name === 'string' && player.name.trim() ? player.name.slice(0,128) : local ? '你' : '玩家';
-    const caption = `${name}${local ? ' · 本地' : ''}${host ? ' · 房主' : ''}\n${precise ? '位置快照' : '仅定位到房间'}`;
+    const name = typeof player.name === 'string' && player.name.trim() ? player.name.slice(0,128) : local ? tx('你','You') : tx('玩家','Player');
+    const caption = `${name}${local ? tx(' · 本地',' · Local') : ''}${host ? tx(' · 房主',' · Host') : ''}\n${precise ? tx('位置快照','Position snapshot') : tx('仅定位到房间','Room-level position')}`;
     const marker = window.L.circleMarker(point, { radius:local ? 7 : 6, color:local ? '#fff' : '#9ad0e1', weight:2, fillColor:local ? '#dbbc6b' : '#436d85', fillOpacity:1, interactive:false, className:'guide-position' });
     marker.bindTooltip(text(caption), {direction:index % 2 ? 'bottom' : 'top',offset:[0,(index % 2 ? 1 : -1)*(10+Math.floor(index/2)*36)],permanent:true,className:`guide-player-label${local ? ' local' : ''}`}).addTo(playerMarkers);
   }
@@ -144,18 +150,18 @@ function drawRoute() {
   let best = null;
   for (const name of gates) {
     const target = getRoom(name); if (!target) continue;
-    window.L.circleMarker(roomCenter(target.feature), {radius:10,color:'#e4ce90',weight:2,fillOpacity:0}).bindTooltip(text(`通向 ${regionLabel(settings.nextRegion)} 的门`), {className:'room-labels'}).addTo(direction);
+    window.L.circleMarker(roomCenter(target.feature), {radius:10,color:'#e4ce90',weight:2,fillOpacity:0}).bindTooltip(text(tx(`通向 ${regionLabel(settings.nextRegion)} 的门`,`Gate to ${regionLabel(settings.nextRegion)}`)), {className:'room-labels'}).addTo(direction);
     const path = findRoomRoute(features(), window.rwRoomJSON.connection_features, settings.room, name);
     if (path.rooms.length && (!best || path.featureIndexes.length < best.featureIndexes.length)) best = path;
   }
   if (best?.featureIndexes.length) {
     new window.L.BezierGeoJSON(best.featureIndexes.map(i => window.rwRoomJSON.connection_features[i]), {color:'#e4ce90',weight:4,opacity:.95,dashArray:'7 7',interactive:false}).addTo(direction);
-    notify('route', {message:`已标出 ${best.featureIndexes.length} 段原图连接，通向 ${regionLabel(settings.nextRegion)} 的门。仅为连接参考，门槛、方向和能力仍以游戏为准。`});
-  } else notify('route', {message:gates.length ? '已圈出通向下一地区的门；选中起点房间后显示连接参考。无法可靠连通时不会编造路线。' : '原图中未找到可核对的出口，暂不绘制房间路线。按区域方向自行探索，可能存在版本或 Mod 差异。'});
+    notify('route', {message:language() === 'en' ? `Marked ${best.featureIndexes.length} connections from the source map toward the gate to ${regionLabel(settings.nextRegion)}. This indicates connectivity only; verify gate requirements, direction, and abilities in game.` : `已标出 ${best.featureIndexes.length} 段原图连接，通向 ${regionLabel(settings.nextRegion)} 的门。此线仅表示连接关系；门槛、方向和能力要求以游戏为准。`});
+  } else notify('route', {message:gates.length ? tx('已标出通向下一地区的门。选定起点房间后可显示连接参考；无法核实的路线不会绘制。','The gate to the next region is marked. Select a starting room to show a connection route. Unverified routes are not drawn.') : tx('原图中未找到可核对的出口，暂不绘制房间路线。请按区域方向探索；游戏版本或地形 Mod 可能造成差异。','No verifiable exit was found in the source map, so no room route is shown. Explore according to the regional direction; game versions or terrain mods may differ.')});
 }
 function focus(name, quiet = false) {
   const target = getRoom(name);
-  if (!target) { if (!quiet) notify('error',{message:`原图没有房间 ${String(name).slice(0,96)}，已保留区域视图。`}); return false; }
+  if (!target) { if (!quiet) notify('error',{message:tx(`原图没有房间 ${String(name).slice(0,96)}，已保留区域视图。`,`The source map has no room ${String(name).slice(0,96)}. The regional view remains open.`)}); return false; }
   insideFocus = true; window.focusRoom(target); insideFocus = false;
   settings.room = target.feature.properties.name;
   applyLayers(); drawRoute();
@@ -191,14 +197,26 @@ function ready() {
   else focus(target, true);
   drawPlayers(); drawRoute(); drawNames();
   notify('ready',{rooms:features().length});
-  if (target && !getRoom(target)) notify('error',{message:`原图没有房间 ${target}，已显示该区域。新增或改动地形可能不匹配。`});
+  if (target && !getRoom(target)) notify('error',{message:tx(`原图没有房间 ${target}，已显示该区域。新增或改动地形可能不匹配。`,`The source map has no room ${target}; the regional view is shown. Added or altered terrain may not match.`)});
 }
 window.addEventListener('rw-map-ready', ready);
-window.addEventListener('rw-map-error', event => notify('error',{message:event.detail}));
+function translateMapError(value) {
+  const message = String(value ?? '');
+  if (language() !== 'en') return message;
+  if (message === '该角色的原图没有收录这个区域。') return 'The source map does not include this region for the selected campaign.';
+  let match = /^原地图暂未提供这个区域的数据（HTTP (\d+)）。$/.exec(message);
+  if (match) return `The source map does not provide data for this region (HTTP ${match[1]}).`;
+  if (message === '原地图数据加载失败，请检查网络。') return 'Could not load source map data. Check the network connection.';
+  if (message === '原地图数据格式异常，暂时无法显示该区域。') return 'The source map data is invalid; this region cannot be displayed.';
+  return message;
+}
+window.addEventListener('rw-map-error', event => notify('error',{message:translateMapError(event.detail)}));
 window.addEventListener('message', event => {
   if (event.origin !== location.origin || event.source !== parent || event.data?.type !== 'where-to-map') return;
   const value = event.data;
+  const previousLanguage = language();
   settings = { ...settings,
+    language:value.language === 'en' ? 'en' : 'zh',
     mask:!!value.mask, rooms:!!value.rooms, spawns:!!value.spawns, names:!!value.names,
     nextRegion:typeof value.nextRegion==='string' ? value.nextRegion.toUpperCase() : null, route:!!value.route,
     room:typeof value.room==='string' ? value.room : null, player:value.player || null,
@@ -208,6 +226,8 @@ window.addEventListener('message', event => {
     regionLabel:typeof value.regionLabel === 'string' ? value.regionLabel.slice(0,160) : '',
     regionLabels:Object.fromEntries(Object.entries(value.regionLabels || {}).filter(([key,v]) => /^[A-Z0-9]{1,16}$/i.test(key) && typeof v === 'string').map(([key,v]) => [key.toUpperCase(),v.slice(0,160)])),
   };
+  document.documentElement.lang = language();
+  if (loaded && previousLanguage !== language()) window.map.closePopup();
   applyLayers();
   if (!loaded) return;
   if (value.action === 'overview') window.map.fitBounds(window.roomsLayer.getBounds(),{padding:[30,30],maxZoom:-2});

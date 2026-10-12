@@ -1,59 +1,81 @@
-# 雨间 我该去哪 / Rainward where to go
+# 雨间 · 我该去哪 | Rainward · Where Should I Go
 
-![雨间 我该去哪](mod/thumbnail.png)
+![雨间 · 我该去哪](mod/thumbnail.png)
 
-《雨世界》地图与故事线索工具。直接基于 [Rain World Map](https://rain-world-map.github.io/) 的开源前端调整，以真实房间、连接和地形为主体，使用简洁的黑白、方角界面。
+《雨世界》交互地图与故事线索工具。本项目基于 [Rain World Map](https://rain-world-map.github.io/) 的开源前端，保留真实房间、连接和地形，并以简洁的黑白界面呈现地图与路线提示。
 
-**网站地址：[littlhmw.github.io/rainward](https://littlhmw.github.io/rainward/)** · **[源码](https://github.com/littlhMW/rainward)**
+**[打开网页](https://littlhmw.github.io/rainward/)** · **[GitHub 项目](https://github.com/littlhMW/rainward)**
 
-沿用原有免费 GitHub Pages 地址与仓库。[改版验证记录](docs/QA.md)列出本版实际检查与限制。
+## 功能
 
-## 地图与线索
+### 地图与探索
 
-- 默认按房间遮罩地形，保留原地图的房间节点与真实连接。导入 Mod 快照后，游戏记录中已访问的房间自动显示；未导入时只显示连接。右键房间或使用所选房间的按钮，可单独“显示 / 遮住 / 跟随游戏记录”；总开关可显示完整原图。可以拖动、缩放、按房间代码定位。
-- 普通地名正常显示。按 Wiki 同页导航框的明确分组，默认隐藏 17 个剧透区域名；可单独开启地名显示，规则见 [Wiki 核对记录](docs/WIKI-SPOILERS.md)。房间图像、代码及主动展开的提示不属于该开关的保护范围。
-- 地名直接标在地图上。保留故事线索，先给轻提示，再逐步展开方向与目的地；少量游戏状态用于建议线索，完成仍由玩家确认。区域路线给下一步方向，选中起点房间后，可在地图数据足够明确时标出通向下一地区出口的房间连接参考。
-- 九位常规剧情角色在同一地图界面选择。基础三位及 Downpour 五位使用 Rain World Map 数据；Watcher 使用 Alduris Watcher Map 的真实房间、连接与地形。Watcher 动态传送仍以当前存档为准，不推测存档中的实时跨区网络。
-- 生存帮助、进度备份导入导出和旧版旅途笔记保留；备份与笔记位于“说明 / 数据”中。无需账户。
+- 地图默认按房间遮罩未探索地形，同时保留房间节点和连接关系。
+- 导入游戏快照后，游戏中已访问的房间会自动显示。右键房间或使用房间面板，可以单独选择“显示”“遮住”或“跟随游戏记录”；总开关可以显示完整地图。
+- 地名直接标在地图上。普通地名默认可见；按照 Wiki 导航模板中的剧透分组，17 个区域名默认隐藏，可在设置中开启。
+- 地图支持拖动、缩放和按房间代码定位。连接、节点和已选择的路线在遮罩状态下仍然可见。
+- 使用新增或修改地形、房间或连接的 Mod 时，地图与提示可能不准确，请以游戏实际情况为准。本项目不会扫描已安装的 Mod。
 
-门槛、单向通路、角色能力与剧情条件可能影响可通行性。地图连接参考不是安全路径保证。基础三位的“启用了 Downpour”设置用于路线建议；地图仍按上游当前角色数据源加载，不应将此设置误认为已有每个角色、每个 DLC 组合的完整地形版本。
+### 角色与线索
 
-**如果使用了新增或修改地形、房间或连接的 Mod，地图和提示可能不准确，请以游戏实际情况为准。** 这是固定提醒，本工具不扫描地形 Mod。
+- 支持九位常规剧情角色。基础角色和 Downpour 角色使用 Rain World Map 数据；Watcher 使用 Alduris Watcher Map 的房间、连接与地形数据。
+- 故事线索按层级展开，先提供方向，再提供目的地和路线参考。经过房间或开始会面不会自动被视为完成剧情目标，完成状态由玩家确认。
+- 区域路线根据角色能力、门槛和单向通路给出下一步方向。路线是地图数据中的连接参考，不保证构成安全路径。
+- 提供生存提示、进度备份导入导出和旅途笔记；使用网页无需账户。
 
-## 可选游戏 Mod
+## 游戏 Mod
 
-[下载 Mod 安装包](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip) · [源码、安装与卸载说明](mod/README.md)。可分发的 ZIP 在 downloads/WhereShouldIGo.zip，本地构建原件在 mod/dist/。
+[下载 Where Should I Go 1.1.0](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip) · [Mod 源码、安装与卸载](mod/README.md)
 
-当前 Mod 版本为 **1.1.0**。默认在游戏内按住 **G 0.6 秒**，打开系统默认浏览器，传入当前区域、房间、位置、实际已访问房间与少量剧情记录；按键及按住时长可在 Remix 中修改。不需要先复制坐标，不自动改剪贴板。再按一次才会更新快照，不持续追踪。长链接会完整导出为游戏数据目录中的 Rainward/snapshot.json，网页提示选择该文件导入，不截断记录。
+Mod 默认在游戏内按住 **G 0.6 秒**，打开系统浏览器并传入当前区域、房间、位置、已访问房间和可读取的剧情记录。按键和按住时长可在 Remix 中修改。Mod 不需要先复制坐标，也不会持续追踪或自动修改剪贴板；再次按键时才生成新的快照。
 
-雨甸显示所有可读取的玩家位置，同区在地图上标点，跨区提供切换入口，暂未同步的位置明确标为未知。精确坐标不可用时只标房间。战役由房主游戏模式确定，自己的角色外观另行记录。
+过长的快照会完整写入游戏数据目录的 `Rainward/snapshot.json`，网页会提示选择该文件导入，不会截断记录。
 
-单机与房主读取游戏当前的实际访问记录；客机只使用雨甸已同步的**房主周期起点快照**，本周期新探索及故事变化可能延迟，不读取或混入客机进度。网页显示来源与新鲜程度；不可用时保持未知。雨甸自由模式可显示玩家位置，但没有可确认的探索与剧情记录。故事会面计数不能证明对话已结束，也不能证明任务物仍在手中。
+雨甸会显示所有可读取的玩家位置：同区玩家显示在地图上，跨区玩家提供切换入口，尚未同步的位置标记为未知；没有精确坐标时只显示房间位置。探索进度只使用房主记录。单机和房主读取当前实际访问记录，客机使用雨甸同步的房主周期起点快照，因此本周期的新探索和故事变化可能延迟。自由模式可显示玩家位置，但不提供可确认的探索与剧情进度。
 
-Mod 已成功编译并核对公开接口，**尚未完成单机或真实联机实机验收**。安装包不含游戏 DLL、雨甸 DLL、BepInEx 或游戏素材。构建脚本不自动安装；本机工坊准备使用独立的 mods/whereshouldigo/ 目录，清理方式见卸载说明。**尚未上传工坊**，可按 [上传教程](docs/WORKSHOP.md) 使用游戏内置 Remix 上传入口。
+Mod 已完成编译，尚未完成单机或雨甸联机实机测试。安装包不包含游戏文件或 Mod 加载器。Steam 工坊尚未上传，上传步骤见 [Steam 工坊上传教程](docs/WORKSHOP.md)。
 
-## 本地运行与检查
+## 本地运行
 
-需要已有 Node.js 18 或更新版本。前端所需 Leaflet 已随上游静态文件保留，**无需 npm install**。
+需要 Node.js 18 或更新版本。Leaflet 等前端依赖已随上游静态文件保留，无需运行 `npm install`。
 
-在本目录运行：
+```text
+npm run serve
+```
 
-    npm run serve
+然后打开 <http://127.0.0.1:4173/>。预览服务只监听本机；按 Ctrl+C 停止。
 
-打开 [http://127.0.0.1:4173/](http://127.0.0.1:4173/)，按 Ctrl+C 停止。预览只监听本机，不创建服务、自启动项或全局配置。
+```text
+npm test
+```
 
-    npm test
+浏览器检查脚本为 `scripts/check-browser.mjs` 和 `scripts/check-snapshot-browser.mjs`。运行方式、测试范围和已知限制见 [验证记录](docs/QA.md)。
 
-浏览器检查使用 scripts/check-browser.mjs 与 scripts/check-snapshot-browser.mjs。复跑时先启动预览，并让 PLAYWRIGHT_MODULE 指向已有 Playwright、BROWSER_PATH 指向已有 Edge/Chrome；分别用 node 运行这两个脚本。SITE_URL 可覆盖待检查地址，产物在 test-results/，可以单独删除。测试数量与完成状态见 [QA 记录](docs/QA.md) 的对应版本。
+## 数据与隐私
 
-## 联网、数据与许可
+- 区域 JSON 和地形瓦片按需从上游读取，需要网络。网页不提供账户、后台位置服务器或定时上传。
+- 游戏快照、单房间遮罩、手动线索进度和笔记保存在浏览器 localStorage 的 `rainward.progress.v1` 中，不会在不同浏览器间自动同步。可以在“说明 / 数据”中备份或清除。
+- 每次游戏快照会替换探索列表，不会把不同存档的房间合并；同一来源和存档会保留单房间设置，切换存档或来源不可用时会清除旧探索与手动完成记录并保留笔记。
+- Mod 快照通过 URL 片段传入，HTTP 请求不会把片段发送给托管服务器；浏览器历史和分享链接仍可能包含位置、显示名与探索记录。
 
-本版是真实在线地图：区域 JSON 和地形瓦片按需从上游读取，需要网络，也受上游可用性影响。旧版核心向导的离线 Service Worker 与 rainward- 缓存正在退役，不再提供离线地图承诺。
+## 许可与来源
 
-游戏快照、单房间遮罩设置、手动线索进度与笔记保存在浏览器 localStorage 的 rainward.progress.v1 中，兼容旧版记录；不同浏览器不会自动同步。每次游戏快照替换探索列表，不累计不同存档的房间；同来源、同存档保留单房间设置，切换存档或无法读取来源时清除旧探索与手动线索完成记录，保留笔记。可在“说明 / 数据 → 本地数据”备份或清除。重置当前角色时保留其旧笔记；清除本站数据才会删除所有角色记录与笔记，不修改游戏存档。
+地图代码与数据来源、许可证和 Wiki 资料范围见 [来源与许可](upstream/UPSTREAM.md) 与 [资料范围](docs/SOURCES.md)。本项目原创代码采用 MIT 许可；上游代码、Leaflet、Wiki 摘录和图片素材适用各自许可，游戏素材仍归相应权利人所有。
 
-Mod 快照使用 URL # 片段传入，HTTP 请求不会把该片段发送给托管服务器；网页脚本、浏览器历史及分享链接仍可看到位置、玩家显示名及访问记录。地图请求会访问上游服务，本项目没有账户、后台位置服务器或定时上传。旧 v1 位置链接仍可使用，但不会假装更新游戏探索进度。
+[免费部署](docs/DEPLOY.md) · [下载用途与完整卸载](docs/UNINSTALL.md) · [GitHub 项目](https://github.com/littlhMW/rainward)
 
-下载的上游静态前端与配套小资源原始约 506 KB，集中在 upstream/。上游代码为 CC0，随附 Leaflet 为 BSD-2-Clause，保留各自许可证及作者来源；游戏美术仍属相应权利人。原创代码修改为 MIT；Wiki 分类摘录按 CC BY-SA 4.0。横幅与 Mod 封面由用户提供给本项目使用，未另行声明第三方再利用许可；代码 MIT 不自动覆盖图片。
+## English
 
-[来源及许可证](upstream/UPSTREAM.md) · [资料范围](docs/SOURCES.md) · [免费部署](docs/DEPLOY.md) · [下载用途与完整卸载](docs/UNINSTALL.md)
+Rainward is an interactive map and story-clue guide for *Rain World*. It is based on the open-source front end of [Rain World Map](https://rain-world-map.github.io/) and keeps the original room connections and terrain as the primary map content.
+
+The map masks unexplored room terrain by default while keeping connections visible. Imported game snapshots reveal visited rooms. Each room can be shown, covered, or linked to the game record independently, and a global switch can reveal the complete map. Ordinary region names are visible; 17 region names grouped as spoilers in the Wiki navigation template are hidden by default.
+
+Nine standard story campaigns are supported. Clues unfold in layers and suggest a direction before revealing more detail. Visiting a room or starting a meeting does not automatically complete a story objective. Routes are connection references and may be affected by character abilities, gates, one-way passages, or terrain mods.
+
+The optional mod opens a browser snapshot when **G is held for 0.6 seconds** by default. It passes the current location, visited rooms, and available story data. In Rain Meadow, all readable player positions are shown, while exploration uses only the host record. Clients receive the host's cycle-start snapshot, so changes from the current cycle may appear later. Free mode can provide player positions but does not provide confirmed exploration or story progress.
+
+The mod has been compiled but has not completed in-game single-player or Rain Meadow multiplayer testing. The package contains no game files or mod loader. Steam Workshop upload instructions are available in [docs/WORKSHOP.md](docs/WORKSHOP.md).
+
+For local development, use Node.js 18 or newer, run `npm run serve`, and open <http://127.0.0.1:4173/>. Run `npm test` for the automated checks. Map data and terrain tiles load online. Browser progress stays in local storage and can be backed up or cleared from the data panel.
+
+Related resources: [Rain World Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki) · [简体中文 Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki/zh-hans) · [Desktop Rain World Slugcat Simulation](https://github.com/littlhMW/desktop-rainworld-slugcat-simulation) · [Original map](https://rain-world-map.github.io/)

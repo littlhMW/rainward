@@ -1,4 +1,4 @@
-import { normalizeProgress, normalizeRoomOverrides, suggestedStage } from './snapshot.js?v=2.1.0';
+import { normalizeProgress, normalizeRoomOverrides, suggestedStage } from './snapshot.js?v=2.2.0';
 export const STORAGE_KEY = 'rainward.progress.v1';
 export const VERSION = 1;
 export function defaultProfile(campaign) {
@@ -38,7 +38,7 @@ export function applyGameProgress(profile, progress) {
   return !sameSave;
 }
 export function normalizeState(input, campaigns, regions) {
-  if (!input || typeof input !== 'object' || input.version !== VERSION) throw new Error('这不是受支持的雨间进度文件（需要版本 1）。');
+  if (!input || typeof input !== 'object' || input.version !== VERSION) throw new Error('目前仅支持版本 1 的雨间进度文件。');
   const state = defaultState();
   if (campaigns.some(c => c.id === input.campaign)) state.campaign = input.campaign;
   for (const key of Object.keys(state.prefs)) if (typeof input.prefs?.[key] === 'boolean') state.prefs[key] = input.prefs[key];

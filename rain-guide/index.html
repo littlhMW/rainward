@@ -4,44 +4,44 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080808">
-  <meta name="description" content="雨间：基于 Rain World Map 的真实雨世界地图，配合逐级故事线索与游戏内位置跳转。">
+  <meta name="description" content="雨间：探索《雨世界》的真实地图，查看角色故事线索与当前地点。">
   <meta property="og:title" content="雨间 · 我该去哪">
   <meta property="og:image" content="https://littlhmw.github.io/rainward/social-preview.png">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./src/style.css?v=2.1.0">
+  <link rel="stylesheet" href="./src/style.css?v=2.2.0">
   <title>雨间 · 我该去哪</title>
 </head>
 <body>
-  <a class="skip-link" href="#story">跳到故事线索</a>
+    <a class="skip-link" href="#story" data-zh="跳到故事线索" data-en="Skip to story guide">跳到故事线索</a>
   <header>
-    <h1>雨间 <small>我该去哪</small></h1>
-    <div class="header-links"><a id="github-project" href="https://github.com/littlhMW/rainward" target="_blank" rel="noopener noreferrer">GitHub 项目 ↗</a><button id="help-button">生存帮助</button><a href="./downloads/WhereShouldIGo.zip" id="download-mod" download>下载 Mod</a><button id="about-button">说明 / 数据</button><button id="story-toggle" aria-expanded="true" aria-controls="story">收起线索 »</button></div>
+    <h1><span data-zh="雨间" data-en="Rainward">雨间</span> <small data-zh="我该去哪" data-en="Where Should I Go">我该去哪</small></h1>
+    <div class="header-links"><select id="language-select" aria-label="界面语言"><option value="zh">中文</option><option value="en">English</option></select><a id="github-project" href="https://github.com/littlhMW/rainward" target="_blank" rel="noopener noreferrer" data-zh="GitHub 项目 ↗" data-en="GitHub project ↗">GitHub 项目 ↗</a><a id="github-star" href="https://github.com/littlhMW/rainward" target="_blank" rel="noopener noreferrer" data-zh="给项目 Star ↗" data-en="Star this project ↗">给项目 Star ↗</a><button id="help-button" data-zh="生存帮助" data-en="Survival guide">生存帮助</button><a href="./downloads/WhereShouldIGo.zip" id="download-mod" download data-zh="下载 Mod" data-en="Download mod">下载 Mod</a><button id="about-button" data-zh="项目说明" data-en="About">项目说明</button><button id="story-toggle" aria-expanded="true" aria-controls="story" data-zh="收起线索 »" data-en="Hide guide »">收起线索 »</button></div>
   </header>
   <div class="toolbar" aria-label="地图设置">
-    <label>角色 <select id="character-select" aria-label="角色"></select></label>
-    <label>区域 <select id="region-select" aria-label="区域"></select></label>
-    <label><input type="checkbox" id="mask-toggle" checked> 遮罩未探索房间</label>
-    <label><input type="checkbox" id="names-toggle"> 剧透地名</label>
-    <label><input type="checkbox" id="route-toggle" checked> 线索路线</label>
-    <label><input type="checkbox" id="rooms-toggle"> 房间编号</label>
-    <label><input type="checkbox" id="spawns-toggle"> 生物标记</label>
-    <button id="world-view">区域全图</button>
+    <label><span data-zh="角色" data-en="Slugcat">角色</span> <select id="character-select" aria-label="角色"></select></label>
+    <label><span data-zh="区域" data-en="Region">区域</span> <select id="region-select" aria-label="区域"></select></label>
+    <label><input type="checkbox" id="mask-toggle" checked> <span data-zh="遮罩未探索房间" data-en="Mask unexplored rooms">遮罩未探索房间</span></label>
+    <label><input type="checkbox" id="names-toggle"> <span data-zh="剧透地名" data-en="Show spoiler names">剧透地名</span></label>
+    <label><input type="checkbox" id="route-toggle" checked> <span data-zh="线索路线" data-en="Guide route">线索路线</span></label>
+    <label><input type="checkbox" id="rooms-toggle"> <span data-zh="房间编号" data-en="Room names">房间编号</span></label>
+    <label><input type="checkbox" id="spawns-toggle"> <span data-zh="生物标记" data-en="Creature markers">生物标记</span></label>
+    <button id="world-view" data-zh="区域全图" data-en="Show region">区域全图</button>
   </div>
-  <p class="mod-notice">有新增或修改地形的 Mod 时，地图、坐标和路线可能不准确。雨甸按房主探索记录遮罩，显示可获取的所有玩家位置；按住 G 更新快照。</p>
+  <p class="mod-notice" data-zh="地形类 Mod 可能改变房间与通路，地图与定位结果仅供参考。雨甸探索记录依据房主存档；玩家位置按当前可读取信息显示。按住 G 更新游戏快照。" data-en="Terrain mods may alter rooms and passages, so map and location data may differ. In Rain Meadow, exploration follows the host's save and player markers use currently available positions. Hold G to update the snapshot.">地形类 Mod 可能改变房间与通路，地图与定位结果仅供参考。雨甸探索记录依据房主存档；玩家位置按当前可读取信息显示。按住 G 更新游戏快照。</p>
   <main id="layout">
-    <section class="map-area" aria-label="雨世界真实地图">
-      <iframe id="map-frame" title="Rain World Map：真实房间、连接和地形" referrerpolicy="no-referrer" src="about:blank"></iframe>
-      <div id="map-status" role="status">正在加载地图…</div>
+    <section class="map-area" aria-label="雨世界地图" data-aria-zh="雨世界地图" data-aria-en="Rain World map">
+      <iframe id="map-frame" title="雨世界地图：房间、连接与地形" referrerpolicy="no-referrer" src="about:blank"></iframe>
+      <div id="map-status" role="status" data-zh="正在读取地图…" data-en="Loading map…">正在读取地图…</div>
       <p id="location-warning" role="status"></p>
-      <div class="position-bar"><span id="position-text">可从游戏中长按 G 定位，也可手动查询房间。</span><button id="player-location" hidden>回到玩家</button></div>
+      <div class="position-bar"><span id="position-text" data-zh="按住游戏内 G 键打开当前位置，也可输入房间代码查询。" data-en="Hold G in game to open your current location, or search by room code.">按住游戏内 G 键打开当前位置，也可输入房间代码查询。</span><button id="player-location" hidden data-zh="返回玩家位置" data-en="Return to player location">返回玩家位置</button></div>
     </section>
-    <aside id="story" tabindex="-1" aria-label="故事线索"></aside>
+    <aside id="story" tabindex="-1" aria-label="故事线索" data-aria-zh="故事线索" data-aria-en="Story guide"></aside>
   </main>
-  <footer><span>地图：<a href="https://rain-world-map.github.io/" target="_blank" rel="noopener noreferrer">Henpemaz / Dual</a> · <a href="https://alduris.github.io/watcher-map/" target="_blank" rel="noopener noreferrer">Watcher: Alduris</a></span><span id="save-status">线索进度仅保存在本机</span><a href="https://github.com/littlhMW/rainward" target="_blank" rel="noopener noreferrer">源码与许可</a></footer>
+  <footer><span><span data-zh="地图" data-en="Maps">地图</span><span data-zh="：" data-en=": ">：</span><a href="https://rain-world-map.github.io/" target="_blank" rel="noopener noreferrer" data-zh="原地图 ↗" data-en="Original map ↗">原地图 ↗</a> · <a href="https://alduris.github.io/watcher-map/" target="_blank" rel="noopener noreferrer">Watcher</a></span><span id="save-status" data-zh="线索进度仅保存在本机" data-en="Guide progress is stored on this device">线索进度仅保存在本机</span><span class="footer-links"><a id="wiki-link" href="https://rainworld.miraheze.org/wiki/Rain_World_Wiki/zh-hans" target="_blank" rel="noopener noreferrer" data-zh="雨世界 Wiki ↗" data-en="Rain World Wiki ↗">雨世界 Wiki ↗</a> · <a href="https://github.com/littlhMW/desktop-rainworld-slugcat-simulation" target="_blank" rel="noopener noreferrer" data-zh="桌面模拟 ↗" data-en="Desktop simulation ↗">桌面模拟 ↗</a> · <a href="https://github.com/littlhMW/rainward" target="_blank" rel="noopener noreferrer" data-zh="项目源码 ↗" data-en="Source code ↗">项目源码 ↗</a></span></footer>
   <dialog id="dialog" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
   <div id="toast" role="status"></div>
-  <noscript>需要启用 JavaScript 才能查看互动地图。</noscript>
-  <script type="module" src="./src/app.js?v=2.1.0"></script>
+  <noscript data-zh="请启用 JavaScript 以查看互动地图。" data-en="Enable JavaScript to use the interactive map.">请启用 JavaScript 以查看互动地图。</noscript>
+  <script type="module" src="./src/app.js?v=2.2.0"></script>
 </body>
 </html>
