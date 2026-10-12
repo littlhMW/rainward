@@ -2,7 +2,7 @@
 
 ![雨间 · 我该去哪](mod/thumbnail.png)
 
-《雨世界》交互地图与故事线索工具。本项目基于 [Rain World Map](https://rain-world-map.github.io/) 的开源前端，保留真实房间、连接和地形，并以简洁的黑白界面呈现地图与路线提示。
+《雨世界》交互地图与故事线索工具。本项目基于 [Rain World Map](https://rain-world-map.github.io/) 的开源前端，保留真实房间、连接、地形、拖拽缩放和房间交互，并以简洁的黑白界面呈现地图与路线提示。Watcher 地图保留故事线索并链接原作者网站。
 
 **[打开网页](https://littlhmw.github.io/rainward/)** · **[GitHub 项目](https://github.com/littlhMW/rainward)**
 
@@ -18,7 +18,7 @@
 
 ### 角色与线索
 
-- 支持九位常规剧情角色。基础角色和 Downpour 角色使用 Rain World Map 数据；Watcher 使用 Alduris Watcher Map 的房间、连接与地形数据。
+- 支持九位常规剧情角色。基础角色和 Downpour 角色使用 Rain World Map 前端与其公开数据接口；Watcher 提供故事线索和 Alduris Watcher Map 外部入口，不在本项目内嵌其地图数据。
 - 故事线索按层级展开，先提供方向，再提供目的地和路线参考。经过房间或开始会面不会自动被视为完成剧情目标，完成状态由玩家确认。
 - 区域路线根据角色能力、门槛和单向通路给出下一步方向。路线是地图数据中的连接参考，不保证构成安全路径。
 - 提供生存提示、进度备份导入导出和旅途笔记；使用网页无需账户。
@@ -53,22 +53,22 @@ npm test
 
 ## 数据与隐私
 
-- 区域 JSON 和地形瓦片按需从上游读取，需要网络。网页不提供账户、后台位置服务器或定时上传。
+- 原版与 Downpour 的区域 JSON 和地形瓦片由地图前端按需读取，需要网络；Watcher 地图在原作者网站打开。网页不提供账户、后台位置服务器或定时上传。
 - 游戏快照、单房间遮罩、手动线索进度和笔记保存在浏览器 localStorage 的 `rainward.progress.v1` 中，不会在不同浏览器间自动同步。可以在“说明 / 数据”中备份或清除。
 - 每次游戏快照会替换探索列表，不会把不同存档的房间合并；同一来源和存档会保留单房间设置，切换存档或来源不可用时会清除旧探索与手动完成记录并保留笔记。
 - Mod 快照通过 URL 片段传入，HTTP 请求不会把片段发送给托管服务器；浏览器历史和分享链接仍可能包含位置、显示名与探索记录。
 
 ## 许可与来源
 
-地图代码与数据来源、许可证和 Wiki 资料范围见 [来源与许可](upstream/UPSTREAM.md) 与 [资料范围](docs/SOURCES.md)。本项目原创代码采用 MIT 许可；上游代码、Leaflet、Wiki 摘录和图片素材适用各自许可，游戏素材仍归相应权利人所有。
+地图代码、地图数据、字体、Wiki 资料和图片的来源与许可证见 [第三方声明](THIRD-PARTY-NOTICES.md)、[上游说明](upstream/UPSTREAM.md) 与 [资料范围](docs/SOURCES.md)。本项目原创代码和文档采用 MIT 许可；上游代码、Leaflet、地图数据、Wiki 摘录、字体、委托图片和游戏素材适用各自许可。
 
 [免费部署](docs/DEPLOY.md) · [下载用途与完整卸载](docs/UNINSTALL.md) · [GitHub 项目](https://github.com/littlhMW/rainward)
 
 ## English
 
-Rainward is an interactive map and story-clue guide for *Rain World*. It is based on the open-source front end of [Rain World Map](https://rain-world-map.github.io/) and keeps the original room connections and terrain as the primary map content.
+Rainward is an interactive map and story-clue guide for *Rain World*. It uses the open-source front end of [Rain World Map](https://rain-world-map.github.io/) for base-game and Downpour rooms, connections, terrain, dragging, zooming, and room controls. Watcher keeps its story clues and an external link to Alduris Watcher Map.
 
-The map masks unexplored room terrain by default while keeping connections visible. Imported game snapshots reveal visited rooms. Each room can be shown, covered, or linked to the game record independently, and a global switch can reveal the complete map. Ordinary region names are visible; 17 region names grouped as spoilers in the Wiki navigation template are hidden by default.
+The map masks unexplored room terrain by default while keeping connections visible. Imported game snapshots reveal visited rooms. Each room can be shown, covered, or linked to the game record independently, and a global switch can reveal the complete map. Ordinary region names are visible; 17 region names grouped as spoilers in the Wiki navigation template are hidden by default. Watcher uses an external map link.
 
 Nine standard story campaigns are supported. Clues unfold in layers and suggest a direction before revealing more detail. Visiting a room or starting a meeting does not automatically complete a story objective. Routes are connection references and may be affected by character abilities, gates, one-way passages, or terrain mods.
 
@@ -76,6 +76,6 @@ The optional mod opens a browser snapshot when **G is held for 0.6 seconds** by 
 
 The mod has been compiled but has not completed in-game single-player or Rain Meadow multiplayer testing. The package contains no game files or mod loader. Steam Workshop upload instructions are available in [docs/WORKSHOP.md](docs/WORKSHOP.md).
 
-For local development, use Node.js 18 or newer, run `npm run serve`, and open <http://127.0.0.1:4173/>. Run `npm test` for the automated checks. Map data and terrain tiles load online. Browser progress stays in local storage and can be backed up or cleared from the data panel.
+For local development, use Node.js 18 or newer, run `npm run serve`, and open <http://127.0.0.1:4173/>. Run `npm test` for the automated checks. Base-game and Downpour map data and terrain tiles load online; Watcher provides an external map link. Browser progress stays in local storage and can be backed up or cleared from the data panel.
 
-Related resources: [Rain World Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki) · [简体中文 Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki/zh-hans) · [Desktop Rain World Slugcat Simulation](https://github.com/littlhMW/desktop-rainworld-slugcat-simulation) · [Original map](https://rain-world-map.github.io/)
+Related resources: [Rain World Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki) · [简体中文 Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki/zh-hans) · [Desktop Rain World Slugcat Simulation](https://github.com/littlhMW/desktop-rainworld-slugcat-simulation) · [Original map](https://rain-world-map.github.io/) · [Third-party notices](THIRD-PARTY-NOTICES.md)

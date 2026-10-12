@@ -205,7 +205,7 @@ export const SURVIVAL_TIPS = [
 
 export const SOURCES = [
   { title:'Rain World Map', url:'https://rain-world-map.github.io/', note:'用户指定的参考项目；覆盖基础三位及 Downpour 五位角色。外部完整地图会剧透。' },
-  { title:'Rain World Map · GitHub / CC0', url:'https://github.com/rain-world-map/rain-world-map.github.io', note:'直接复用并调整其开源前端，许可与改动见 upstream/UPSTREAM.md；地形数据按需读取。' },
+  { title:'Rain World Map · GitHub / CC0', url:'https://github.com/rain-world-map/rain-world-map.github.io', note:'复用并调整其开源前端，许可与改动见 upstream/UPSTREAM.md；原版与 Downpour 地形数据按需读取。' },
   { title:'Henpemaz 原始地图 · MIT', url:'https://github.com/henpemaz/Rain-World-Interactive-Map', note:'原始项目作者 Henrique Maziero。下游地图的来源及原始声明保留于 upstream/。' },
   { title:'Official Rain World Wiki · 区域', url:wiki('Regions'), note:'区域名单、DLC 范围、区域关系；页面和图片可能剧透。' },
   { title:'Official Rain World Wiki · 角色', url:wiki('Slugcat'), note:'角色能力、食物与剧情模式边界。常规剧情角色共 9 位；秘密额外角色未纳入本工具。' },
@@ -214,7 +214,7 @@ export const SOURCES = [
   { title:'Official Rain World Wiki · 休眠', url:wiki('Hibernation'), note:'存档、饥饿休眠、物品留存与失败行为。' },
   { title:'Official Rain World Wiki · 业力门', url:wiki('Karma Gate'), note:'双向不同门槛、每周期一次与僧侣例外。' },
   { title:'Official Rain World Wiki · 传送', url:wiki('Passages'), note:'令牌限制、可用角色与关键物品设置。' },
-  { title:'Watcher Map · Alduris', url:'https://alduris.github.io/watcher-map/', note:'通过公开接口按需读取其真实地图数据与瓦片；未复制新增源码或离线打包瓦片。' },
+  { title:'Watcher Map · Alduris', url:'https://alduris.github.io/watcher-map/', note:'雨间仅保留故事线索与原站入口，不复制、内嵌或程序化读取其地图代码、区域数据和瓦片。' },
   { title:'Official Rain World Wiki · 观望者', url:wiki('Watcher'), note:'角色机制与当前版本能力；链接含剧透。' },
   { title:'Official Rain World Wiki · 观望者成长', url:wiki('Ripple'), note:'序章三次会面、成长上限、实际能力等级。' },
   { title:'Official Rain World Wiki · 观望者通路', url:wiki('Warp Point'), note:'固定、单向和动态传送的区别；不为未知存档伪造实时路线。' },

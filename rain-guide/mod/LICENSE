@@ -19,3 +19,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+This license applies only to original Rainward Mod source code and original
+Mod documentation in this directory. The Rain World game, Rain Meadow,
+third-party map data, Leaflet, fonts, and commissioned artwork retain their own
+rights and licenses. They are not relicensed by this file. See
+[../THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md).

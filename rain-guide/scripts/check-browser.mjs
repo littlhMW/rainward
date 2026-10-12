@@ -45,13 +45,15 @@ try {
   check('SU_C04 to HI highlights 12 real connections',true);
   await page.locator('#region-select').selectOption('HI'); await ready('white','HI'); await page.reload(); await ready('white','HI');
   check('manual region survives reload',await page.locator('#region-select').inputValue()==='HI');
-  for(const c of CAMPAIGNS) {
+  for(const c of CAMPAIGNS.filter(c => c.id !== 'watcher')) {
     await page.locator('#character-select').selectOption(c.id);
     const region=await page.locator('#region-select').inputValue(); await ready(MAP_CHARACTERS[c.id],region);
     check(`real map loads for ${c.id}`,await frame().evaluate(()=>rwRoomJSON.room_features.length>0) && await page.locator('#mask-toggle').isChecked());
   }
-  await page.locator('#region-select').selectOption('WPTA'); await ready('watcher','WPTA');
-  check('Watcher expansion schema loads',await frame().evaluate(()=>rwRoomJSON.room_features.length>0));
+  await page.locator('#character-select').selectOption('watcher');
+  await page.waitForFunction(() => document.querySelector('#map-frame')?.src.includes('map-source-notice.html'));
+  const watcherSource = page.frames().find(f => f.url().includes('/map-source-notice.html'));
+  check('Watcher keeps story page and opens its original map externally', await watcherSource.locator('#open-map').getAttribute('href') === 'https://alduris.github.io/watcher-map/map.html?region=HI' && await page.locator('#mask-toggle').isDisabled());
   await page.goto(base+'#v=1&character=Survivor&region=SU&room=SU_C04&x=12&y=7&px=250.5&py=140.25&cx=-40&cy=0&mode=meadow'); await ready();
   await frame().waitForFunction(()=>document.querySelector('.guide-position'));
   check('Mod location selects correct room and local-player pin',await frame().evaluate(()=>focusedRoom.feature.properties.name==='SU_C04' && [...document.querySelectorAll('.leaflet-tooltip')].some(e=>e.textContent.includes('本地'))) && (await page.locator('#position-text').innerText()).includes('雨甸自由模式'));

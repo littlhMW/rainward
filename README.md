@@ -2,7 +2,7 @@
 
 ![雨间 · 我该去哪](rain-guide/mod/thumbnail.png)
 
-《雨世界》交互地图与无剧透路线提示。项目以开源地图的实际地形、房间和连接为基础，帮助玩家判断下一步方向，同时尽量保留探索体验。
+《雨世界》交互地图与无剧透路线提示。项目保留原地图的地形、房间和连接交互，并以故事线索帮助玩家判断下一步方向，同时尽量保留探索体验。
 
 **[打开网页](https://littlhmw.github.io/rainward/)** · **[GitHub 项目](https://github.com/littlhMW/rainward)** · **[下载游戏 Mod](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip)**
 
@@ -30,6 +30,6 @@
 
 ## 项目资料
 
-[源码目录](rain-guide/) · [本地运行与检查](rain-guide/README.md) · [Mod 安装说明](rain-guide/mod/README.md) · [Steam 工坊上传教程](rain-guide/docs/WORKSHOP.md) · [来源与许可](rain-guide/upstream/UPSTREAM.md) · [完整卸载说明](rain-guide/docs/UNINSTALL.md)
+[源码目录](rain-guide/) · [本地运行与检查](rain-guide/README.md) · [Mod 安装说明](rain-guide/mod/README.md) · [Steam 工坊上传教程](rain-guide/docs/WORKSHOP.md) · [来源与许可](rain-guide/THIRD-PARTY-NOTICES.md) · [上游说明](rain-guide/upstream/UPSTREAM.md) · [完整卸载说明](rain-guide/docs/UNINSTALL.md)
 
-网页由 GitHub Pages 免费托管。地图数据与地形瓦片需联网加载。Steam 工坊尚未上传。项目代码采用 MIT 许可；游戏与其他素材适用各自许可，图片不包含在代码许可范围内。
+网页由 GitHub Pages 免费托管。原版与 Downpour 地图通过保留许可的前端按需读取公开数据；Watcher 地图使用原作者网站外链。Steam 工坊尚未上传。项目原创代码与文档采用 MIT 许可；地图数据、Leaflet、Wiki 资料、字体、游戏素材和委托图片适用各自许可，详见[第三方声明](rain-guide/THIRD-PARTY-NOTICES.md)。

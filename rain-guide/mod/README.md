@@ -92,4 +92,4 @@ dotnet run --project tests/ModLogic.Tests.csproj -c Release
 | 源码目录 `.cache/nuget/` | 构建时将来若有包缓存的限定位置；本版无外部包 | 如存在，直接删除此目录 |
 | 源码目录 `dist/` | 可分发 DLL 与 ZIP | 删除此目录，不影响源码或游戏 |
 
-源码依据仓库 MIT 许可发布。封面图片由用户提供给本项目使用，未另行声明第三方再利用许可；代码 MIT 不自动覆盖图片。Rain World 归其权利人所有；雨甸只进行可选 API 调用，未把雨甸源码或 DLL 编入发布包。
+源码依据仓库 MIT 许可发布。封面图片由用户授权本项目用于 GitHub、Pages、Mod 与 Steam 创意工坊展示和发布，并允许为这些用途修改与再发布；代码 MIT 不自动覆盖图片。Rain World 归其权利人所有；雨甸只进行可选 API 调用，未把雨甸源码或 DLL 编入发布包。

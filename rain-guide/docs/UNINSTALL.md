@@ -7,8 +7,8 @@
 | 内容 | 意义 | 位置与清理方式 |
 | --- | --- | --- |
 | 网页 HTML、CSS、JavaScript、故事数据 | 构成地图入口、线索与本地进度功能 | 在 rain-guide/ 内；停止预览后可删除该项目目录 |
-| 下载的上游前端及配套小资源，原始约 506 KB | 复用 Rain World Map 真实地图渲染，含 Leaflet、样式与图标 | 集中在 rain-guide/upstream/，连同目录中的许可一起保留；整体卸载时删除目录 |
-| 远程区域 JSON、地形瓦片 | 按选择的区域显示原地图房间与地形，不在项目中存整套瓦片 | 通过浏览器按需读取；常规 HTTP 缓存由浏览器管理，不是离线服务 |
+| 下载的上游前端及配套小资源，原始约 506 KB | 保留许可的 Rain World Map 地图渲染，含 Leaflet、样式与图标 | 集中在 rain-guide/upstream/，连同目录中的许可一起保留；整体卸载时删除目录 |
+| 远程区域 JSON、地形瓦片 | 按选择的区域显示原地图房间与地形，不在项目中存整套瓦片 | 由地图前端按需读取；常规 HTTP 缓存由浏览器管理，不是离线服务 |
 | package.json、scripts/serve.mjs | 提供本地预览与测试命令 | 无需 npm install；Ctrl+C 停止预览，删除项目即可移除脚本 |
 | 浏览器测试与 test-results/ | 用已有 Playwright/浏览器检验功能并保存截图 | 删除 test-results/ 清理产物，不卸载其他项目共用工具 |
 | localStorage 键 rainward.progress.v1 | 保留旧版及新版角色进度、偏好与笔记 | 在“说明 / 数据 → 本地数据”导出或清除 |
@@ -24,9 +24,9 @@
 | GitHub Pages 与部署工作流 | 免费托管与推送后发布静态网页 | 取消发布并禁用本站工作流；不必删除源码仓库 |
 | 仓库级 Git 作者配置 | 提交署名 littlhMW / littlhMW@users.noreply.github.com | 仅在本仓库 .git/config，不修改全局；共享父仓库配置不要随子项目删除 |
 
-完整取用来源与许可见 [上游说明](../upstream/UPSTREAM.md)，Mod 的构建和清理说明见 [Mod README](../mod/README.md)。Node、.NET SDK、Edge 等已有通用工具可能被其他项目使用，卸载本工具不需要删除它们。发布包不包含游戏或雨甸 DLL。
+完整取用来源与许可见 [第三方声明](../THIRD-PARTY-NOTICES.md) 和 [上游说明](../upstream/UPSTREAM.md)，Mod 的构建和清理说明见 [Mod README](../mod/README.md)。Node、.NET SDK、Edge 等已有通用工具可能被其他项目使用，卸载本工具不需要删除它们。发布包不包含游戏或雨甸 DLL。
 
-用户提供 artwork.png / thumbnail.png 供本项目使用，尚未单独声明第三方再利用许可；仓库代码 MIT 许可不自动适用于这两张图片。卸载本项目时只移除项目副本与生成封面，不删除桌面原图。
+用户已授权 artwork.png、thumbnail.png 及其生成版本用于本项目 GitHub 展示、Pages、Mod 和 Steam 工坊，并允许为这些用途修改与再发布；仓库代码 MIT 许可不自动适用于图片。卸载本项目时只移除项目副本与生成封面，不删除桌面原图。具体范围见 [第三方声明](../THIRD-PARTY-NOTICES.md)。
 
 ## 停止本地预览
 

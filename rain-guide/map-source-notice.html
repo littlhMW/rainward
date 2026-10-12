@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>地图来源 · 雨间</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #080909; color: #e7e9df; }
+    main { box-sizing: border-box; width: min(42rem, 100%); padding: 2rem; border: 1px solid #394249; background: #111516; }
+    h1 { margin: 0 0 .7rem; font-size: 1.35rem; font-weight: 600; }
+    p { line-height: 1.65; margin: .8rem 0; color: #c7d0cd; }
+    a { color: #e4ce90; }
+    .source { margin: 1.25rem 0; padding: 1rem; border-left: 2px solid #e4ce90; background: #181d1d; }
+    .source strong { display: block; margin-bottom: .35rem; color: #f0eee0; }
+    .open { display: inline-block; margin-top: .35rem; padding: .65rem .9rem; border: 1px solid #e4ce90; color: #f5edcf; text-decoration: none; }
+    .open:hover, .open:focus-visible { background: #e4ce90; color: #171919; }
+    code { color: #e4ce90; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 id="title">地图在原作者网站提供</h1>
+    <p id="lead">雨间保留故事线索、区域方向和房间代码；完整地形、连接与瓦片请在来源网站查看。</p>
+    <div class="source">
+      <strong id="source-name">Rain World Map</strong>
+      <span id="source-detail">原版与 Downpour 地图</span><br>
+      <a id="open-map" class="open" target="_blank" rel="noopener noreferrer" href="https://rain-world-map.github.io/">打开来源地图 ↗</a>
+    </div>
+    <p id="region-note">当前区域：<code id="region">—</code></p>
+    <p id="room-note">当前查询房间：<code id="room">—</code></p>
+    <p id="mask-note"></p>
+    <p id="foot">地图来源网站可能随版本或地形类 Mod 变化。请以游戏内实际地形为准。</p>
+  </main>
+  <script>
+    (() => {
+      const params = new URLSearchParams(location.search);
+      const english = params.get('lang') === 'en';
+      const watcher = params.get('source') === 'watcher';
+      const fallback = watcher ? 'https://alduris.github.io/watcher-map/' : 'https://rain-world-map.github.io/';
+      let href = fallback;
+      try {
+        const candidate = new URL(params.get('map') || fallback);
+        const allowed = watcher ? candidate.origin === 'https://alduris.github.io' && candidate.pathname.startsWith('/watcher-map/') : candidate.origin === 'https://rain-world-map.github.io';
+        if (allowed) href = candidate.href;
+      } catch {}
+      document.documentElement.lang = english ? 'en' : 'zh-CN';
+      document.title = english ? 'Map source · Rainward' : '地图来源 · 雨间';
+      const copy = english ? {
+        title: 'The map is provided by its original site',
+        lead: 'Rainward keeps story guidance, regional direction, and room codes. Open the source site for complete terrain, connections, and tiles.',
+        name: watcher ? 'Watcher Map · Alduris' : 'Rain World Map',
+        detail: watcher ? 'Watcher map and region data' : 'Base game and Downpour maps',
+        open: 'Open source map ↗',
+        region: 'Current region: ',
+        room: 'Room lookup: ',
+        mask: { revealed: 'Rainward record: room revealed', masked: 'Rainward record: room masked', visited: 'Rainward record: follows visited rooms', unknown: 'Rainward record: no visit recorded' },
+        foot: 'The source map may differ between game versions or terrain mods. Verify the actual terrain in game.',
+      } : {
+        title: '地图在原作者网站提供',
+        lead: '雨间保留故事线索、区域方向和房间代码；完整地形、连接与瓦片请在来源网站查看。',
+        name: watcher ? 'Watcher Map · Alduris' : 'Rain World Map',
+        detail: watcher ? 'Watcher 地图与区域资料' : '原版与 Downpour 地图',
+        open: '打开来源地图 ↗',
+        region: '当前区域：',
+        room: '当前查询房间：',
+        mask: { revealed: '雨间记录：显示此房间', masked: '雨间记录：遮罩此房间', visited: '雨间记录：跟随已探索房间', unknown: '雨间记录：尚无探索记录' },
+        foot: '地图来源网站可能随版本或地形类 Mod 变化。请以游戏内实际地形为准。',
+      };
+      for (const [id, value] of [['title',copy.title],['lead',copy.lead],['source-name',copy.name],['source-detail',copy.detail],['open-map',copy.open],['foot',copy.foot]]) document.getElementById(id).textContent = value;
+      document.getElementById('room-note').firstChild.textContent = copy.room;
+      document.getElementById('region-note').firstChild.textContent = copy.region;
+      document.getElementById('open-map').href = href;
+      const map = new URL(href);
+      document.getElementById('region').textContent = params.get('regionLabel') || map.searchParams.get('region') || '—';
+      document.getElementById('room').textContent = map.searchParams.get('room') || '—';
+      const maskState = params.get('roomMask');
+      document.getElementById('mask-note').textContent = maskState && copy.mask[maskState] ? copy.mask[maskState] : '';
+    })();
+  </script>
+</body>
+</html>

@@ -11,5 +11,6 @@
     "serve": "node scripts/serve.mjs",
     "test": "node --test"
   },
-  "license": "MIT"
+  "license": "SEE LICENSE IN LICENSE",
+  "licenseScope": "MIT applies only to original Rainward source code and documentation; third-party materials retain their own licenses. See THIRD-PARTY-NOTICES.md."
 }

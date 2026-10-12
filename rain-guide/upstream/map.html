@@ -620,8 +620,14 @@
                 "yellow": "https://raw.githubusercontent.com/rain-world-map/vanilla/main/yellow",
                 "red": "https://raw.githubusercontent.com/rain-world-map/vanilla/main/red",
             };
+            // Watcher is handled by Rainward's source notice. Keep this upstream
+            // page limited to the campaigns covered by the licensed front end.
+            if (pdifficulty === "watcher") {
+                console.warn("Watcher map is provided by its original site.");
+                return;
+            }
             var region_url = region.toLowerCase();
-            var roompath = pdifficulty === "watcher" ? `https://alduris.github.io/watcher-map/slugcats/${pregion}/Watcher` : `${slugcat_url[pdifficulty]}/${region_url}`;
+            var roompath = `${slugcat_url[pdifficulty]}/${region_url}`;
             getJsonObject(`${roompath}/region.json`, function (json) {
                 var roomjson = json;
                 if ('copyingrooms' in json) {

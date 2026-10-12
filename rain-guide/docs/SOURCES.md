@@ -9,7 +9,7 @@
 - 上游代码根许可为 CC0 1.0，原文保留在 upstream/LICENSE。
 - 随附 Leaflet 1.7.1 使用 **BSD-2-Clause**，原文保留在 upstream/leaflet/LICENSE。前端库随静态文件提供，无需 npm 安装。
 - 上游原始地图作者为 Henrique Maziero / Henpemaz；原项目是 [Rain-World-Interactive-Map](https://github.com/henpemaz/Rain-World-Interactive-Map)。本次具体取用文件、下载用途及上游适配见 [UPSTREAM.md](../upstream/UPSTREAM.md)。
-- 地图的区域 JSON、房间几何、连接、生物刷新及地形瓦片从 [vanilla](https://github.com/rain-world-map/vanilla)、[msc](https://github.com/rain-world-map/msc) 的公开接口按需读取，不把大型地形仓库打包到本站。
+- 地图的区域 JSON、房间几何、连接、生物刷新及地形瓦片由 [vanilla](https://github.com/rain-world-map/vanilla)、[msc](https://github.com/rain-world-map/msc) 的公开接口按需提供，不把大型地形仓库打包到本站。生成说明表明这些数据由游戏导出的截图和元数据制作，并与前端代码分开存放；前端仓库的 CC0 不能单独证明地图数据及游戏衍生素材的再发布范围。当前仅按需访问原公开接口，不镜像或离线分发；原版与 Downpour 由许可前端显示，完整记录见 [第三方声明](../THIRD-PARTY-NOTICES.md)。
 - 游戏图像、字体、角色图标及其他美术仍属各自权利人；上游 CC0 不应被解释成对所有游戏内容重新授权。独立数据仓库的许可不能由前端根许可证推定。
 - Wiki 页脚声明 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)。本项目地名分类摘录与翻译整理按同一许可注明来源；原创中文故事提示独立撰写，没有复制 Wiki 的长段剧情描述或对话。参见 [地名核对记录](WIKI-SPOILERS.md)。
 
@@ -25,7 +25,7 @@
 
 常规剧情角色共 9 位：Survivor、Monk、Hunter、Gourmand、Artificer、Rivulet、Spearmaster、Saint、Watcher。Inv、竞技场、远征和自定义角色不作为已核实剧情战役；未知 Mod 角色不会静默冒充幸存者。
 
-基础三位与 Downpour 五位使用上游 [slugcats.json](https://rain-world-map.github.io/slugcats.json) 的区域目录和角色地图；Watcher 由同一前端接入另一数据提供方。52 个正式区域名称用于故事数据和地名规则，不是全部地图的绘制方法。屏幕上的真实房间位置、房间边界、内部地形和连接取自上游 JSON/瓦片。
+基础三位与 Downpour 五位使用许可前端及上游 [slugcats.json](https://rain-world-map.github.io/slugcats.json) 的区域目录和角色地图；Watcher 保留故事线索与外部地图入口，不在本项目内嵌其地图数据。52 个正式区域名称用于故事数据和地名规则，不是全部地图的绘制方法。屏幕上的真实房间位置、房间边界、内部地形和连接取自原版/Downpour 上游 JSON/瓦片。
 
 基础三位的真实地形沿用上游 vanilla 角色数据；“启用了 Downpour”选项会更改区域路线建议，不能因此声称前端已具备三位角色每种 DLC 状态的独立地形版本。角色地图的版本以实际 provider 为准。
 
@@ -58,11 +58,11 @@
 
 剧情完成仍由用户确认。Mod 读取游戏中的少量原始记录用于建议当前线索，例如会面次数、机器人、回响与当前休眠房；不将访问房间、开始会面直接当成剧情完成，也不据此证明任务物仍在手中。饕餮的西行建议依赖 hasMark，工匠的城市建议同时要求 hasMark 与 hasRobo；会面计数会在会面开始时变化，不能单独充当这些通路的解锁证据。圣徒的回响计数与 karmaCap 按游戏内部值核对。
 
-## Watcher 真实地图与动态通路
+## Watcher 线索与外部地图
 
-[Alduris Watcher Map](https://alduris.github.io/watcher-map/) 是 Wiki 推荐的观望者地图，使用其公开 regions.json、slugcats/{REGION}/Watcher/region.json 与地形瓦片接口，在本项目同一地图前端显示真实内容。没有复制其未声明许可的新增源码，也没有把完整瓦片离线打包。确切接口和跨源核对见 [UPSTREAM.md](../upstream/UPSTREAM.md)。
+[Alduris Watcher Map](https://alduris.github.io/watcher-map/) 是 Wiki 推荐的观望者地图。由于该来源目前没有本项目可确认的复制许可，“雨间”不复制、内嵌或程序化读取其新增地图代码、区域 JSON 和地形瓦片；Watcher 地图区域显示中只保留故事线索、路线方向和指向原站的外部链接。需要详细地图时请在原站查看。完整边界见 [第三方声明](../THIRD-PARTY-NOTICES.md) 与 [上游说明](../upstream/UPSTREAM.md)。
 
-[Ripple](https://rainworld.miraheze.org/wiki/Ripple)、[Spinning Top](https://rainworld.miraheze.org/wiki/Spinning_Top)、[Warp Point](https://rainworld.miraheze.org/wiki/Warp_Point) 与 [Endings](https://rainworld.miraheze.org/wiki/Endings) 用于核对成长和分支条件。Watcher 区域内部是真实地图，但存档中的自建、封闭、单向与动态传送无法由静态地图推断；跨区故事建议仍是路标，不声称实时还原传送网络。
+[Ripple](https://rainworld.miraheze.org/wiki/Ripple)、[Spinning Top](https://rainworld.miraheze.org/wiki/Spinning_Top)、[Warp Point](https://rainworld.miraheze.org/wiki/Warp_Point) 与 [Endings](https://rainworld.miraheze.org/wiki/Endings) 用于核对成长和分支条件。Watcher 的自建、封闭、单向与动态传送无法由静态故事路标推断；跨区建议不声称实时还原传送网络。
 
 ## 游戏定位与雨甸
 
@@ -76,4 +76,4 @@
 
 [Hibernation](https://rainworld.miraheze.org/wiki/Hibernation)、[Karma Gate](https://rainworld.miraheze.org/wiki/Karma_Gate)、[Passages](https://rainworld.miraheze.org/wiki/Passages)、[Rain](https://rainworld.miraheze.org/wiki/Rain)、[Controls](https://rainworld.miraheze.org/wiki/Controls)、[Scavenger](https://rainworld.miraheze.org/wiki/Scavenger) 和 [Lantern](https://rainworld.miraheze.org/wiki/Lantern) 用于核对休眠、过门、移动、传送和生存条目。游戏更新、Remix 或 Mod 更改规则时，以游戏为准。
 
-本次下载了上游静态前端与配套小资源（原始约 506 KB），以及用于雨甸接口核对的公开源码片段；都限定在项目目录，未安装新系统服务。用途、文件位置与清理步骤见 [UNINSTALL.md](UNINSTALL.md) 和 [Mod README](../mod/README.md)。真实地图需联网；旧版离线缓存退役不应删除浏览器中的进度与笔记。
+本次下载了上游静态前端与配套小资源（原始约 506 KB），以及用于雨甸接口核对的公开源码片段；都限定在项目目录，未安装新系统服务。用途、文件位置与清理步骤见 [UNINSTALL.md](UNINSTALL.md) 和 [Mod README](../mod/README.md)。真实原版/Downpour 地图需联网；Watcher 仅提供外部地图入口。旧版离线缓存退役不应删除浏览器中的进度与笔记。
