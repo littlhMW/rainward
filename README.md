@@ -1,4 +1,4 @@
-<a id="中文"></a>
+ <a id="中文"></a>
 <h1 align="center">雨间：我该去哪 | Rainward: Where to Go</h1>
 
 <p align="center"><a href="#中文">简体中文</a> · <a href="#english">English</a></p>
@@ -7,12 +7,16 @@
 
 <p align="center">
   <a href="https://littlhmw.github.io/rainward/">打开网页</a> ·
+  <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3818713751">Steam 创意工坊</a> ·
   <a href="https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip">下载游戏 Mod</a> ·
   <a href="https://github.com/littlhMW/rainward">GitHub 仓库</a>
 </p>
 
 <p align="center">
+  <a href="https://github.com/littlhMW/rainward/releases"><img src="https://img.shields.io/github/v/release/littlhMW/rainward?label=Release" alt="Release"></a>
+  <a href="https://github.com/littlhMW/rainward"><img src="https://img.shields.io/badge/Platform-Web%20%7C%20Rain%20World-0078D4" alt="Platform: Web and Rain World"></a>
   <a href="https://github.com/littlhMW/rainward"><img src="https://img.shields.io/github/stars/littlhMW/rainward?style=social" alt="Star on GitHub"></a>
+  <a href="https://github.com/littlhMW/rainward/blob/main/rain-guide/THIRD-PARTY-NOTICES.md"><img src="https://img.shields.io/badge/Attributions-Third--party%20notices-blue" alt="Third-party notices"></a>
 </p>
 
 <p align="center"><img src="rain-guide/mod/thumbnail.png" alt="雨间：我该去哪" width="720"></p>
@@ -24,7 +28,7 @@
 - **分层故事线索**：支持九位常规剧情角色。先看探索方向，再逐步展开目的地与路线参考；是否查看后续线索由你决定。
 - **路线参考**：结合地图连接、区域方向和当前角色提供探索建议。门槛、单向通路与角色能力会影响实际通行。
 - **游戏内路线高亮**：配合 Mod 将路线指引高亮显示在游戏中，探索时更容易辨认前进方向，减少反复切换网页地图。
-- **游戏内位置快照**：进入房间后按住 `G`即可在浏览器中打开当前位置。按键和长按时长可在 Remix 中修改。
+- **游戏内位置快照**：进入房间后按住 `G` 即可在浏览器中打开当前位置。按键和长按时长可在 Remix 中修改。
 - **Watcher 与雨甸**：提供 Watcher 的线索；Watcher 地图会打开原作者网站。雨甸会显示可读取的玩家位置，探索进度以房主记录为准。
 
 ## 开始使用
@@ -35,12 +39,18 @@
 
 ### 安装 Mod（路线高亮与位置快照）
 
-1. [下载 Mod 压缩包](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip) 并解压。
-2. 将 `whereshouldigo` 文件夹放入 `RainWorld_Data/StreamingAssets/mods/`。
-3. 在游戏的 Remix 菜单中启用 **雨间：我该去哪 / Rainward: Where to Go**。
-4. 按游戏内路线高亮功能使用路线指引；进入房间后，按住 `G` 可在浏览器中打开当前位置。
+你可以选择通过 Steam 创意工坊订阅，或手动下载压缩包安装。
 
-**卸载：**在 Remix 中停用 Mod 并关闭游戏，然后删除 `RainWorld_Data/StreamingAssets/mods/whereshouldigo/` 文件夹。
+- **Steam 创意工坊：** [订阅 Rainward: Where to Go](https://steamcommunity.com/sharedfiles/filedetails/?id=3818713751)
+- **手动安装：** [下载 Mod 压缩包](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip) 并解压。
+
+手动安装步骤：
+
+1. 将解压得到的 `whereshouldigo` 文件夹放入 `RainWorld_Data/StreamingAssets/mods/`。
+2. 在游戏的 Remix 菜单中启用 **雨间：我该去哪 / Rainward: Where to Go**。
+3. 使用游戏内路线高亮功能查看路线指引；进入房间后，按住 `G` 可在浏览器中打开当前位置。
+
+**卸载：** 如果是手动安装，在 Remix 中停用 Mod 并关闭游戏，然后删除 `RainWorld_Data/StreamingAssets/mods/whereshouldigo/` 文件夹。如果是通过 Steam 创意工坊订阅，请在 Steam 创意工坊中取消订阅。
 
 ## 注意
 
@@ -49,7 +59,7 @@
 
 ## 相关链接
 
-[原地图 Rain World Map](https://rain-world-map.github.io/) · [Rain World Wiki（简体中文）](https://rainworld.miraheze.org/wiki/Rain_World_Wiki/zh-hans) · [Rain World Wiki（English）](https://rainworld.miraheze.org/wiki/Rain_World_Wiki) · [来源与许可](rain-guide/THIRD-PARTY-NOTICES.md) · [桌面雨世界-蛞蝓猫模拟](https://github.com/littlhMW/desktop-rainworld-slugcat-simulation)
+[Steam 创意工坊](https://steamcommunity.com/sharedfiles/filedetails/?id=3818713751) · [原地图 Rain World Map](https://rain-world-map.github.io/) · [Rain World Wiki（简体中文）](https://rainworld.miraheze.org/wiki/Rain_World_Wiki/zh-hans) · [Rain World Wiki（English）](https://rainworld.miraheze.org/wiki/Rain_World_Wiki) · [来源与许可](rain-guide/THIRD-PARTY-NOTICES.md) · [桌面雨世界-蛞蝓猫模拟](https://github.com/littlhMW/desktop-rainworld-slugcat-simulation)
 
 ---
 
@@ -58,6 +68,13 @@
 
 **Rainward: Where to Go** is an interactive *Rain World* map and exploration companion. Explore room connections, reveal story clues at your own pace, and highlight routes in-game to help you find your way.
 
+<p align="center">
+  <a href="https://littlhmw.github.io/rainward/">Open Web Map</a> ·
+  <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3818713751">Steam Workshop</a> ·
+  <a href="https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip">Download Mod</a> ·
+  <a href="https://github.com/littlhMW/rainward">GitHub Repository</a>
+</p>
+
 ### Features
 
 - **Interactive maps:** Explore rooms, connections, terrain and creature layers for the base game and Downpour.
@@ -65,15 +82,35 @@
 - **Layered story clues:** Supports nine standard story campaigns. Reveal directions first, then destinations and route references at your own pace.
 - **Route guidance:** Suggestions consider map connections, region direction and the current character. Gates, one-way passages and character abilities can affect access.
 - **In-game route highlighting:** With the mod, route guidance can be highlighted in-game, making it easier to follow your direction without constantly switching back to the web map.
-- **In-game location snapshots:** Hold `G` in a room  to open the current location in your browser. Configure the key and hold duration in Remix.
+- **In-game location snapshots:** Hold `G` in a room to open the current location in your browser. Configure the key and hold duration in Remix.
 - **Watcher and The Watcher DLC:** Watcher clues are available, while its map opens the original author's site. For the Rain Meadow, readable player locations are shown; exploration progress follows the host's record.
 
 ### Get started
 
-- [Open the web map](https://littlhmw.github.io/rainward/) — no installation required; an internet connection is needed.
-- [Download the mod](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip), extract `whereshouldigo` into `RainWorld_Data/StreamingAssets/mods/`, then enable **Rainward: Where to Go** in Remix.
-- Use the mod's in-game route-highlighting feature for route guidance. Hold `G` in a room to open that location on the web map.
+#### Web map
 
-The mod does not modify save files or continuously track your location in the background. Mods that add or change terrain, rooms or connections may make map data and route suggestions inaccurate.
+[Open Rainward](https://littlhmw.github.io/rainward/) — no installation required. The web map supports Simplified Chinese and English and requires an internet connection.
 
-[Original map](https://rain-world-map.github.io/) · [Rain World Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki) · [Third-party notices](rain-guide/THIRD-PARTY-NOTICES.md)
+#### Install the mod
+
+Choose either Steam Workshop or manual installation.
+
+- **Steam Workshop:** [Subscribe to Rainward: Where to Go](https://steamcommunity.com/sharedfiles/filedetails/?id=3818713751)
+- **Manual download:** [Download the mod ZIP](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip) and extract it.
+
+For manual installation:
+
+1. Place the extracted `whereshouldigo` folder in `RainWorld_Data/StreamingAssets/mods/`.
+2. Enable **Rainward: Where to Go** in the game's Remix menu.
+3. Use in-game route highlighting for guidance. Hold `G` in a room to open that location on the web map.
+
+**Uninstall:** For a manual installation, disable the mod in Remix, close the game, and delete `RainWorld_Data/StreamingAssets/mods/whereshouldigo/`. If installed through Steam Workshop, unsubscribe from the Workshop item.
+
+### Notes
+
+- The mod does not modify save files or continuously track your location in the background. Your location is only read or displayed when you actively use the relevant features.
+- The tool does not automatically support every terrain mod. Mods that add or change terrain, rooms or connections may make map data and route suggestions inaccurate.
+
+### Related links
+
+[Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3818713751) · [Original map: Rain World Map](https://rain-world-map.github.io/) · [Rain World Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki) · [Third-party notices](rain-guide/THIRD-PARTY-NOTICES.md) · [Desktop Rain World Slugcat Simulation](https://github.com/littlhMW/desktop-rainworld-slugcat-simulation)
