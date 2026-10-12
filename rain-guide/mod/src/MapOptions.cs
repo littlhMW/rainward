@@ -1,7 +1,7 @@
 using Menu.Remix.MixedUI;
 using UnityEngine;
 
-namespace WhereShouldIGo
+namespace Rainward
 {
     internal sealed class MapOptions : OptionInterface
     {

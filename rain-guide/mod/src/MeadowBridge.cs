@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Reflection;
 
-namespace WhereShouldIGo
+namespace Rainward
 {
     // Only the documented Meadow API is inspected; never enumerate installed terrain mods.
     // Verified against Rain-Meadow 0cade766a851405bea89c7475ae88480c59df083.

@@ -1,4 +1,4 @@
-0littlhmw.whereshouldigo-name|雨间：我该去哪
+﻿0littlhmw.whereshouldigo-name|雨间：我该去哪
 littlhmw.whereshouldigo-description|雨间：我该去哪 是 雨世界 的路线与探索辅助 Mod，配合 Rainward 网页地图使用。它不仅能在游戏内高亮显示探索路线，还能让你在房间内按住 G，快速打开网页地图上的当前位置，方便你探索确认方向。
 littlhmw.whereshouldigo-map|地图
 littlhmw.whereshouldigo-open-map-label|打开网页地图

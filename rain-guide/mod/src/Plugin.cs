@@ -4,9 +4,9 @@ using BepInEx;
 using RWCustom;
 using UnityEngine;
 
-namespace WhereShouldIGo
+namespace Rainward
 {
-    [BepInPlugin(ModId, "Rainward: Where to Go", "1.3.1")]
+    [BepInPlugin(ModId, "Rainward: Where to Go", "1.3.2")]
     [BepInDependency("henpemaz.rainmeadow", BepInDependency.DependencyFlags.SoftDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {

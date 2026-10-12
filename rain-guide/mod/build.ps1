@@ -9,14 +9,14 @@ if (-not (Test-Path -LiteralPath (Join-Path $gameRoot 'RainWorld_Data/Managed/As
 }
 Push-Location -LiteralPath $modRoot
 try {
-    dotnet build 'WhereShouldIGo.csproj' -c Release --nologo "-p:GamePath=$gameRoot"
+    dotnet build 'Rainward.csproj' -c Release --nologo "-p:GamePath=$gameRoot"
     if ($LASTEXITCODE -ne 0) { throw 'DLL build failed.' }
     dotnet run --project 'tests/ModLogic.Tests.csproj' -c Release --no-launch-profile
     if ($LASTEXITCODE -ne 0) { throw 'Logic tests failed.' }
-    $packageRoot = Join-Path $modRoot 'dist/whereshouldigo'
+    $packageRoot = Join-Path $modRoot 'dist/rainward'
     $pluginRoot = Join-Path $packageRoot 'plugins'
     New-Item -ItemType Directory -Force -Path $pluginRoot | Out-Null
-    Copy-Item -LiteralPath 'bin/Release/net48/WhereShouldIGo.dll' -Destination (Join-Path $pluginRoot 'WhereShouldIGo.dll') -Force
+    Copy-Item -LiteralPath 'bin/Release/net48/Rainward.dll' -Destination (Join-Path $pluginRoot 'Rainward.dll') -Force
     foreach ($file in @('modinfo.json', 'README.md', 'LICENSE', 'thumbnail.png')) {
         Copy-Item -LiteralPath (Join-Path $modRoot $file) -Destination (Join-Path $packageRoot $file) -Force
     }
@@ -27,13 +27,13 @@ try {
     }
     # Create a zip from an explicit allowlist; never include game libraries or source caches.
     Add-Type -AssemblyName System.IO.Compression
-    $archivePath = Join-Path $modRoot 'dist/WhereShouldIGo-1.3.1.zip'
+    $archivePath = Join-Path $modRoot 'dist/Rainward-WhereToGo-1.3.2.zip'
     $archiveStream = [IO.File]::Open($archivePath, [IO.FileMode]::Create)
     try {
         $archive = [IO.Compression.ZipArchive]::new($archiveStream, [IO.Compression.ZipArchiveMode]::Create)
         try {
-            foreach ($relativePath in @('plugins/WhereShouldIGo.dll', 'modinfo.json', 'README.md', 'LICENSE', 'thumbnail.png', 'text/text_chi/strings.txt', 'text/text_eng/strings.txt')) {
-                $entry = $archive.CreateEntry('whereshouldigo/' + $relativePath)
+            foreach ($relativePath in @('plugins/Rainward.dll', 'modinfo.json', 'README.md', 'LICENSE', 'thumbnail.png', 'text/text_chi/strings.txt', 'text/text_eng/strings.txt')) {
+                $entry = $archive.CreateEntry('rainward/' + $relativePath)
                 $entryStream = $entry.Open()
                 $sourceStream = [IO.File]::OpenRead((Join-Path $packageRoot $relativePath))
                 try { $sourceStream.CopyTo($entryStream) }

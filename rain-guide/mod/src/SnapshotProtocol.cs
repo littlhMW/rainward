@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 
-namespace WhereShouldIGo
+namespace Rainward
 {
     [DataContract]
     internal sealed class GameSnapshot

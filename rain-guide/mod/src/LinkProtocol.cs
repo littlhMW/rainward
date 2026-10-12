@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace WhereShouldIGo
+namespace Rainward
 {
     internal static class LinkProtocol
     {

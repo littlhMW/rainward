@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace WhereShouldIGo
+namespace Rainward
 {
     // Owns only the temporary colours and shaders changed during one HUD draw.
     internal sealed class HudRouteTint

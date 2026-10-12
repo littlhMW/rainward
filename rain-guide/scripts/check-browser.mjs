@@ -91,7 +91,7 @@ try {
   check('import restores safe hints and mask',(await page.locator('.hint-level').innerText()).includes('1 / 3') && await page.locator('#mask-toggle').isChecked());
   await page.locator('#about-button').click(); await page.locator('#clear-data').click(); await page.locator('#confirm-action').click(); await ready();
   check('clear removes site progress and old caches',await page.evaluate(async()=>!localStorage.getItem('rainward.progress.v1') && !(await caches.keys()).some(k=>k.startsWith('rainward-'))));
-  const response=await context.request.get(new URL('downloads/WhereShouldIGo.zip',base).href);
+  const response=await context.request.get(new URL('downloads/Rainward-WhereToGo.zip',base).href);
   check('Mod ZIP downloadable',response.ok() && (await response.body()).subarray(0,2).toString()==='PK');
   for(const width of [390,320]) {
     await page.setViewportSize({width,height:844});

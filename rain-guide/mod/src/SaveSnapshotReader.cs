@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace WhereShouldIGo
+namespace Rainward
 {
     // Parse only documented serialized fields. Never invoke SaveState.LoadGame or
     // SaveToString: both can mutate game state. Client snapshots remain host-only.

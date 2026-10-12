@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace WhereShouldIGo
+namespace Rainward
 {
     internal static class SnapshotBuilder
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace WhereShouldIGo
+namespace Rainward
 {
     // Draws over the game's own HUD map connection sprites. It never changes
     // terrain, entrances, exits, map textures, or room data.

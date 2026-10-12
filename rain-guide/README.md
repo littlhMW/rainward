@@ -4,7 +4,7 @@
 
 雨间是面向《雨世界》玩家的交互地图与探索指南。它保留原地图的房间、连接、地形、拖拽、缩放和房间交互，并以逐层故事线索提供前进方向。
 
-**[打开网页](https://littlhmw.github.io/rainward/)** · **[GitHub 项目](https://github.com/littlhMW/rainward)** · **[Star 项目](https://github.com/littlhMW/rainward/star)** · **[下载 Mod](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip)**
+**[打开网页](https://littlhmw.github.io/rainward/)** · **[GitHub 项目](https://github.com/littlhMW/rainward)** · **[Star 项目](https://github.com/littlhMW/rainward/star)** · **[下载 Mod](https://littlhmw.github.io/rainward/downloads/Rainward-WhereToGo.zip)**
 
 ## 地图与探索
 
@@ -22,7 +22,7 @@
 
 ## Mod
 
-从上方链接下载压缩包，解压后将 `whereshouldigo` 文件夹放入 Rain World 的 `RainWorld_Data/StreamingAssets/mods/`，在 Remix 中启用「雨间：我该去哪 / Rainward: Where to Go」。进入故事游戏，在房间内按住 **G 0.6 秒**，系统默认浏览器会打开当前地点快照；按键和按住时长可以在 Remix 中修改。
+从上方链接下载压缩包，解压后将 `rainward` 文件夹放入 Rain World 的 `RainWorld_Data/StreamingAssets/mods/`，在 Remix 中启用「雨间：我该去哪 / Rainward: Where to Go」。进入故事游戏，在房间内按住 **G 0.6 秒**，系统默认浏览器会打开当前地点快照；按键和按住时长可以在 Remix 中修改。
 
 快照包含当前区域、房间、游戏实际记录的已访问房间、可读取的剧情状态和玩家位置。Mod 不修改存档、不读取或写入剪贴板，也不会持续追踪位置。网页需要网络连接，打开时才读取快照。
 
@@ -32,7 +32,7 @@
 
 ## 卸载 Mod
 
-在 Remix 中停用「雨间：我该去哪 / Rainward: Where to Go」并关闭游戏，删除 `RainWorld_Data/StreamingAssets/mods/whereshouldigo/` 文件夹即可。若要同时移除按键配置，再删除游戏数据目录中的 `ModConfigs/littlhmw.whereshouldigo.txt`；如果曾导出过过长快照，也可以删除 `Rainward/snapshot.json` 及已空的 `Rainward` 文件夹。不要删除其他 Mod 配置或游戏存档。浏览器中的雨间数据可在网页数据面板中清除。
+在 Remix 中停用「雨间：我该去哪 / Rainward: Where to Go」并关闭游戏，删除 `RainWorld_Data/StreamingAssets/mods/rainward/` 文件夹即可。若要同时移除按键配置，再删除游戏数据目录中的 `ModConfigs/littlhmw.whereshouldigo.txt`；如果曾导出过过长快照，也可以删除 `Rainward/snapshot.json` 及已空的 `Rainward` 文件夹。不要删除其他 Mod 配置或游戏存档。浏览器中的雨间数据可在网页数据面板中清除。
 
 ## 数据与隐私
 
@@ -51,12 +51,12 @@ Rainward: Where to Go is an interactive *Rain World* map and exploration guide. 
 - Nine standard story campaigns are supported. Clues unfold in layers, suggesting a direction before revealing more detail. Visiting a room or starting a meeting does not complete an objective automatically.
 - Watcher keeps its story clues and opens the original author’s map site separately.
 
-Download the mod above, extract `whereshouldigo` into `RainWorld_Data/StreamingAssets/mods/`, and enable 「雨间：我该去哪 / Rainward: Where to Go」 in Remix. Hold **G for 0.6 seconds** in a room to open a browser snapshot. The key and hold duration can be changed in Remix.
+Download the mod above, extract `rainward` into `RainWorld_Data/StreamingAssets/mods/`, and enable 「雨间：我该去哪 / Rainward: Where to Go」 in Remix. Hold **G for 0.6 seconds** in a room to open a browser snapshot. The key and hold duration can be changed in Remix.
 
 The snapshot includes the current region and room, visited rooms recorded by the game, available story state, and readable player positions. The mod does not modify saves, read or write the clipboard, or continuously track location. In Rain Meadow, all readable player positions are shown while exploration uses only the host record; clients may receive the host’s cycle-start snapshot later. Free Mode can provide player positions but no confirmed exploration or story progress.
 
 If the URL is too long, the complete snapshot is written to `Rainward/snapshot.json` for import from the data panel. Base-game and Downpour map data and terrain tiles load online; Watcher opens its original map site. Browser progress remains local to the current browser and can be backed up or cleared from the data panel.
 
-To remove the mod, disable 「雨间：我该去哪 / Rainward: Where to Go」 in Remix, close the game, and delete `RainWorld_Data/StreamingAssets/mods/whereshouldigo/`. To remove its key configuration, delete `ModConfigs/littlhmw.whereshouldigo.txt`; if a long snapshot was exported, delete `Rainward/snapshot.json` and the empty `Rainward` folder. Do not delete other mod settings or save data.
+To remove the mod, disable 「雨间：我该去哪 / Rainward: Where to Go」 in Remix, close the game, and delete `RainWorld_Data/StreamingAssets/mods/rainward/`. To remove its key configuration, delete `ModConfigs/littlhmw.whereshouldigo.txt`; if a long snapshot was exported, delete `Rainward/snapshot.json` and the empty `Rainward` folder. Do not delete other mod settings or save data.
 
 The interface defaults to Simplified Chinese and supports English. Reference material: [Rain World Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki) · [简体中文 Wiki](https://rainworld.miraheze.org/wiki/Rain_World_Wiki/zh-hans) · [Desktop Rain World Slugcat Simulation](https://github.com/littlhMW/desktop-rainworld-slugcat-simulation) · [Original map](https://rain-world-map.github.io/) · [Third-party notices](THIRD-PARTY-NOTICES.md)

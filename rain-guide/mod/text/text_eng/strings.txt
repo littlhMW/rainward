@@ -1,4 +1,4 @@
-0littlhmw.whereshouldigo-name|Rainward: Where to Go
+﻿0littlhmw.whereshouldigo-name|Rainward: Where to Go
 littlhmw.whereshouldigo-description|Rainward: Where to Go is a route and exploration companion mod for Rain World, designed to work with the Rainward web map. It highlights exploration routes in-game and lets you hold G while inside a room to open your current location on the web map.
 littlhmw.whereshouldigo-map|Map
 littlhmw.whereshouldigo-open-map-label|Open web map

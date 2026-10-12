@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://littlhmw.github.io/rainward/">打开网页</a> ·
-  <a href="https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip">下载游戏 Mod</a> ·
+  <a href="https://littlhmw.github.io/rainward/downloads/Rainward-WhereToGo.zip">下载游戏 Mod</a> ·
   <a href="https://github.com/littlhMW/rainward">GitHub 仓库</a>
 </p>
 
@@ -35,12 +35,12 @@
 
 ### 安装 Mod（路线高亮与位置快照）
 
-1. [下载 Mod 压缩包](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip) 并解压。
-2. 将 `whereshouldigo` 文件夹放入 `RainWorld_Data/StreamingAssets/mods/`。
+1. [下载 Mod 压缩包](https://littlhmw.github.io/rainward/downloads/Rainward-WhereToGo.zip) 并解压。
+2. 将 `rainward` 文件夹放入 `RainWorld_Data/StreamingAssets/mods/`。
 3. 在游戏的 Remix 菜单中启用 **雨间：我该去哪 / Rainward: Where to Go**。
 4. 按游戏内路线高亮功能使用路线指引；进入房间后，按住 `G` 可在浏览器中打开当前位置。
 
-**卸载：**在 Remix 中停用 Mod 并关闭游戏，然后删除 `RainWorld_Data/StreamingAssets/mods/whereshouldigo/` 文件夹。
+**卸载：**在 Remix 中停用 Mod 并关闭游戏，然后删除 `RainWorld_Data/StreamingAssets/mods/rainward/` 文件夹。
 
 ## 注意
 
@@ -71,7 +71,7 @@
 ### Get started
 
 - [Open the web map](https://littlhmw.github.io/rainward/) — no installation required; an internet connection is needed.
-- [Download the mod](https://littlhmw.github.io/rainward/downloads/WhereShouldIGo.zip), extract `whereshouldigo` into `RainWorld_Data/StreamingAssets/mods/`, then enable **Rainward: Where to Go** in Remix.
+- [Download the mod](https://littlhmw.github.io/rainward/downloads/Rainward-WhereToGo.zip), extract `rainward` into `RainWorld_Data/StreamingAssets/mods/`, then enable **Rainward: Where to Go** in Remix.
 - Use the mod's in-game route-highlighting feature for route guidance. Hold `G` in a room to open that location on the web map.
 
 The mod does not modify save files or continuously track your location in the background. Mods that add or change terrain, rooms or connections may make map data and route suggestions inaccurate.
