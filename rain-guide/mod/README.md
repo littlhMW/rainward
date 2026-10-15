@@ -10,7 +10,7 @@
 
 更新时关闭游戏，用新版本替换 `rainward` 文件夹。由旧版 `whereshouldigo` 升级时，首次启动会迁移按键与开关配置；确认新版本运行正常后即可删除旧文件夹。Remix 中可以修改打开地图的按键和长按时间，并分别启用或停用游戏内地图高亮与 G 键导航。高亮只作用于游戏内 HUD 地图，不改变地形、入口或出口。
 
-「持续指引」会始终显示当前故事目标路线；开启「受阻后再显示指引」后，连续两次成功休眠期间没有发现新房间时才显示路线。每次成功休眠后，目标会按当前战役的向导状态重新判定。启用「标记兴趣点入口」时，地图会以浅色标记尚未显示过向导投影的相关房间入口，不改变黄色主路线。黄色主路线以约 3.6 秒为周期缓慢明暗变化。
+「持续指引」会始终显示当前故事目标路线；开启「受阻后再显示指引」后，可设定连续 1 至 10 个成功休眠周期未发现新房间时显示路线。每次成功休眠后，目标会按当前战役的向导状态重新判定。「标记兴趣点入口」会独立以浅色标记尚未显示过向导投影的相关房间入口，不改变黄色主路线。「保持监视者在附近」是独立选项，默认关闭；关闭时 Mod 不干预监视者行为。黄色主路线以约 3.6 秒为周期缓慢明暗变化。
 
 ## 地图与位置
 
@@ -46,7 +46,7 @@ The mod does not modify saves, access the clipboard, send Steam IDs, or continuo
 
 The web map keeps its own route display. With “Highlight recommended route” enabled, the in-game HUD map marks connections toward the recommended direction in yellow; disabling it removes only that overlay. “Enable G-key navigation” controls opening the web map. Neither option changes terrain, entrances, or exits.
 
-Continuous guidance keeps the current story route visible. When “Guide only when stuck” is enabled, the route appears after two successful sleeps without discovering a new room. The story target is reevaluated after each successful sleep. “Mark interest-point entrances” marks the entrances of relevant rooms whose Overseer projections have not yet been shown; it does not change the yellow main route. The main route slowly pulses over a cycle of about 3.6 seconds.
+Continuous guidance keeps the current story route visible. When “Guide only when stuck” is enabled, set the route to appear after 1–10 successful sleeps without discovering a new room. The story target is reevaluated after each successful sleep. “Mark interest-point entrances” independently marks relevant rooms whose Overseer projections have not yet been shown; it does not change the yellow main route. “Keep the Overseer nearby” is a separate option and is off by default; when disabled, the mod does not interfere with Overseer behavior. The main route slowly pulses over a cycle of about 3.6 seconds.
 
 When upgrading from an older release, disable the mod, replace the old `whereshouldigo` folder with `rainward`, and launch the game once to migrate the key and toggle settings. Remove the old folder after confirming that the new version works.
 
