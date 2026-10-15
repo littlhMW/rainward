@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Rainward
 {
-    [BepInPlugin(ModId, "Rainward: Where to Go", "1.3.6")]
+    [BepInPlugin(ModId, "Rainward: Where to Go", "1.3.7")]
     [BepInDependency("henpemaz.rainmeadow", BepInDependency.DependencyFlags.SoftDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {

@@ -182,6 +182,19 @@ namespace Rainward
             return rooms;
         }
 
+        internal static List<RouteEdge> RegionalGuidancePath(IList<RouteEdge> edges, int start,
+            int targetRoom, bool targetIsRegionExit)
+        {
+            var path = FindPath(edges, start, new HashSet<int> { targetRoom });
+            if (targetIsRegionExit || path.Count <= 1) return path;
+
+            // In regional mode, retain a useful directional hint inside the
+            // destination region without drawing a room-by-room route to its
+            // ordinary story target. The next map opening replans from the
+            // player's new room.
+            return new List<RouteEdge> { path[0] };
+        }
+
         internal static int RegionExitOnPath(IList<int> worldPathRooms, ISet<int> currentRegionRooms, int start)
         {
             if (worldPathRooms == null || currentRegionRooms == null || start < 0) return -1;
@@ -200,14 +213,6 @@ namespace Rainward
                     return lastCurrentRegionRoom == start ? -1 : lastCurrentRegionRoom;
             }
             return -1;
-        }
-
-        internal static int RegionGuidanceGoal(bool locateSpecificRoom, bool targetIsOnCurrentMap,
-            bool targetIsConfirmedExit, int targetRoom, int currentRegionExit)
-        {
-            if (locateSpecificRoom) return targetRoom;
-            if (targetIsOnCurrentMap) return targetIsConfirmedExit ? targetRoom : -1;
-            return currentRegionExit;
         }
 
         internal static HashSet<string> FindInterestDoors(IList<RouteEdge> edges, IList<RouteEdge> mainRoute,

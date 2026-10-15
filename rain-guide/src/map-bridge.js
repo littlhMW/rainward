@@ -1,6 +1,6 @@
 import { parseLocation, playerPoint } from './location.js';
 import { findRoomRoute, gateRooms } from './room-route.js';
-import { roomKey, visibleRoomNames, roomPolygons, roomClipPaths, canPlacePrecisely } from './room-visibility.js?v=2.3.0';
+import { roomKey, visibleRoomNames, roomPolygons, roomClipPaths, canPlacePrecisely } from './room-visibility.js?v=2.3.1';
 
 // The CC0 upstream owns terrain and connection rendering; this adapter controls
 // disclosure, room overrides, names, player snapshots and existing route lines.

@@ -77,18 +77,16 @@ internal static class GuidanceCases
         check(GuidanceRoutePlanner.RegionExitOnPath(new[] { 0, 8, 9 },
                 new HashSet<int> { 0, 1, 2 }, 0) == -1,
             "region guidance does not draw a fabricated path when already at the regional exit");
-        check(!GuidanceRoutePlanner.DefaultLocateSpecificRoom
-            && GuidanceRoutePlanner.RegionGuidanceGoal(GuidanceRoutePlanner.DefaultLocateSpecificRoom,
-                true, false, 3, -1) == -1,
-            "specific-room targeting defaults off and suppresses an unconfirmed in-region room goal");
-        check(GuidanceRoutePlanner.RegionGuidanceGoal(GuidanceRoutePlanner.DefaultLocateSpecificRoom,
-                true, true, 3, -1) == 3,
-            "region-level guidance may point to a confirmed region gate");
-        check(GuidanceRoutePlanner.RegionGuidanceGoal(GuidanceRoutePlanner.DefaultLocateSpecificRoom,
-                false, false, 9, 1) == 1,
-            "a verified cross-region path uses its current-region exit");
-        check(GuidanceRoutePlanner.RegionGuidanceGoal(true, true, false, 3, -1) == 3,
-            "enabling specific-room targeting selects the current story room");
+        check(!GuidanceRoutePlanner.DefaultLocateSpecificRoom,
+            "specific-room guidance defaults off");
+        var regionalRoomHint = GuidanceRoutePlanner.RegionalGuidancePath(edges, 0, 3, false);
+        check(regionalRoomHint.Count == 1 && regionalRoomHint[0].A == 0 && regionalRoomHint[0].B == 1,
+            "regional mode keeps the next highlighted connection without exposing the full in-region room route");
+        var regionalExitRoute = GuidanceRoutePlanner.RegionalGuidancePath(edges, 0, 3, true);
+        check(regionalExitRoute.Count == direct.Count,
+            "regional mode preserves the complete route to a confirmed region exit");
+        check(GuidanceRoutePlanner.RegionalGuidancePath(edges, 3, 3, false).Count == 0,
+            "regional guidance stops once the player reaches the target room");
         var interestDoors = GuidanceRoutePlanner.FindInterestDoors(edges, direct, 0, new HashSet<int> { 2, 4 });
         check(interestDoors.Contains(GuidanceRoutePlanner.EdgeKey(0, 2))
             && interestDoors.Contains(GuidanceRoutePlanner.EdgeKey(3, 4))

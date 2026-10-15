@@ -183,28 +183,29 @@ namespace Rainward
             }
             else
             {
+                var targetIsInDifferentRegion = worldGoalRoom >= 0
+                    && IsConfirmedDifferentRegion(game, map, worldGoalRoom);
                 var targetIsOnCurrentMap = localRooms.Contains(mapGoalRoom) || localRooms.Contains(worldGoalRoom);
-                var targetIsConfirmedExit = IsConfirmedRegionExit(game, worldGoalRoom);
                 var regionalGoal = -1;
-                if (targetIsOnCurrentMap)
+                var regionalGoalIsExit = false;
+                if (targetIsInDifferentRegion && startRoom != worldGoalRoom)
                 {
-                    var exitRoom = localRooms.Contains(mapGoalRoom) ? mapGoalRoom : worldGoalRoom;
-                    regionalGoal = GuidanceRoutePlanner.RegionGuidanceGoal(false, true,
-                        targetIsConfirmedExit, exitRoom, -1);
-                }
-                else if (worldGoalRoom >= 0 && startRoom != worldGoalRoom
-                    && IsConfirmedDifferentRegion(game, map, worldGoalRoom))
-                {
-                    // When the target lies outside this map, use the world graph
-                    // to find the current region's first exit on the way there.
+                    // Resolve cross-region intent before checking local map
+                    // indexes; a foreign target index can coincide with a
+                    // room index in this HUD map.
                     var worldRoute = FindWorldRoute(game, startRoom, worldGoalRoom);
                     var worldRooms = GuidanceRoutePlanner.PathRooms(worldRoute, startRoom);
-                    var localGoal = GuidanceRoutePlanner.RegionExitOnPath(worldRooms, localRooms, startRoom);
-                    regionalGoal = GuidanceRoutePlanner.RegionGuidanceGoal(false, false,
-                        false, worldGoalRoom, localGoal);
+                    regionalGoal = GuidanceRoutePlanner.RegionExitOnPath(worldRooms, localRooms, startRoom);
+                    regionalGoalIsExit = regionalGoal >= 0;
+                }
+                else if (targetIsOnCurrentMap)
+                {
+                    regionalGoal = localRooms.Contains(mapGoalRoom) ? mapGoalRoom : worldGoalRoom;
+                    regionalGoalIsExit = IsConfirmedRegionExit(game, regionalGoal);
                 }
                 if (regionalGoal >= 0)
-                    route = GuidanceRoutePlanner.FindPath(edges, startRoom, new HashSet<int> { regionalGoal });
+                    route = GuidanceRoutePlanner.RegionalGuidancePath(edges, startRoom,
+                        regionalGoal, regionalGoalIsExit);
             }
 
             foreach (var edge in route)

@@ -1,9 +1,9 @@
-import { CAMPAIGNS, REGIONS, SURVIVAL_TIPS } from './data.js?v=2.3.0';
-import { EN_CAMPAIGNS, EN_REGIONS, EN_SURVIVAL_TIPS } from './data-en.js?v=2.3.0';
-import { STORAGE_KEY, defaultState, defaultProfile, normalizeState, recommendedStage, applyGameProgress, regionName, findPath } from './engine.js?v=2.3.0';
+import { CAMPAIGNS, REGIONS, SURVIVAL_TIPS } from './data.js?v=2.3.1';
+import { EN_CAMPAIGNS, EN_REGIONS, EN_SURVIVAL_TIPS } from './data-en.js?v=2.3.1';
+import { STORAGE_KEY, defaultState, defaultProfile, normalizeState, recommendedStage, applyGameProgress, regionName, findPath } from './engine.js?v=2.3.1';
 import { REGION_SPOILERS, SPOILER_POLICY } from './spoilers.js';
 import { MAP_CHARACTERS, locationFragment } from './location.js';
-import { parseGameLink, normalizeSnapshot, MAX_SNAPSHOT_BYTES } from './snapshot.js?v=2.3.0';
+import { parseGameLink, normalizeSnapshot, MAX_SNAPSHOT_BYTES } from './snapshot.js?v=2.3.1';
 
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
