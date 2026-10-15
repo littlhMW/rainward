@@ -10,5 +10,6 @@
     <Compile Include="../src/MeadowBridge.cs" Link="MeadowBridge.cs" />
     <Compile Include="../src/SnapshotProtocol.cs" Link="SnapshotProtocol.cs" />
     <Compile Include="../src/SaveSnapshotReader.cs" Link="SaveSnapshotReader.cs" />
+    <Compile Include="../src/GuidanceLogic.cs" Link="GuidanceLogic.cs" />
   </ItemGroup>
 </Project>

@@ -6,31 +6,88 @@ using UnityEngine;
 
 namespace Rainward
 {
-    // Draws over the game's own HUD map connection sprites. It never changes
-    // terrain, entrances, exits, map textures, or room data.
     internal static class HudMapHighlighter
     {
         private static readonly BindingFlags Instance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private static readonly FieldInfo ConnectionsField = typeof(HUD.Map).GetField("mapConnections", Instance);
         private static readonly FieldInfo MapDataField = typeof(HUD.Map).GetField("mapData", Instance);
-        private static readonly FieldInfo GateDataField = typeof(HUD.Map.MapData).GetField("gateData", Instance);
-        private static readonly FieldInfo GateRoomField = Type.GetType("HUD.Map+MapData+GateData, Assembly-CSharp")?.GetField("roomIndex", Instance);
         private static readonly FieldInfo RoomAField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("roomA", Instance);
         private static readonly FieldInfo RoomBField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("roomB", Instance);
         private static readonly FieldInfo LineField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("lineSprite", Instance);
         private static readonly FieldInfo DotAField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("dotA", Instance);
         private static readonly FieldInfo DotBField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("dotB", Instance);
+        private static readonly FieldInfo RegionField = typeof(World).GetField("region", Instance);
+        private static readonly FieldInfo SettingsTriggersField = typeof(RoomSettings).GetField("triggers", Instance);
+        private static readonly FieldInfo TriggerEventField = typeof(EventTrigger).GetField("tEvent", Instance);
+        private static readonly FieldInfo TriggerSlugcatsField = typeof(EventTrigger).GetField("slugcats", Instance);
+        private static readonly FieldInfo TriggerTimelinesField = typeof(EventTrigger).GetField("timelines", Instance);
+        private static readonly FieldInfo TriggerFromCycleField = typeof(EventTrigger).GetField("activeFromCycle", Instance);
+        private static readonly FieldInfo TriggerToCycleField = typeof(EventTrigger).GetField("activeToCycle", Instance);
+        private static readonly FieldInfo ShowDirectionOnlyField = typeof(ShowProjectedImageEvent).GetField("onlyWhenShowingDirection", Instance);
         private static readonly Color Highlight = new Color(1f, 0.82f, 0.08f, 1f);
-        private static readonly Dictionary<HUD.Map, MapState> states = new Dictionary<HUD.Map, MapState>();
+        private static readonly Color InterestColor = new Color(0.92f, 0.9f, 0.82f, 1f);
+        private static readonly Dictionary<HUD.Map, MapState> States = new Dictionary<HUD.Map, MapState>();
+        private static readonly GuidanceProgress Progress = new GuidanceProgress();
+        private static readonly FieldInfo ShowToRoomField = typeof(OverseersWorldAI.DirectionFinder).GetField("showToRoom", Instance);
+        private static readonly MethodInfo RoomSettingsTemplateMethod = typeof(Region).GetMethod("GetRoomSettingsTemplate", Instance, null, new[] { typeof(string) }, null);
 
-        internal static void Draw(On.HUD.Map.orig_Draw orig, HUD.Map map, float timeStacker, bool enabled)
+        internal static bool InitializeGuidance(RainWorldGame game, string sessionKey)
+        {
+            if (!IsStory(game)) return false;
+            TryCurrentStoryGoal(game, out var target);
+            if (!Progress.Begin(sessionKey, target)) return true;
+            Reset();
+            return true;
+        }
+
+        internal static string CurrentStoryGoal(RainWorldGame game)
+        {
+            return TryCurrentStoryGoal(game, out var target) ? target : Progress.CurrentTarget;
+        }
+
+        internal static bool RefreshStoryGoal(RainWorldGame game)
+        {
+            return TryCurrentStoryGoal(game, out var target) && Progress.ObserveTarget(target);
+        }
+
+        private static bool TryCurrentStoryGoal(RainWorldGame game, out string target)
+        {
+            target = null;
+            if (!IsStory(game) || ShowToRoomField == null) return false;
+            var finder = game.world?.overseersWorldAI?.directionFinder;
+            if (finder == null) return false;
+            try
+            {
+                if (!(ShowToRoomField.GetValue(finder) is int roomIndex)) return false;
+                // DirectionFinder briefly uses -1 while recalculating. Keep the
+                // last confirmed target instead of clearing the visible route.
+                if (roomIndex < 0) return false;
+                var room = game.world.GetAbstractRoom(roomIndex);
+                if (room == null || String.IsNullOrWhiteSpace(room.name)) return false;
+                target = room.name;
+                return true;
+            }
+            catch { return false; }
+        }
+
+        internal static void SuccessfulSleep(RainWorldGame game, string previousGoal, bool? discoveredNewRoom)
+        {
+            if (!IsStory(game)) return;
+            if (!TryCurrentStoryGoal(game, out var currentGoal)) currentGoal = Progress.CurrentTarget;
+            Progress.SuccessfulSleep(previousGoal, currentGoal, discoveredNewRoom);
+        }
+
+        internal static bool GuidanceVisibilityChanged(bool onlyWhenBlocked, int threshold) => Progress.RecordGuidanceMode(onlyWhenBlocked, threshold);
+
+        internal static void Draw(On.HUD.Map.orig_Draw orig, HUD.Map map, float timeStacker, bool enabled, MapOptions options)
         {
             MapState state = null;
-            if (map != null && states.TryGetValue(map, out state))
+            if (map != null && States.TryGetValue(map, out state))
             {
-                try { state.Tint.Restore(); }
-                catch { states.Remove(map); state = null; }
+                try { state.InterestTint.Restore(); state.Tint.Restore(); }
+                catch { States.Remove(map); state = null; }
             }
+
             orig(map, timeStacker);
             try
             {
@@ -39,14 +96,16 @@ namespace Rainward
                     ClearMap(map);
                     return;
                 }
-                if (state == null) states.Add(map, state = new MapState());
-                var signature = Signature(map);
+
+                if (state == null) States.Add(map, state = new MapState());
+                var signature = Signature(map, options);
                 if (!String.Equals(signature, state.Signature, StringComparison.Ordinal))
                 {
-                    state.Pairs = BuildRoutePairs(map);
+                    state.Pairs = BuildRoutePairs(map, options);
+                    BuildInterestDoorPairs(map, options, state);
                     state.Signature = signature;
                 }
-                ApplyColors(map, state);
+                ApplyColors(map, state, timeStacker);
             }
             catch
             {
@@ -54,41 +113,57 @@ namespace Rainward
             }
         }
 
-        private static string Signature(HUD.Map map)
+        private static string Signature(HUD.Map map, MapOptions options)
         {
             var owner = map?.hud?.owner;
             var room = owner?.MapOwnerRoom ?? -1;
-            var rainWorld = map?.hud?.rainWorld;
-            var game = rainWorld?.processManager?.currentMainLoop as RainWorldGame;
-            var character = game?.StoryCharacter?.value ?? "";
-            var region = map?.RegionName ?? "";
+            var game = map?.hud?.rainWorld?.processManager?.currentMainLoop as RainWorldGame;
             var connections = ConnectionsField?.GetValue(map) as ICollection;
-            var data = MapDataField?.GetValue(map);
-            var gates = data == null ? null : GateDataField?.GetValue(data) as ICollection;
-            return room + "|" + character + "|" + region + "|" + (connections?.Count ?? -1) + "|" + (gates?.Count ?? -1);
+            var gameId = game == null ? 0 : game.GetHashCode();
+            return gameId + "|" + room + "|" + map?.RegionName + "|" + (connections?.Count ?? -1) + "|" + (options?.EnableRouteHighlight.Value ?? false) + "|" + (options?.GuideInterestPoints.Value ?? false) + "|" + (options?.GuideWhenBlocked.Value ?? false) + "|" + (options?.GuideAfterCycles.Value ?? GuidanceProgress.DefaultSleepsBeforeGuidance) + "|" + Progress.CurrentTarget + "|" + Progress.Revision + "|" + Progress.SleepsWithoutProgress;
         }
 
-        private static HashSet<string> BuildRoutePairs(HUD.Map map)
+        private static HashSet<string> BuildRoutePairs(HUD.Map map, MapOptions options)
         {
             var result = new HashSet<string>(StringComparer.Ordinal);
             var owner = map?.hud?.owner;
             var data = MapDataField?.GetValue(map);
             var connections = ConnectionsField?.GetValue(map) as IEnumerable;
-            if (owner == null || data == null || connections == null) return result;
+            if (owner == null || data == null || connections == null || options?.EnableRouteHighlight.Value != true) return result;
 
-            var edges = new List<Edge>();
+            var edges = new List<RouteEdge>();
             foreach (var connection in connections)
             {
                 var a = ReadIndex(RoomAField?.GetValue(connection));
                 var b = ReadIndex(RoomBField?.GetValue(connection));
-                if (a >= 0 && b >= 0) edges.Add(new Edge(a, b));
+                if (a >= 0 && b >= 0) edges.Add(new RouteEdge(a, b));
             }
             if (edges.Count == 0) return result;
 
-            var target = TargetRegion(map);
-            if (String.IsNullOrEmpty(target)) return result;
-            var goals = GateRooms(map, data, target);
-            var route = FindRoute(edges, owner.MapOwnerRoom, goals);
+            var game = map?.hud?.rainWorld?.processManager?.currentMainLoop as RainWorldGame;
+            if (!IsStory(game)) return result;
+            if (!Progress.ShouldShowRoute(options?.GuideWhenBlocked.Value ?? false,
+                options?.GuideAfterCycles.Value ?? GuidanceProgress.DefaultSleepsBeforeGuidance)) return result;
+            var destination = Progress.CurrentTarget;
+            if (String.IsNullOrWhiteSpace(destination)) return result;
+            var goalRoom = RoomIndex(data, destination);
+            if (goalRoom < 0) return result;
+
+            var startRoom = owner.MapOwnerRoom;
+            var route = GuidanceRoutePlanner.FindPath(edges, startRoom, new HashSet<int> { goalRoom });
+            if (route.Count == 0 && startRoom != goalRoom)
+            {
+                // DirectionFinder can keep a story target in another region.
+                // Use the world graph to find the last room on the current HUD
+                // map before planning the visible part of that path locally.
+                var localRooms = MapRoomIndices(data);
+                var worldRoute = FindWorldRoute(game, startRoom, goalRoom);
+                var worldRooms = GuidanceRoutePlanner.PathRooms(worldRoute, startRoom);
+                var localGoal = LastRoomOnMap(worldRooms, localRooms);
+                if (localGoal >= 0 && localGoal != startRoom)
+                    route = GuidanceRoutePlanner.FindPath(edges, startRoom, new HashSet<int> { localGoal });
+            }
+
             foreach (var edge in route)
             {
                 result.Add(Pair(edge.A, edge.B));
@@ -97,182 +172,235 @@ namespace Rainward
             return result;
         }
 
-        private static HashSet<int> GateRooms(HUD.Map map, object data, string targetRegion)
+        private static void BuildInterestDoorPairs(HUD.Map map, MapOptions options, MapState state)
         {
-            var matching = new HashSet<int>();
-            var gateData = GateDataField?.GetValue(data) as IEnumerable;
-            if (gateData == null) return matching;
-            var currentRegion = map?.RegionName ?? "";
-            var nextRegion = NextRegion(currentRegion, targetRegion);
-            foreach (var gate in gateData)
+            state.InterestDoors.Clear();
+            state.InterestRoomIndices.Clear();
+            if (options?.GuideInterestPoints.Value != true) return;
+            var owner = map?.hud?.owner;
+            var data = MapDataField?.GetValue(map);
+            var connections = ConnectionsField?.GetValue(map) as IEnumerable;
+            if (owner == null || data == null || connections == null) return;
+
+            var edges = new List<RouteEdge>();
+            var game = map?.hud?.rainWorld?.processManager?.currentMainLoop as RainWorldGame;
+            var campaign = game?.StoryCharacter?.value;
+            var cycle = game?.GetStorySession?.saveState?.cycleNumber ?? 0;
+            var interestRooms = InterestRooms(data, TimelineName(game), campaign, cycle, game);
+            state.InterestRoomIndices.UnionWith(interestRooms);
+            foreach (var connection in connections)
             {
-                if (!(GateRoomField?.GetValue(gate) is int room)) continue;
-                string name = null;
-                try { name = map.mapData?.NameOfRoom(room); } catch { }
-                if (!String.IsNullOrEmpty(nextRegion) && GateLeadsTo(name, currentRegion, nextRegion)) matching.Add(room);
+                var a = ReadIndex(RoomAField?.GetValue(connection));
+                var b = ReadIndex(RoomBField?.GetValue(connection));
+                if (a >= 0 && b >= 0) edges.Add(new RouteEdge(a, b));
             }
-            // If the destination cannot be matched to a gate in this map,
-            // leave the vanilla map unchanged instead of guessing an exit.
-            return matching;
+            var mainRoute = edges.FindAll(edge => state.Pairs.Contains(Pair(edge.A, edge.B)));
+            foreach (var edgeKey in GuidanceRoutePlanner.FindInterestDoors(edges, mainRoute, owner.MapOwnerRoom, interestRooms))
+                state.InterestDoors.Add(edgeKey);
         }
 
-        private static bool GateLeadsTo(string name, string currentRegion, string targetRegion)
+        private static HashSet<int> InterestRooms(object data, string timeline, string campaign, int cycle, RainWorldGame game)
         {
-            if (String.IsNullOrEmpty(name) || !name.StartsWith("GATE_", StringComparison.OrdinalIgnoreCase)) return false;
-            var parts = name.Split('_');
-            if (parts.Length < 3) return false;
-            return String.Equals(parts[1], targetRegion, StringComparison.OrdinalIgnoreCase)
-                || String.Equals(parts[2], targetRegion, StringComparison.OrdinalIgnoreCase)
-                || (String.Equals(parts[1], currentRegion, StringComparison.OrdinalIgnoreCase)
-                    && String.Equals(parts[2], targetRegion, StringComparison.OrdinalIgnoreCase));
-        }
-
-        private static List<Edge> FindRoute(List<Edge> edges, int start, HashSet<int> goals)
-        {
-            var result = new List<Edge>();
-            if (goals.Count == 0 || start < 0) return result;
-            var queue = new Queue<int>();
-            var previousRoom = new Dictionary<int, int>();
-            var previousEdge = new Dictionary<int, Edge>();
-            queue.Enqueue(start); previousRoom[start] = start;
-            var goal = -1;
-            while (queue.Count > 0)
+            var result = new HashSet<int>();
+            try
             {
-                var current = queue.Dequeue();
-                if (goals.Contains(current)) { goal = current; break; }
-                foreach (var edge in edges)
+                var names = data.GetType().GetField("roomNames", Instance)?.GetValue(data) as string[];
+                var indices = data.GetType().GetField("roomIndices", Instance)?.GetValue(data) as int[];
+                if (names == null || indices == null) return result;
+                var world = data.GetType().GetField("world", Instance)?.GetValue(data);
+                var region = RegionField?.GetValue(world) as Region;
+                if (region == null || RoomSettingsTemplateMethod == null) return result;
+                for (var i = 0; i < Math.Min(names.Length, indices.Length); i++)
                 {
-                    var next = edge.A == current ? edge.B : edge.B == current ? edge.A : -1;
-                    if (next < 0 || previousRoom.ContainsKey(next)) continue;
-                    previousRoom[next] = current; previousEdge[next] = edge; queue.Enqueue(next);
+                    if (game?.GetStorySession?.saveState?.miscWorldSaveData?.playerGuideState?.HasImageBeenShownInRoom(names[i]) == true) continue;
+                    if (IsInterestDoor(region, names[i], timeline, campaign, cycle)) result.Add(indices[i]);
                 }
             }
-            if (goal < 0) return result;
-            while (goal != start) { result.Add(previousEdge[goal]); goal = previousRoom[goal]; }
+            catch { }
             return result;
         }
 
-        private static string TargetRegion(HUD.Map map)
+        private static HashSet<int> MapRoomIndices(object data)
         {
-            var rainWorld = map?.hud?.rainWorld;
-            var game = rainWorld?.processManager?.currentMainLoop as RainWorldGame;
-            var character = game?.StoryCharacter?.value ?? "";
-            var region = map?.RegionName ?? "";
-            var route = Route(character);
-            for (var i = 0; i < route.Length; i++)
-                if (String.Equals(route[i], region, StringComparison.OrdinalIgnoreCase))
-                    return i + 1 < route.Length ? NextRegion(region, route[i + 1]) : null;
-            return null;
+            var result = new HashSet<int>();
+            try
+            {
+                var indices = data?.GetType().GetField("roomIndices", Instance)?.GetValue(data) as int[];
+                if (indices != null)
+                    foreach (var index in indices)
+                        if (index >= 0) result.Add(index);
+            }
+            catch { }
+            return result;
         }
 
-        private static string NextRegion(string from, string destination)
+        private static List<RouteEdge> FindWorldRoute(RainWorldGame game, int start, int goal)
         {
-            if (String.IsNullOrEmpty(from) || String.IsNullOrEmpty(destination)
-                || String.Equals(from, destination, StringComparison.OrdinalIgnoreCase)) return destination;
-            var edges = new[]
+            var result = new List<RouteEdge>();
+            if (game?.world?.abstractRooms == null || start < 0 || goal < 0) return result;
+            var edges = new List<RouteEdge>();
+            var rooms = game.world.abstractRooms;
+            for (var i = 0; i < rooms.Length; i++)
             {
-                "SU-HI", "SU-DS", "SU-LF", "HI-GW", "HI-CC", "HI-SH", "DS-GW", "DS-SB",
-                "GW-SL", "SH-SL", "SH-UW", "CC-UW", "CC-SI", "SI-LF", "LF-SB", "SL-SB",
-                "UW-SS", "DS-CC", "GW-SH", "HI-VS", "SI-VS", "SB-VS", "SL-VS", "SL-MS",
-                "SB-OE", "OE-SU", "UW-LM", "UW-LC", "LM-DM", "UW-RM", "RM-MS", "SL-RM",
-                "CC-CL", "SH-CL", "CL-SL", "UG-SB", "UG-DS", "SB-HR"
-            };
-            var graph = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-            foreach (var edge in edges)
-            {
-                var parts = edge.Split('-');
-                if (!graph.ContainsKey(parts[0])) graph[parts[0]] = new List<string>();
-                if (!graph.ContainsKey(parts[1])) graph[parts[1]] = new List<string>();
-                graph[parts[0]].Add(parts[1]); graph[parts[1]].Add(parts[0]);
+                var connections = rooms[i]?.connections;
+                if (connections == null) continue;
+                foreach (var connection in connections)
+                    if (connection >= 0 && connection < rooms.Length && connection != i && i < connection)
+                        edges.Add(new RouteEdge(i, connection));
             }
-            var queue = new Queue<List<string>>();
-            queue.Enqueue(new List<string> { from });
-            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { from };
-            while (queue.Count > 0)
+            return GuidanceRoutePlanner.FindPath(edges, start, new HashSet<int> { goal });
+        }
+
+        private static int LastRoomOnMap(IList<int> path, ISet<int> mapRooms)
+        {
+            if (path == null || mapRooms == null) return -1;
+            var result = -1;
+            foreach (var room in path)
+                if (mapRooms.Contains(room)) result = room;
+            return result;
+        }
+
+        private static bool IsInterestDoor(Region region, string roomName, string timeline, string campaign, int cycle)
+        {
+            if (String.IsNullOrWhiteSpace(roomName)) return false;
+            try
             {
-                var path = queue.Dequeue();
-                var last = path[path.Count - 1];
-                if (!graph.ContainsKey(last)) continue;
-                foreach (var next in graph[last])
+                var roomSettings = RoomSettingsTemplateMethod.Invoke(region, new object[] { roomName });
+                var triggers = SettingsTriggersField?.GetValue(roomSettings) as IEnumerable;
+                if (triggers == null) return false;
+                foreach (var trigger in triggers)
                 {
-                    if (!seen.Add(next)) continue;
-                    var extended = new List<string>(path) { next };
-                    if (String.Equals(next, destination, StringComparison.OrdinalIgnoreCase)) return extended[1];
-                    queue.Enqueue(extended);
+                    var projected = TriggerEventField?.GetValue(trigger);
+                    if (!(projected is ShowProjectedImageEvent)) continue;
+                    if (ShowDirectionOnlyField == null || !(ShowDirectionOnlyField.GetValue(projected) is bool onlyWhenDirection) || !onlyWhenDirection) continue;
+                    if (cycle < (TriggerFromCycleField?.GetValue(trigger) as int? ?? 0)) continue;
+                    var toCycle = TriggerToCycleField?.GetValue(trigger) as int? ?? -1;
+                    if (toCycle >= 0 && cycle > toCycle) continue;
+                    if (!ListAllows(TriggerSlugcatsField?.GetValue(trigger), campaign)) continue;
+                    if (!ListAllows(TriggerTimelinesField?.GetValue(trigger), timeline)) continue;
+                    return true;
                 }
             }
-            return destination;
+            catch { }
+            return false;
         }
 
-        private static string[] Route(string character)
+        private static bool ListAllows(object list, string value)
         {
-            switch ((character ?? "").ToLowerInvariant())
+            if (!(list is IEnumerable values)) return true;
+            if (String.IsNullOrWhiteSpace(value)) return false;
+            bool hasEntries = false;
+            foreach (var item in values)
             {
-                case "white": case "yellow": return new[] { "SU", "HI", "GW", "SL", "SH", "UW", "SS", "SB" };
-                case "red": return new[] { "LF", "SI", "CC", "UW", "SS", "SL", "SB" };
-                case "gourmand": return new[] { "SH", "UW", "SS", "SB", "OE" };
-                case "artificer": return new[] { "GW", "HI", "CC", "UW", "LC", "SB" };
-                case "rivulet": return new[] { "DS", "GW", "SL", "RM", "MS", "SL" };
-                case "spear": case "spearmaster": return new[] { "SU", "HI", "CC", "UW", "LM", "DM", "SI" };
-                case "saint": return new[] { "SI", "CC", "CL", "SL", "UG", "LF", "SB", "HR" };
-                default: return Array.Empty<string>();
+                var name = item?.GetType().GetField("value", Instance)?.GetValue(item) as string
+                    ?? item?.GetType().GetProperty("value", Instance)?.GetValue(item, null) as string
+                    ?? item?.ToString();
+                if (String.IsNullOrWhiteSpace(name)) continue;
+                hasEntries = true;
+                if (String.Equals(name, value, StringComparison.OrdinalIgnoreCase)) return true;
             }
+            return !hasEntries;
         }
 
-        private static void ApplyColors(HUD.Map map, MapState state)
+        private static string TimelineName(RainWorldGame game)
+        {
+            if (game == null) return null;
+            try
+            {
+                var timeline = game.GetType().GetProperty("Timeline", Instance)?.GetValue(game, null);
+                return timeline?.ToString();
+            }
+            catch { return null; }
+        }
+
+        private static bool IsStory(RainWorldGame game) => game != null && game.IsStorySession && game.GetStorySession?.saveState != null;
+
+        private static int RoomIndex(object data, string name)
+        {
+            if (String.IsNullOrWhiteSpace(name)) return -1;
+            try
+            {
+                // Match against the active map names and actual room indices.
+                var namesField = data.GetType().GetField("roomNames", Instance);
+                var indicesField = data.GetType().GetField("roomIndices", Instance);
+                var names = namesField?.GetValue(data) as string[];
+                var indices = indicesField?.GetValue(data) as int[];
+                if (names == null || indices == null) return -1;
+                for (var i = 0; i < Math.Min(names.Length, indices.Length); i++)
+                    if (String.Equals(names[i], name, StringComparison.OrdinalIgnoreCase)) return indices[i];
+            }
+            catch { }
+            return -1;
+        }
+
+        private static int ReadIndex(object raw) => raw is int value ? value : -1;
+        private static string Pair(int a, int b) => a + ":" + b;
+
+        private static void ApplyColors(HUD.Map map, MapState state, float timeStacker)
         {
             var list = ConnectionsField?.GetValue(map) as IEnumerable;
             if (list == null) return;
             map.hud.rainWorld.Shaders.TryGetValue("Basic", out var shader);
+            var pulse = GuidanceAnimation.Pulse(UnityEngine.Time.unscaledTime);
+            var alpha = Mathf.Lerp(0.72f, 1f, pulse);
+            var mainColor = new Color(Highlight.r, Highlight.g, Highlight.b, alpha);
             foreach (var connection in list)
             {
                 var a = ReadIndex(RoomAField?.GetValue(connection));
                 var b = ReadIndex(RoomBField?.GetValue(connection));
                 if (!state.Pairs.Contains(Pair(a, b))) continue;
-                state.Tint.Apply(LineField?.GetValue(connection) as FSprite, shader, Highlight);
-                state.Tint.Apply(DotAField?.GetValue(connection) as FSprite, shader, Highlight);
-                state.Tint.Apply(DotBField?.GetValue(connection) as FSprite, shader, Highlight);
+                state.Tint.Apply(LineField?.GetValue(connection) as FSprite, shader, mainColor);
+                state.Tint.Apply(DotAField?.GetValue(connection) as FSprite, shader, mainColor);
+                state.Tint.Apply(DotBField?.GetValue(connection) as FSprite, shader, mainColor);
+            }
+
+            // Keep interest points as static entrance markers after route tinting.
+            // They never alter the route line itself.
+            foreach (var connection in list)
+            {
+                var a = ReadIndex(RoomAField?.GetValue(connection));
+                var b = ReadIndex(RoomBField?.GetValue(connection));
+                if (!state.InterestDoors.Contains(GuidanceRoutePlanner.EdgeKey(a, b))) continue;
+                if (state.InterestRoomIndices.Contains(a))
+                    state.InterestTint.Apply(DotAField?.GetValue(connection) as FSprite, shader, InterestColor);
+                if (state.InterestRoomIndices.Contains(b))
+                    state.InterestTint.Apply(DotBField?.GetValue(connection) as FSprite, shader, InterestColor);
             }
         }
 
-        private static int ReadIndex(object raw)
-        {
-            return raw is int value ? value : -1;
-        }
-
-        private static string Pair(int a, int b) => a + ":" + b;
-
         internal static void ClearMap(HUD.Map map)
         {
-            if (map == null || !states.TryGetValue(map, out var state)) return;
-            try { state.Tint.Restore(); } catch { }
-            states.Remove(map);
+            if (map == null || !States.TryGetValue(map, out var state)) return;
+            try { state.InterestTint.Restore(); state.Tint.Restore(); } catch { }
+            States.Remove(map);
+        }
+
+        internal static void InvalidateMaps()
+        {
+            foreach (var state in States.Values)
+            {
+                state.Signature = null;
+                state.Pairs.Clear();
+                state.InterestDoors.Clear();
+                state.InterestRoomIndices.Clear();
+            }
         }
 
         internal static void Reset()
         {
-            foreach (var state in states.Values)
-                try { state.Tint.Restore(); } catch { }
-            states.Clear();
+            foreach (var state in States.Values)
+                try { state.InterestTint.Restore(); state.Tint.Restore(); } catch { }
+            States.Clear();
         }
 
         private sealed class MapState
         {
             internal readonly HudRouteTint Tint = new HudRouteTint();
+            internal readonly HudRouteTint InterestTint = new HudRouteTint();
             internal string Signature;
             internal HashSet<string> Pairs = new HashSet<string>(StringComparer.Ordinal);
-        }
-
-        private sealed class Edge
-        {
-            internal readonly int A;
-            internal readonly int B;
-
-            internal Edge(int a, int b)
-            {
-                A = a;
-                B = b;
-            }
+            internal HashSet<string> InterestDoors = new HashSet<string>(StringComparer.Ordinal);
+            internal HashSet<int> InterestRoomIndices = new HashSet<int>();
         }
     }
 }

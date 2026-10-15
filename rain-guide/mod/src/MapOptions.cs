@@ -9,6 +9,10 @@ namespace Rainward
         internal readonly Configurable<int> HoldTenths;
         internal readonly Configurable<bool> EnableRouteHighlight;
         internal readonly Configurable<bool> EnableGNavigation;
+        internal readonly Configurable<bool> GuideWhenBlocked;
+        internal readonly Configurable<int> GuideAfterCycles;
+        internal readonly Configurable<bool> GuideInterestPoints;
+        internal readonly Configurable<bool> KeepOverseerNearby;
 
         internal MapOptions()
         {
@@ -21,6 +25,15 @@ namespace Rainward
                 new ConfigurableInfo("littlhmw.rainward-highlight-route"));
             EnableGNavigation = config.Bind("EnableGNavigation", true,
                 new ConfigurableInfo("littlhmw.rainward-g-navigation"));
+            GuideWhenBlocked = config.Bind("GuideWhenBlocked", false,
+                new ConfigurableInfo("littlhmw.rainward-guide-when-blocked"));
+            GuideAfterCycles = config.Bind("GuideAfterCycles", GuidanceProgress.DefaultSleepsBeforeGuidance,
+                new ConfigurableInfo("littlhmw.rainward-guide-after-cycles",
+                    new ConfigAcceptableRange<int>(1, 10)));
+            GuideInterestPoints = config.Bind("GuideInterestPoints", false,
+                new ConfigurableInfo("littlhmw.rainward-guide-interest-points"));
+            KeepOverseerNearby = config.Bind("KeepOverseerNearby", false,
+                new ConfigurableInfo("littlhmw.rainward-keep-overseer-nearby"));
         }
 
         public override void Initialize()
@@ -28,23 +41,35 @@ namespace Rainward
             base.Initialize();
             Tabs = new[] { new OpTab(this, Translate("littlhmw.rainward-map")) };
             Tabs[0].AddItems(
-                new OpLabel(new Vector2(20, 535), new Vector2(560, 40), Translate("littlhmw.rainward-name"), FLabelAlignment.Center, true),
-                new OpLabel(25, 465, Translate("littlhmw.rainward-open-map-label")),
-                new OpKeyBinder(OpenKey, new Vector2(330, 460), new Vector2(180, 30), false)
+                new OpLabel(new Vector2(20, 540), new Vector2(560, 40), Translate("littlhmw.rainward-name"), FLabelAlignment.Center, true),
+                new OpLabel(25, 470, Translate("littlhmw.rainward-open-map-label")),
+                new OpKeyBinder(OpenKey, new Vector2(330, 465), new Vector2(180, 30), false)
                     { description = Translate("littlhmw.rainward-open-map") },
-                new OpLabel(25, 385, Translate("littlhmw.rainward-hold-duration-label")),
-                new OpSlider(HoldTenths, new Vector2(330, 385), 200)
+                new OpLabel(25, 420, Translate("littlhmw.rainward-hold-duration-label")),
+                new OpSlider(HoldTenths, new Vector2(330, 420), 200)
                     { description = Translate("littlhmw.rainward-hold-duration") },
-                new OpCheckBox(EnableRouteHighlight, new Vector2(25, 320))
+                new OpCheckBox(EnableRouteHighlight, new Vector2(25, 365))
                     { description = Translate("littlhmw.rainward-highlight-route") },
-                new OpLabel(60, 320, Translate("littlhmw.rainward-highlight-route-label")),
-                new OpCheckBox(EnableGNavigation, new Vector2(25, 285))
+                new OpLabel(60, 365, Translate("littlhmw.rainward-highlight-route-label")),
+                new OpCheckBox(EnableGNavigation, new Vector2(25, 330))
                     { description = Translate("littlhmw.rainward-g-navigation") },
-                new OpLabel(60, 285, Translate("littlhmw.rainward-g-navigation-label")),
-                new OpLabel(new Vector2(25, 190), new Vector2(550, 85),
+                new OpLabel(60, 330, Translate("littlhmw.rainward-g-navigation-label")),
+                new OpCheckBox(GuideWhenBlocked, new Vector2(25, 295))
+                    { description = Translate("littlhmw.rainward-guide-when-blocked") },
+                new OpLabel(60, 295, Translate("littlhmw.rainward-guide-when-blocked-label")),
+                new OpLabel(25, 255, Translate("littlhmw.rainward-guide-after-cycles-label")),
+                new OpSlider(GuideAfterCycles, new Vector2(330, 255), 200)
+                    { description = Translate("littlhmw.rainward-guide-after-cycles") },
+                new OpCheckBox(GuideInterestPoints, new Vector2(25, 210))
+                    { description = Translate("littlhmw.rainward-guide-interest-points") },
+                new OpLabel(60, 210, Translate("littlhmw.rainward-guide-interest-points-label")),
+                new OpCheckBox(KeepOverseerNearby, new Vector2(25, 175))
+                    { description = Translate("littlhmw.rainward-keep-overseer-nearby") },
+                new OpLabel(60, 175, Translate("littlhmw.rainward-keep-overseer-nearby-label")),
+                new OpLabel(new Vector2(25, 105), new Vector2(550, 55),
                     Translate("littlhmw.rainward-default-help") + "\n" +
                     Translate("littlhmw.rainward-snapshot-help"), FLabelAlignment.Left),
-                new OpLabel(new Vector2(25, 65), new Vector2(550, 105),
+                new OpLabel(new Vector2(25, 15), new Vector2(550, 75),
                     Translate("littlhmw.rainward-terrain-warning") + "\n" +
                     Translate("littlhmw.rainward-no-mod-scan") + "\n" +
                     Translate("littlhmw.rainward-browser-online"), FLabelAlignment.Left)

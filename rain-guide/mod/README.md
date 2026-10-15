@@ -10,13 +10,15 @@
 
 更新时关闭游戏，用新版本替换 `rainward` 文件夹。由旧版 `whereshouldigo` 升级时，首次启动会迁移按键与开关配置；确认新版本运行正常后即可删除旧文件夹。Remix 中可以修改打开地图的按键和长按时间，并分别启用或停用游戏内地图高亮与 G 键导航。高亮只作用于游戏内 HUD 地图，不改变地形、入口或出口。
 
+「持续指引」会始终显示当前故事目标路线；开启「受阻后再显示指引」后，连续两次成功休眠期间没有发现新房间时才显示路线。每次成功休眠后，目标会按当前战役的向导状态重新判定。启用「标记兴趣点入口」时，地图会以浅色标记尚未显示过向导投影的相关房间入口，不改变黄色主路线。黄色主路线以约 3.6 秒为周期缓慢明暗变化。
+
 ## 地图与位置
 
 原版和 Downpour 地图保留房间、连接、地形、拖拽缩放与房间点击。未探索房间默认遮罩；可导入游戏快照显示已访问房间，也可单独调整房间遮罩。普通区域名默认显示，Wiki 标记为剧透的区域名默认隐藏。Watcher 提供故事线索和[原作者地图入口](https://alduris.github.io/watcher-map/)。
 
 按住快捷键时生成一次位置快照，不会持续追踪游戏。浏览器打开时，联机游戏仍会继续运行，请先停在安全位置。使用新增或修改地形、房间或连接的 Mod 时，地图信息可能不准确；本工具不扫描已安装的 Mod。
 
-打开网页时仍会显示网页自身的推荐路线。启用 Remix 的「启用高亮路线」后，长按游戏地图键打开的 HUD 地图会以黄色标出当前区域内通往推荐方向的连接；关闭后不添加该叠加层。关闭「启用 G 键导航」后，长按 G 不会打开网页地图。
+打开网页时仍会显示网页自身的推荐路线。启用 Remix 的「启用高亮路线」后，长按游戏地图键打开的 HUD 地图会以黄色标出通往游戏向导当前目标房间的连接；关闭后不添加该叠加层。关闭「启用 G 键导航」后，长按 G 不会打开网页地图。
 
 雨甸中会显示当前可读取的玩家位置，探索记录只使用房主存档。客机收到的房主记录可能晚于当前周期；自由模式可以提供位置，但没有可确认的探索和剧情记录。无法读取的位置会标为未知。
 
@@ -43,6 +45,8 @@ Base-game and Downpour maps retain rooms, connections, terrain, dragging, zoomin
 The mod does not modify saves, access the clipboard, send Steam IDs, or continuously track the game. The website requires an internet connection. In Rain Meadow, exploration uses the host's save; the current cycle may not yet be synchronized. Mods that change terrain, rooms, or connections can make map information inaccurate.
 
 The web map keeps its own route display. With “Highlight recommended route” enabled, the in-game HUD map marks connections toward the recommended direction in yellow; disabling it removes only that overlay. “Enable G-key navigation” controls opening the web map. Neither option changes terrain, entrances, or exits.
+
+Continuous guidance keeps the current story route visible. When “Guide only when stuck” is enabled, the route appears after two successful sleeps without discovering a new room. The story target is reevaluated after each successful sleep. “Mark interest-point entrances” marks the entrances of relevant rooms whose Overseer projections have not yet been shown; it does not change the yellow main route. The main route slowly pulses over a cycle of about 3.6 seconds.
 
 When upgrading from an older release, disable the mod, replace the old `whereshouldigo` folder with `rainward`, and launch the game once to migrate the key and toggle settings. Remove the old folder after confirming that the new version works.
 

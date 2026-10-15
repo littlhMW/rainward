@@ -96,6 +96,7 @@ try { MeadowBridge.TryLocalAvatar(lobby, out _, out _); }
 catch (System.Reflection.TargetInvocationException) { reflectionStopped = true; }
 Check(reflectionStopped, "reflection exception stops selection instead of falling back to a remote player");
 SnapshotCases.Run(Check);
+GuidanceCases.Run(Check);
 if (args.Length == 1)
 {
     using var stream = File.OpenRead(args[0]);

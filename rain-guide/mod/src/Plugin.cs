@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Rainward
 {
-    [BepInPlugin(ModId, "Rainward: Where to Go", "1.3.3")]
+    [BepInPlugin(ModId, "Rainward: Where to Go", "1.3.5")]
     [BepInDependency("henpemaz.rainmeadow", BepInDependency.DependencyFlags.SoftDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
@@ -19,21 +19,34 @@ namespace Rainward
         private float nextRegistrationAttempt;
         private float nextErrorLog;
         private RainWorldGame previousGame;
+        private bool previousStorySession;
+        private string guidanceSessionKey;
+        private bool guidanceVisibilityInitialized;
+        private bool guideWhenBlockedLastFrame;
+        private int guideAfterCyclesLastFrame = -1;
 
         private void OnEnable()
         {
             hold.Suspend();
             On.RainWorld.OnModsInit += ModsInit;
             On.HUD.Map.Draw += MapDraw;
+            On.RainWorldGame.Win += GameWin;
         }
 
         private void OnDisable()
         {
             hold.Suspend();
             HudMapHighlighter.Reset();
+            OverseerPresence.Reset();
             previousGame = null;
+            previousStorySession = false;
+            guidanceSessionKey = null;
+            guidanceVisibilityInitialized = false;
+            guideWhenBlockedLastFrame = false;
+            guideAfterCyclesLastFrame = -1;
             On.RainWorld.OnModsInit -= ModsInit;
             On.HUD.Map.Draw -= MapDraw;
+            On.RainWorldGame.Win -= GameWin;
         }
 
         private void OnApplicationFocus(bool focused)
@@ -91,8 +104,35 @@ namespace Rainward
                 if (!ReferenceEquals(previousGame, game))
                 {
                     previousGame = game;
+                    previousStorySession = false;
                     hold.Suspend();
                 }
+                var storySession = IsStory(game);
+                var sessionKey = StorySessionKey(game);
+                if (storySession && (!previousStorySession || !String.Equals(guidanceSessionKey, sessionKey, StringComparison.Ordinal)))
+                {
+                    if (HudMapHighlighter.InitializeGuidance(game, sessionKey))
+                    {
+                        guidanceSessionKey = sessionKey;
+                        guidanceVisibilityInitialized = false;
+                    }
+                }
+                if (storySession && HudMapHighlighter.RefreshStoryGoal(game))
+                    HudMapHighlighter.InvalidateMaps();
+                if (!storySession) guidanceSessionKey = null;
+                previousStorySession = storySession;
+                var guideWhenBlocked = options?.GuideWhenBlocked.Value ?? false;
+                var guideAfterCycles = options?.GuideAfterCycles.Value ?? GuidanceProgress.DefaultSleepsBeforeGuidance;
+                var visibilityChanged = HudMapHighlighter.GuidanceVisibilityChanged(guideWhenBlocked, guideAfterCycles);
+                if (!guidanceVisibilityInitialized || guideWhenBlocked != guideWhenBlockedLastFrame
+                    || guideAfterCycles != guideAfterCyclesLastFrame || visibilityChanged)
+                {
+                    HudMapHighlighter.InvalidateMaps();
+                    guidanceVisibilityInitialized = true;
+                    guideWhenBlockedLastFrame = guideWhenBlocked;
+                    guideAfterCyclesLastFrame = guideAfterCycles;
+                }
+                OverseerPresence.Update(game, options?.KeepOverseerNearby.Value ?? false, Time.unscaledTime);
                 var navigationEnabled = options?.EnableGNavigation.Value ?? true;
                 if (!navigationEnabled)
                 {
@@ -118,7 +158,47 @@ namespace Rainward
 
         private void MapDraw(On.HUD.Map.orig_Draw orig, HUD.Map map, float timeStacker)
         {
-            HudMapHighlighter.Draw(orig, map, timeStacker, options?.EnableRouteHighlight.Value ?? true);
+            HudMapHighlighter.Draw(orig, map, timeStacker, options?.EnableRouteHighlight.Value ?? true, options);
+        }
+
+        private static bool IsStory(RainWorldGame game) => game != null && game.IsStorySession && game.GetStorySession?.saveState != null;
+
+        private static string StorySessionKey(RainWorldGame game)
+        {
+            if (!IsStory(game)) return null;
+            var save = game.GetStorySession.saveState;
+            return game.StoryCharacter?.value + ":" + save.seed;
+        }
+
+        private void GameWin(On.RainWorldGame.orig_Win orig, RainWorldGame game,
+            bool malnourished, bool fromWarpPoint)
+        {
+            var previousGoal = HudMapHighlighter.CurrentStoryGoal(game);
+            var discoveredNewRoom = NewRoomsThisCycle(game);
+            orig(game, malnourished, fromWarpPoint);
+            if (!fromWarpPoint && IsStory(game))
+            {
+                HudMapHighlighter.SuccessfulSleep(game, previousGoal, discoveredNewRoom);
+                HudMapHighlighter.InvalidateMaps();
+            }
+        }
+
+        private static bool? NewRoomsThisCycle(RainWorldGame game)
+        {
+            if (!IsStory(game)) return null;
+            try
+            {
+                var save = game.GetStorySession.saveState;
+                if (save.regionStates == null) return null;
+                var field = typeof(RegionState).GetField("newRoomsThisCycle",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+                if (field == null) return null;
+                var count = 0;
+                foreach (var state in save.regionStates)
+                    if (state != null && field.GetValue(state) is int value) count += value;
+                return count > 0;
+            }
+            catch { return null; }
         }
 
         private void OpenMap(RainWorldGame game)
