@@ -3,29 +3,26 @@ using System.Reflection;
 
 namespace Rainward
 {
-    // This feature is opt-in. When it is off, the mod never reads or changes
-    // the Overseer AI state beyond the normal story guidance used for the map.
+    // This feature is opt-in. While off, the mod only records native departure
+    // directives so enabling it later cannot override one that is still active.
     internal static class OverseerPresence
     {
-        private const float RefreshSeconds = 1.25f;
+        private const float RefreshSeconds = 10f;
         private static readonly BindingFlags Instance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-        private static readonly FieldInfo PlayerGuideField = typeof(OverseersWorldAI).GetField("playerGuide", Instance);
-        private static readonly FieldInfo AbstractAiField = typeof(AbstractCreature).GetField("abstractAI", Instance);
         private static readonly PropertyInfo PlayerGuideProperty = typeof(OverseerAbstractAI).GetProperty("playerGuide", Instance);
         private static readonly MethodInfo BringToRoomMethod = typeof(OverseerAbstractAI).GetMethod(
             "BringToRoomAndGuidePlayer", Instance, null, new[] { typeof(int) }, null);
 
         private static RainWorldGame game;
+        private static World world;
+        private static AbstractCreature trackedGuide;
+        private static OverseerAbstractAI gameOrderedAway;
+        private static OverseerAbstractAI modDirectedGuide;
+        private static int modTargetRoom = -1;
         private static float nextRequest;
 
         internal static void Update(RainWorldGame currentGame, bool enabled, float now)
         {
-            if (!enabled)
-            {
-                if (game != null) Reset();
-                return;
-            }
-
             if (!IsStory(currentGame))
             {
                 Reset();
@@ -34,10 +31,45 @@ namespace Rainward
 
             if (!Object.ReferenceEquals(game, currentGame))
             {
+                Reset();
                 game = currentGame;
                 nextRequest = 0f;
             }
+
+            if (!Object.ReferenceEquals(world, currentGame.world))
+            {
+                world = currentGame.world;
+                trackedGuide = null;
+                gameOrderedAway = null;
+                modDirectedGuide = null;
+                modTargetRoom = -1;
+                nextRequest = 0f;
+            }
+
+            var worldAi = currentGame.world?.overseersWorldAI;
+            var guide = worldAi?.playerGuide;
+            var abstractAi = guide?.abstractAI as OverseerAbstractAI;
+            if (!Object.ReferenceEquals(trackedGuide, guide))
+            {
+                trackedGuide = guide;
+                gameOrderedAway = null;
+                modDirectedGuide = null;
+                modTargetRoom = -1;
+                nextRequest = 0f;
+            }
+
+            // The game uses PlayerGuideGoAway for story and AI decisions.
+            // Respect it until the game resumes guiding or replaces the guide.
+            if (Object.ReferenceEquals(gameOrderedAway, abstractAi))
+            {
+                if (abstractAi != null && abstractAi.playerGuide && !abstractAi.goToPlayer)
+                    return;
+                gameOrderedAway = null;
+            }
+
+            if (!enabled) return;
             if (now < nextRequest) return;
+            nextRequest = now + RefreshSeconds;
 
             try
             {
@@ -45,27 +77,33 @@ namespace Rainward
                 var room = player?.Room;
                 if (room == null || room.index < 0)
                 {
-                    nextRequest = now + RefreshSeconds;
                     return;
                 }
 
-                var worldAi = currentGame.world?.overseersWorldAI;
-                var guide = PlayerGuideField?.GetValue(worldAi);
-                var abstractAi = AbstractAiField?.GetValue(guide);
                 if (guide == null || abstractAi == null || BringToRoomMethod == null
-                    || !typeof(OverseerAbstractAI).IsInstanceOfType(abstractAi))
+                    || !guide.state.alive || guide.slatedForDeletion)
                 {
-                    nextRequest = now + RefreshSeconds;
                     return;
                 }
 
                 if (PlayerGuideProperty != null && PlayerGuideProperty.GetValue(abstractAi, null) is bool isPlayerGuide && !isPlayerGuide)
                 {
-                    nextRequest = now + RefreshSeconds;
+                    return;
+                }
+
+                var destinationRoom = abstractAi.destination.room;
+                var previousModTarget = Object.ReferenceEquals(modDirectedGuide, abstractAi)
+                    ? modTargetRoom : -1;
+                if (destinationRoom >= 0 && destinationRoom != room.index
+                    && destinationRoom != previousModTarget && guide.pos.room != destinationRoom)
+                {
+                    // Let the game's existing room destination finish first.
                     return;
                 }
 
                 BringToRoomMethod.Invoke(abstractAi, new object[] { room.index });
+                modDirectedGuide = abstractAi;
+                modTargetRoom = room.index;
             }
             catch
             {
@@ -73,12 +111,21 @@ namespace Rainward
                 // room is loading. Retry on the next interval without affecting
                 // the base game's update loop.
             }
-            nextRequest = now + RefreshSeconds;
+        }
+
+        internal static void GameRequestedDeparture(OverseerAbstractAI ai)
+        {
+            if (ai?.playerGuide == true) gameOrderedAway = ai;
         }
 
         internal static void Reset()
         {
             game = null;
+            world = null;
+            trackedGuide = null;
+            gameOrderedAway = null;
+            modDirectedGuide = null;
+            modTargetRoom = -1;
             nextRequest = 0f;
         }
 

@@ -32,17 +32,19 @@ jobs:
         run: npm test
       - name: Prepare static website
         run: |
-          mkdir -p _site/src _site/test/src /tmp/rainward-stable
-          git archive v2.2.0 rain-guide | tar -x -C /tmp/rainward-stable
-          stable=/tmp/rainward-stable/rain-guide
-          cp "$stable"/index.html "$stable"/icon.svg "$stable"/manifest.webmanifest "$stable"/sw.js "$stable"/map-source-notice.html _site/
-          cp "$stable"/mod/thumbnail.png _site/social-preview.png
-          cp "$stable"/src/*.js "$stable"/src/style.css _site/src/
-          cp -R "$stable"/upstream "$stable"/downloads _site/
-          cp rain-guide/index.html rain-guide/icon.svg rain-guide/manifest.webmanifest rain-guide/sw.js rain-guide/map-source-notice.html _site/test/
-          cp rain-guide/mod/thumbnail.png _site/test/social-preview.png
-          cp rain-guide/src/*.js rain-guide/src/style.css _site/test/src/
-          cp -R rain-guide/upstream rain-guide/downloads _site/test/
+          mkdir -p _site/src _site/test
+          cp rain-guide/index.html rain-guide/icon.svg rain-guide/manifest.webmanifest rain-guide/sw.js rain-guide/map-source-notice.html _site/
+          cp rain-guide/mod/thumbnail.png _site/social-preview.png
+          cp rain-guide/src/*.js rain-guide/src/style.css _site/src/
+          cp -R rain-guide/upstream rain-guide/downloads _site/
+          cat > _site/test/index.html <<'EOF'
+          <!doctype html>
+          <meta charset="utf-8">
+          <meta http-equiv="refresh" content="0;url=../">
+          <script>location.replace('../' + location.hash);</script>
+          <title>Rainward</title>
+          <p><a href="../">Open Rainward</a></p>
+          EOF
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload static website

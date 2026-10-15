@@ -31,6 +31,7 @@ namespace Rainward
             On.RainWorld.OnModsInit += ModsInit;
             On.HUD.Map.Draw += MapDraw;
             On.RainWorldGame.Win += GameWin;
+            On.OverseerAbstractAI.PlayerGuideGoAway += PlayerGuideGoAway;
         }
 
         private void OnDisable()
@@ -47,6 +48,7 @@ namespace Rainward
             On.RainWorld.OnModsInit -= ModsInit;
             On.HUD.Map.Draw -= MapDraw;
             On.RainWorldGame.Win -= GameWin;
+            On.OverseerAbstractAI.PlayerGuideGoAway -= PlayerGuideGoAway;
         }
 
         private void OnApplicationFocus(bool focused)
@@ -159,6 +161,13 @@ namespace Rainward
         private void MapDraw(On.HUD.Map.orig_Draw orig, HUD.Map map, float timeStacker)
         {
             HudMapHighlighter.Draw(orig, map, timeStacker, options);
+        }
+
+        private void PlayerGuideGoAway(On.OverseerAbstractAI.orig_PlayerGuideGoAway orig,
+            OverseerAbstractAI ai, int time)
+        {
+            orig(ai, time);
+            OverseerPresence.GameRequestedDeparture(ai);
         }
 
         private static bool IsStory(RainWorldGame game) => game != null && game.IsStorySession && game.GetStorySession?.saveState != null;
