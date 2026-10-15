@@ -79,6 +79,15 @@ internal static class GuidanceCases
             "region guidance does not draw a fabricated path when already at the regional exit");
         check(!GuidanceRoutePlanner.DefaultLocateSpecificRoom,
             "specific-room guidance defaults off");
+        check(GuidanceRoutePlanner.CampaignTargetRegion("White", "SU") == "HI"
+            && GuidanceRoutePlanner.CampaignTargetRegion("yellow", "SL") == "SH",
+            "regional guidance follows the campaign route without an Overseer target");
+        check(GuidanceRoutePlanner.CampaignTargetRegion("white", "UW") == "SS"
+            && GuidanceRoutePlanner.CampaignTargetRegion("rivulet", "SL") == "RM",
+            "campaign route advances from the current region after story events");
+        check(GuidanceRoutePlanner.CampaignTargetRegion("unknown", "SU") == null
+            && GuidanceRoutePlanner.CampaignTargetRegion("white", "UNKNOWN") == null,
+            "unsupported campaign or region does not invent a destination");
         var regionalRoomHint = GuidanceRoutePlanner.RegionalGuidancePath(edges, 0, 3, false);
         check(regionalRoomHint.Count == 1 && regionalRoomHint[0].A == 0 && regionalRoomHint[0].B == 1,
             "regional mode keeps the next highlighted connection without exposing the full in-region room route");

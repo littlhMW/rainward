@@ -1,4 +1,4 @@
-import { normalizeProgress, normalizeRoomOverrides, suggestedStage } from './snapshot.js?v=2.3.1';
+import { normalizeProgress, normalizeRoomOverrides, suggestedStage } from './snapshot.js?v=2.3.2';
 export const STORAGE_KEY = 'rainward.progress.v1';
 export const VERSION = 1;
 export function defaultProfile(campaign) {

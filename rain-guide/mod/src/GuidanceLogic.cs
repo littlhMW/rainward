@@ -106,6 +106,75 @@ namespace Rainward
     internal static class GuidanceRoutePlanner
     {
         internal const bool DefaultLocateSpecificRoom = false;
+        private static readonly string[] RegionConnections =
+        {
+            "SU-HI", "SU-DS", "SU-LF", "HI-GW", "HI-CC", "HI-SH", "DS-GW", "DS-SB",
+            "GW-SL", "SH-SL", "SH-UW", "CC-UW", "CC-SI", "SI-LF", "LF-SB", "SL-SB",
+            "UW-SS", "DS-CC", "GW-SH", "HI-VS", "SI-VS", "SB-VS", "SL-VS", "SL-MS",
+            "SB-OE", "OE-SU", "UW-LM", "UW-LC", "LM-DM", "UW-RM", "RM-MS", "SL-RM",
+            "CC-CL", "SH-CL", "CL-SL", "UG-SB", "UG-DS", "SB-HR"
+        };
+
+        internal static string CampaignTargetRegion(string character, string currentRegion)
+        {
+            var route = CampaignRegions(character);
+            if (String.IsNullOrWhiteSpace(currentRegion)) return null;
+            for (var i = 0; i < route.Length; i++)
+            {
+                if (!String.Equals(route[i], currentRegion, StringComparison.OrdinalIgnoreCase)) continue;
+                return i + 1 < route.Length ? FirstRegionOnPath(currentRegion, route[i + 1]) : null;
+            }
+            return null;
+        }
+
+        private static string[] CampaignRegions(string character)
+        {
+            switch ((character ?? "").ToLowerInvariant())
+            {
+                case "white": case "yellow": return new[] { "SU", "HI", "GW", "SL", "SH", "UW", "SS", "SB" };
+                case "red": return new[] { "LF", "SI", "CC", "UW", "SS", "SL", "SB" };
+                case "gourmand": return new[] { "SH", "UW", "SS", "SB", "OE" };
+                case "artificer": return new[] { "GW", "HI", "CC", "UW", "LC", "SB" };
+                case "rivulet": return new[] { "DS", "GW", "SL", "RM", "MS", "SL" };
+                case "spear": case "spearmaster": return new[] { "SU", "HI", "CC", "UW", "LM", "DM", "SI" };
+                case "saint": return new[] { "SI", "CC", "CL", "SL", "UG", "LF", "SB", "HR" };
+                default: return Array.Empty<string>();
+            }
+        }
+
+        private static string FirstRegionOnPath(string from, string destination)
+        {
+            if (String.IsNullOrWhiteSpace(from) || String.IsNullOrWhiteSpace(destination)
+                || String.Equals(from, destination, StringComparison.OrdinalIgnoreCase)) return destination;
+
+            var graph = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var edge in RegionConnections)
+            {
+                var parts = edge.Split('-');
+                if (!graph.ContainsKey(parts[0])) graph[parts[0]] = new List<string>();
+                if (!graph.ContainsKey(parts[1])) graph[parts[1]] = new List<string>();
+                graph[parts[0]].Add(parts[1]);
+                graph[parts[1]].Add(parts[0]);
+            }
+
+            var queue = new Queue<List<string>>();
+            queue.Enqueue(new List<string> { from });
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { from };
+            while (queue.Count > 0)
+            {
+                var path = queue.Dequeue();
+                var last = path[path.Count - 1];
+                if (!graph.TryGetValue(last, out var neighbors)) continue;
+                foreach (var next in neighbors)
+                {
+                    if (!seen.Add(next)) continue;
+                    if (String.Equals(next, destination, StringComparison.OrdinalIgnoreCase)) return path.Count == 1 ? next : path[1];
+                    var extended = new List<string>(path) { next };
+                    queue.Enqueue(extended);
+                }
+            }
+            return destination;
+        }
 
         internal static List<RouteEdge> FindPath(IList<RouteEdge> edges, int start, ISet<int> goals)
         {

@@ -11,6 +11,8 @@ namespace Rainward
         private static readonly BindingFlags Instance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private static readonly FieldInfo ConnectionsField = typeof(HUD.Map).GetField("mapConnections", Instance);
         private static readonly FieldInfo MapDataField = typeof(HUD.Map).GetField("mapData", Instance);
+        private static readonly FieldInfo GateDataField = typeof(HUD.Map.MapData).GetField("gateData", Instance);
+        private static readonly FieldInfo GateRoomField = Type.GetType("HUD.Map+MapData+GateData, Assembly-CSharp")?.GetField("roomIndex", Instance);
         private static readonly FieldInfo RoomAField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("roomA", Instance);
         private static readonly FieldInfo RoomBField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("roomB", Instance);
         private static readonly FieldInfo LineField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("lineSprite", Instance);
@@ -156,57 +158,39 @@ namespace Rainward
             if (!IsStory(game)) return result;
             if (!Progress.ShouldShowRoute(options?.GuideWhenBlocked.Value ?? false,
                 options?.GuideAfterCycles.Value ?? GuidanceProgress.DefaultSleepsBeforeGuidance)) return result;
-            var destination = Progress.CurrentTarget;
-            if (String.IsNullOrWhiteSpace(destination)) return result;
             var startRoom = owner.MapOwnerRoom;
             var localRooms = MapRoomIndices(data);
-            var mapGoalRoom = RoomIndex(data, destination);
-            var worldGoalRoom = CurrentStoryGoalRoomIndex(game);
-            if (worldGoalRoom < 0) worldGoalRoom = mapGoalRoom;
-            if (mapGoalRoom < 0 && worldGoalRoom < 0) return result;
-
             var route = new List<RouteEdge>();
+            var preciseTargetRoom = -1;
+            var targetReached = false;
             if (options?.LocateSpecificRoom.Value == true)
             {
-                if (mapGoalRoom >= 0)
-                    route = GuidanceRoutePlanner.FindPath(edges, startRoom, new HashSet<int> { mapGoalRoom });
-                if (route.Count == 0 && startRoom != worldGoalRoom)
+                preciseTargetRoom = CurrentStoryGoalRoomIndex(game);
+                if (preciseTargetRoom < 0) preciseTargetRoom = RoomIndex(data, Progress.CurrentTarget);
+                targetReached = preciseTargetRoom >= 0 && startRoom == preciseTargetRoom;
+                if (preciseTargetRoom >= 0 && !targetReached)
                 {
-                    // A precise story target can be outside the visible map.
-                    // Follow the world graph to the last room represented here.
-                    var worldRoute = FindWorldRoute(game, startRoom, worldGoalRoom);
-                    var worldRooms = GuidanceRoutePlanner.PathRooms(worldRoute, startRoom);
-                    var localGoal = LastRoomOnMap(worldRooms, localRooms);
-                    if (localGoal >= 0 && localGoal != startRoom)
-                        route = GuidanceRoutePlanner.FindPath(edges, startRoom, new HashSet<int> { localGoal });
+                    if (localRooms.Contains(preciseTargetRoom))
+                        route = GuidanceRoutePlanner.FindPath(edges, startRoom, new HashSet<int> { preciseTargetRoom });
+                    if (route.Count == 0)
+                    {
+                        // A precise story target can be outside the visible map.
+                        // Follow the world graph to the last room represented here.
+                        var worldRoute = FindWorldRoute(game, startRoom, preciseTargetRoom);
+                        var worldRooms = GuidanceRoutePlanner.PathRooms(worldRoute, startRoom);
+                        var localGoal = LastRoomOnMap(worldRooms, localRooms);
+                        if (localGoal >= 0 && localGoal != startRoom)
+                            route = GuidanceRoutePlanner.FindPath(edges, startRoom, new HashSet<int> { localGoal });
+                    }
                 }
             }
-            else
-            {
-                var targetIsInDifferentRegion = worldGoalRoom >= 0
-                    && IsConfirmedDifferentRegion(game, map, worldGoalRoom);
-                var targetIsOnCurrentMap = localRooms.Contains(mapGoalRoom) || localRooms.Contains(worldGoalRoom);
-                var regionalGoal = -1;
-                var regionalGoalIsExit = false;
-                if (targetIsInDifferentRegion && startRoom != worldGoalRoom)
-                {
-                    // Resolve cross-region intent before checking local map
-                    // indexes; a foreign target index can coincide with a
-                    // room index in this HUD map.
-                    var worldRoute = FindWorldRoute(game, startRoom, worldGoalRoom);
-                    var worldRooms = GuidanceRoutePlanner.PathRooms(worldRoute, startRoom);
-                    regionalGoal = GuidanceRoutePlanner.RegionExitOnPath(worldRooms, localRooms, startRoom);
-                    regionalGoalIsExit = regionalGoal >= 0;
-                }
-                else if (targetIsOnCurrentMap)
-                {
-                    regionalGoal = localRooms.Contains(mapGoalRoom) ? mapGoalRoom : worldGoalRoom;
-                    regionalGoalIsExit = IsConfirmedRegionExit(game, regionalGoal);
-                }
-                if (regionalGoal >= 0)
-                    route = GuidanceRoutePlanner.RegionalGuidancePath(edges, startRoom,
-                        regionalGoal, regionalGoalIsExit);
-            }
+            // Regional guidance deliberately uses the campaign route table,
+            // not OverseersWorldAI.DirectionFinder.showToRoom. That target can
+            // disappear after story events; the HUD route should still lead to
+            // the campaign's next region. Exact-room mode uses the game target
+            // when available and falls back to this route if it is not.
+            if (route.Count == 0 && !targetReached)
+                route = BuildCampaignRegionalRoute(map, data, edges, startRoom, game);
 
             foreach (var edge in route)
             {
@@ -214,6 +198,44 @@ namespace Rainward
                 result.Add(Pair(edge.B, edge.A));
             }
             return result;
+        }
+
+        private static List<RouteEdge> BuildCampaignRegionalRoute(HUD.Map map, object data,
+            IList<RouteEdge> edges, int startRoom, RainWorldGame game)
+        {
+            var result = new List<RouteEdge>();
+            var nextRegion = GuidanceRoutePlanner.CampaignTargetRegion(game?.StoryCharacter?.value, map?.RegionName);
+            if (String.IsNullOrWhiteSpace(nextRegion)) return result;
+
+            var gates = GateRooms(map, data, nextRegion);
+            return GuidanceRoutePlanner.FindPath(edges, startRoom, gates);
+        }
+
+        private static HashSet<int> GateRooms(HUD.Map map, object data, string targetRegion)
+        {
+            var matching = new HashSet<int>();
+            var gateData = GateDataField?.GetValue(data) as IEnumerable;
+            if (gateData == null) return matching;
+            var currentRegion = map?.RegionName ?? "";
+            foreach (var gate in gateData)
+            {
+                if (!(GateRoomField?.GetValue(gate) is int room)) continue;
+                string name = null;
+                try { name = map.mapData?.NameOfRoom(room); } catch { }
+                if (GateLeadsTo(name, currentRegion, targetRegion)) matching.Add(room);
+            }
+            return matching;
+        }
+
+        private static bool GateLeadsTo(string name, string currentRegion, string targetRegion)
+        {
+            if (String.IsNullOrEmpty(name) || !name.StartsWith("GATE_", StringComparison.OrdinalIgnoreCase)) return false;
+            var parts = name.Split('_');
+            return parts.Length >= 3
+                && (String.Equals(parts[1], targetRegion, StringComparison.OrdinalIgnoreCase)
+                    || String.Equals(parts[2], targetRegion, StringComparison.OrdinalIgnoreCase)
+                    || (String.Equals(parts[1], currentRegion, StringComparison.OrdinalIgnoreCase)
+                        && String.Equals(parts[2], targetRegion, StringComparison.OrdinalIgnoreCase)));
         }
 
         private static void BuildInterestDoorPairs(HUD.Map map, MapOptions options, MapState state)
