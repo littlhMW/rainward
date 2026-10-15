@@ -4,6 +4,7 @@ littlhmw.rainward-map|Map
 littlhmw.rainward-open-map-label|Open web map
 littlhmw.rainward-hold-duration-label|Hold duration ×0.1 s
 littlhmw.rainward-highlight-route-label|Enable route highlighting
+littlhmw.rainward-specific-room-label|Locate specific rooms
 littlhmw.rainward-g-navigation-label|Enable G-key navigation
 littlhmw.rainward-guide-when-blocked-label|Guide only when stuck
 littlhmw.rainward-guide-after-cycles-label|Cycles without progress
@@ -12,6 +13,7 @@ littlhmw.rainward-keep-overseer-nearby-label|Keep the Overseer nearby
 littlhmw.rainward-open-map|Hold this key to open your current location on the web map.
 littlhmw.rainward-hold-duration|Hold duration in tenths of a second.
 littlhmw.rainward-highlight-route|Highlight the recommended route on the in-game map.
+littlhmw.rainward-specific-room|Off: point only to the current-region exit toward the destination, and stop refining the route once you enter that region. On: highlight the route to the room currently marked by the game's guide.
 littlhmw.rainward-g-navigation|Hold the navigation key to open the web map. The default key is G.
 littlhmw.rainward-guide-when-blocked|Off: keep the route visible. On: show it after the configured number of successful sleeps without discovering a new room. Goals update after every successful sleep.
 littlhmw.rainward-guide-after-cycles|In stuck-only mode, the number of successful sleeps without discovering a new room before the route appears.

@@ -1,6 +1,6 @@
 import { parseLocation, playerPoint } from './location.js';
 import { findRoomRoute, gateRooms } from './room-route.js';
-import { roomKey, visibleRoomNames, roomPolygons, roomClipPaths, canPlacePrecisely } from './room-visibility.js?v=2.2.0';
+import { roomKey, visibleRoomNames, roomPolygons, roomClipPaths, canPlacePrecisely } from './room-visibility.js?v=2.3.0';
 
 // The CC0 upstream owns terrain and connection rendering; this adapter controls
 // disclosure, room overrides, names, player snapshots and existing route lines.
@@ -145,7 +145,30 @@ function drawNames() {
 function drawRoute() {
   if (direction) window.map.removeLayer(direction);
   direction = window.L.layerGroup().addTo(window.map);
-  if (!settings.route || !settings.nextRegion) return;
+  if (!settings.route) return;
+  if (settings.locateRoom && settings.targetRoom) {
+    const target = getRoom(settings.targetRoom);
+    if (target) {
+      const targetPoint = roomCenter(target.feature);
+      window.L.circleMarker(targetPoint, {radius:10,color:'#f1c84b',weight:3,fillColor:'#f1c84b',fillOpacity:.85,interactive:false})
+        .bindTooltip(text(tx(`目标房间：${roomKey(settings.targetRoom)}`,`Target room: ${roomKey(settings.targetRoom)}`)), {className:'manual-route-label'}).addTo(direction);
+      const start = settings.room && getRoom(settings.room);
+      if (start) {
+        const result = findRoomRoute(features(), window.rwRoomJSON.connection_features, settings.room, settings.targetRoom);
+        if (result.rooms.length && result.featureIndexes.length) {
+          new window.L.BezierGeoJSON(result.featureIndexes.map(index => window.rwRoomJSON.connection_features[index]), {color:'#f1c84b',weight:6,opacity:1,dashArray:'8 6',interactive:false}).addTo(direction);
+          notify('route',{message:tx(`已标出 ${result.featureIndexes.length} 段连接：${roomKey(settings.room)} → ${roomKey(settings.targetRoom)}。连接仅供参考，实际通行以游戏为准。`,`Marked ${result.featureIndexes.length} connections: ${roomKey(settings.room)} → ${roomKey(settings.targetRoom)}. Connections are a reference; verify access in game.`)});
+          return;
+        } else if (roomKey(settings.room) === roomKey(settings.targetRoom)) {
+          notify('route',{message:tx('已到达目标房间。','You are already at the target room.')});
+          return;
+        } else {
+          notify('route',{message:tx('原图中未找到到目标房间的连接，继续显示区域方向。','No connection to the target room was found in the source map; regional guidance remains visible.')});
+        }
+      } else notify('route',{message:tx(`已标出目标房间 ${roomKey(settings.targetRoom)}。定位当前房间后可显示连接路线。`,`Target room ${roomKey(settings.targetRoom)} is marked. Locate your current room to show the connections.`)});
+    }
+  }
+  if (!settings.nextRegion) return;
   const gates = gateRooms(features(), window.loadedRegion, settings.nextRegion);
   let best = null;
   for (const name of gates) {
@@ -248,6 +271,7 @@ window.addEventListener('message', event => {
     language:value.language === 'en' ? 'en' : 'zh',
     mask:!!value.mask, rooms:!!value.rooms, spawns:!!value.spawns, names:!!value.names,
     nextRegion:typeof value.nextRegion==='string' ? value.nextRegion.toUpperCase() : null, route:!!value.route,
+    locateRoom:!!value.locateRoom, targetRoom:typeof value.targetRoom==='string' ? roomKey(value.targetRoom) : null,
     room:typeof value.room==='string' ? value.room : null, player:value.player || null,
     players:Array.isArray(value.players) ? value.players.slice(0,64) : [],
     manualRoomRoute:value.manualRoomRoute && typeof value.manualRoomRoute.start === 'string' && typeof value.manualRoomRoute.target === 'string' ? {

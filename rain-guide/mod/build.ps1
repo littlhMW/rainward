@@ -43,7 +43,7 @@ try {
     }
     # Create a zip from an explicit allowlist; never include game libraries or source caches.
     Add-Type -AssemblyName System.IO.Compression
-    $archivePath = Join-Path $modRoot 'dist/Rainward-WhereToGo-1.3.5.zip'
+    $archivePath = Join-Path $modRoot 'dist/Rainward-WhereToGo-1.3.6.zip'
     $archiveStream = [IO.File]::Open($archivePath, [IO.FileMode]::Create)
     try {
         $archive = [IO.Compression.ZipArchive]::new($archiveStream, [IO.Compression.ZipArchiveMode]::Create)
@@ -57,6 +57,7 @@ try {
             }
         } finally { $archive.Dispose() }
     } finally { $archiveStream.Dispose() }
+    Copy-Item -LiteralPath $archivePath -Destination (Join-Path $modRoot '../downloads/Rainward-WhereToGo.zip') -Force
     Get-Item -LiteralPath $archivePath | Select-Object FullName, Length
     Get-FileHash -LiteralPath $archivePath -Algorithm SHA256
     $installedModInfo = Join-Path $installedRoot 'modinfo.json'

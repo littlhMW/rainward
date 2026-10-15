@@ -69,7 +69,11 @@ export function normalizeSnapshot(input) {
   });
   const capturedAt=Number.isFinite(Date.parse(input.capturedAt)) ? new Date(input.capturedAt).toISOString() : '';
   const progress=normalizeProgress({...input.progress,capturedAt,...(location.mode==='meadow'?{source:'unavailable'}:{})},input.multiplayer === true);
-  return {...location,v:2,multiplayer:input.multiplayer === true,route:input.route !== false,capturedAt,players:normalizedPlayers,progress};
+  const storyTargetRoom=location.mode === 'story' ? roomCode(input.storyTargetRoom) : null;
+  const candidateTargetRegion=location.mode === 'story' ? regionCode(input.storyTargetRegion) : null;
+  const storyTargetRegion=storyTargetRoom && candidateTargetRegion === location.region ? candidateTargetRegion : null;
+  return {...location,v:2,multiplayer:input.multiplayer === true,route:input.route !== false,capturedAt,players:normalizedPlayers,
+    ...(storyTargetRegion ? {storyTargetRoom,storyTargetRegion} : {}),progress};
 }
 
 export async function parseGameLink(hash) {

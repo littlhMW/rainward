@@ -1,11 +1,11 @@
-import { normalizeProgress, normalizeRoomOverrides, suggestedStage } from './snapshot.js?v=2.2.0';
+import { normalizeProgress, normalizeRoomOverrides, suggestedStage } from './snapshot.js?v=2.3.0';
 export const STORAGE_KEY = 'rainward.progress.v1';
 export const VERSION = 1;
 export function defaultProfile(campaign) {
   return { current: campaign.start, known: [campaign.start], completed: [], hint: 0, notes: '', checklist: [], gameProgress: null, roomOverrides: {} };
 }
 export function defaultState() {
-  return { version: VERSION, campaign: 'survivor', profiles: {}, prefs: { mask: true, names: false, route: true, dlc: false, outerUnlocked: false } };
+  return { version: VERSION, campaign: 'survivor', profiles: {}, prefs: { mask: true, names: false, route: true, locateRoom: false, dlc: false, outerUnlocked: false } };
 }
 function allEdges(campaign) {
   const edges = campaign.edges.map(edge => edge.slice(0, 2));

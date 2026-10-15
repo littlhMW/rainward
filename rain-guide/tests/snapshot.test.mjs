@@ -32,6 +32,24 @@ test('route highlighting follows the mod snapshot toggle', () => {
   assert.equal(normalizeSnapshot({ ...input(), route: true }).route, true);
 });
 
+test('specific story target rooms are accepted only as validated room and region codes', () => {
+  const snapshot = input();
+  snapshot.storyTargetRoom = 'su_c04';
+  snapshot.storyTargetRegion = 'su';
+  assert.equal(normalizeSnapshot(snapshot).storyTargetRoom, 'SU_C04');
+  assert.equal(normalizeSnapshot(snapshot).storyTargetRegion, 'SU');
+  for (const target of [
+    { storyTargetRoom: '../SU_C04', storyTargetRegion: 'SU' },
+    { storyTargetRoom: 'SU_C04', storyTargetRegion: '!' },
+    { storyTargetRoom: 'SU_C04' },
+    { storyTargetRoom: 'SU_C04', storyTargetRegion: 'HI' },
+  ]) {
+    const result = normalizeSnapshot({ ...input(), ...target });
+    assert.equal(Object.hasOwn(result, 'storyTargetRoom'), false);
+    assert.equal(Object.hasOwn(result, 'storyTargetRegion'), false);
+  }
+});
+
 test('normalization preserves local, host, and unknown remote players separately', () => {
   const { players } = normalizeSnapshot(input());
   assert.equal(players.length, 3);
@@ -99,10 +117,12 @@ test('missing or contradictory scope and freshness fail closed even with a valid
 
 test('Meadow free mode never imports story or exploration progress even if payload claims a host save', () => {
   const snapshot = input(); snapshot.mode = 'meadow'; snapshot.avatar = 'GreenLizard';
+  snapshot.storyTargetRoom = 'HI_A01'; snapshot.storyTargetRegion = 'HI';
   const result = normalizeSnapshot(snapshot);
   assert.equal(result.mode, 'meadow'); assert.equal(result.avatar, 'GreenLizard');
   assert.equal(result.progress.source, 'unavailable');
   assert.deepEqual(result.progress.rooms, []); assert.deepEqual(result.progress.flags, {});
+  assert.equal(Object.hasOwn(result, 'storyTargetRoom'), false);
   assert.equal(result.players.length, 3, 'player snapshots remain useful in free mode');
 });
 

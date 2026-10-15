@@ -105,6 +105,8 @@ namespace Rainward
 
     internal static class GuidanceRoutePlanner
     {
+        internal const bool DefaultLocateSpecificRoom = false;
+
         internal static List<RouteEdge> FindPath(IList<RouteEdge> edges, int start, ISet<int> goals)
         {
             var result = new List<RouteEdge>();
@@ -178,6 +180,34 @@ namespace Rainward
                 rooms.Add(current);
             }
             return rooms;
+        }
+
+        internal static int RegionExitOnPath(IList<int> worldPathRooms, ISet<int> currentRegionRooms, int start)
+        {
+            if (worldPathRooms == null || currentRegionRooms == null || start < 0) return -1;
+            var lastCurrentRegionRoom = -1;
+            foreach (var room in worldPathRooms)
+            {
+                if (currentRegionRooms.Contains(room))
+                {
+                    lastCurrentRegionRoom = room;
+                    continue;
+                }
+
+                // The first room outside the current region confirms that the
+                // preceding local room is the exit to the destination region.
+                if (lastCurrentRegionRoom >= 0)
+                    return lastCurrentRegionRoom == start ? -1 : lastCurrentRegionRoom;
+            }
+            return -1;
+        }
+
+        internal static int RegionGuidanceGoal(bool locateSpecificRoom, bool targetIsOnCurrentMap,
+            bool targetIsConfirmedExit, int targetRoom, int currentRegionExit)
+        {
+            if (locateSpecificRoom) return targetRoom;
+            if (targetIsOnCurrentMap) return targetIsConfirmedExit ? targetRoom : -1;
+            return currentRegionExit;
         }
 
         internal static HashSet<string> FindInterestDoors(IList<RouteEdge> edges, IList<RouteEdge> mainRoute,

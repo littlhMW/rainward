@@ -68,6 +68,27 @@ internal static class GuidanceCases
         var pathRooms = GuidanceRoutePlanner.PathRooms(direct, 0);
         check(pathRooms.SequenceEqual(new[] { 0, 1, 3 }),
             "route planner preserves the ordered rooms for visible path fallback");
+        check(GuidanceRoutePlanner.RegionExitOnPath(new[] { 0, 1, 8, 9 },
+                new HashSet<int> { 0, 1, 2 }, 0) == 1,
+            "region guidance stops at the current-region exit on a cross-region path");
+        check(GuidanceRoutePlanner.RegionExitOnPath(new[] { 0, 1, 3 },
+                new HashSet<int> { 0, 1, 3 }, 0) == -1,
+            "region guidance does not continue toward a specific room inside the destination region");
+        check(GuidanceRoutePlanner.RegionExitOnPath(new[] { 0, 8, 9 },
+                new HashSet<int> { 0, 1, 2 }, 0) == -1,
+            "region guidance does not draw a fabricated path when already at the regional exit");
+        check(!GuidanceRoutePlanner.DefaultLocateSpecificRoom
+            && GuidanceRoutePlanner.RegionGuidanceGoal(GuidanceRoutePlanner.DefaultLocateSpecificRoom,
+                true, false, 3, -1) == -1,
+            "specific-room targeting defaults off and suppresses an unconfirmed in-region room goal");
+        check(GuidanceRoutePlanner.RegionGuidanceGoal(GuidanceRoutePlanner.DefaultLocateSpecificRoom,
+                true, true, 3, -1) == 3,
+            "region-level guidance may point to a confirmed region gate");
+        check(GuidanceRoutePlanner.RegionGuidanceGoal(GuidanceRoutePlanner.DefaultLocateSpecificRoom,
+                false, false, 9, 1) == 1,
+            "a verified cross-region path uses its current-region exit");
+        check(GuidanceRoutePlanner.RegionGuidanceGoal(true, true, false, 3, -1) == 3,
+            "enabling specific-room targeting selects the current story room");
         var interestDoors = GuidanceRoutePlanner.FindInterestDoors(edges, direct, 0, new HashSet<int> { 2, 4 });
         check(interestDoors.Contains(GuidanceRoutePlanner.EdgeKey(0, 2))
             && interestDoors.Contains(GuidanceRoutePlanner.EdgeKey(3, 4))

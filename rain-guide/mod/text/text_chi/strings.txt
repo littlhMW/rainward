@@ -4,6 +4,7 @@ littlhmw.rainward-map|地图
 littlhmw.rainward-open-map-label|打开网页地图
 littlhmw.rainward-hold-duration-label|按住时长 ×0.1 秒
 littlhmw.rainward-highlight-route-label|启用高亮路线
+littlhmw.rainward-specific-room-label|定位到具体房间
 littlhmw.rainward-g-navigation-label|启用 G 键导航
 littlhmw.rainward-guide-when-blocked-label|受阻后再显示指引
 littlhmw.rainward-guide-after-cycles-label|连续无进展周期数
@@ -12,6 +13,7 @@ littlhmw.rainward-keep-overseer-nearby-label|保持监视者在附近
 littlhmw.rainward-open-map|按住此键，在网页地图上打开当前位置。
 littlhmw.rainward-hold-duration|按住时长，单位为 0.1 秒。
 littlhmw.rainward-highlight-route|在游戏内地图中高亮推荐路线。
+littlhmw.rainward-specific-room|关闭时仅指向通往目标区域的当前区域出口；进入目标区域后不再细化至房间。开启后，高亮路线会指向游戏向导当前标记的房间。
 littlhmw.rainward-g-navigation|按住导航键打开网页地图，默认按键为 G。
 littlhmw.rainward-guide-when-blocked|关闭时持续显示路线；开启后，连续达到设定周期且未发现新房间才显示路线。目标在每次成功休眠后更新。
 littlhmw.rainward-guide-after-cycles|受阻模式下，连续未发现新房间的成功休眠周期数。

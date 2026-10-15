@@ -51,6 +51,7 @@ test('a new journey starts masked with no completed story or expanded hint', () 
   assert.equal(state.campaign, 'survivor');
   assert.equal(state.prefs.mask, true);
   assert.equal(state.prefs.names, false);
+  assert.equal(state.prefs.locateRoom, false);
   assert.equal(state.prefs.dlc, false);
   assert.equal(state.prefs.outerUnlocked, false);
   assert.deepEqual(state.profiles, {});
@@ -85,13 +86,20 @@ test('import defaults unknown roles and accepts only boolean preferences', () =>
     prefs: { mask: 'false', names: true, route: 0, dlc: null, outerUnlocked: 'true', injected: true },
   }), campaigns, REGIONS);
   assert.equal(state.campaign, 'survivor');
-  assert.deepEqual(state.prefs, { mask: true, names: true, route: true, dlc: false, outerUnlocked: false });
+  assert.deepEqual(state.prefs, { mask: true, names: true, route: true, locateRoom: false, dlc: false, outerUnlocked: false });
 });
 
 test('import accepts explicit edition and optional-route preferences as booleans', () => {
   const state = normalizeState(imported({}, { prefs: { dlc: true, outerUnlocked: true } }), campaigns, REGIONS);
   assert.equal(state.prefs.dlc, true);
   assert.equal(state.prefs.outerUnlocked, true);
+});
+
+test('the exact-room preference is opt-in and old exports remain regional by default', () => {
+  const oldExport = normalizeState(imported({}, { prefs: { route: true } }), campaigns, REGIONS);
+  assert.equal(oldExport.prefs.locateRoom, false);
+  const exact = normalizeState(imported({}, { prefs: { locateRoom: true } }), campaigns, REGIONS);
+  assert.equal(exact.prefs.locateRoom, true);
 });
 
 test('import drops foreign region IDs, foreign stage IDs, and duplicate records', () => {

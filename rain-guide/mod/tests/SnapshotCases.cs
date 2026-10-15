@@ -14,6 +14,7 @@ internal static class SnapshotCases
     internal static GameSnapshot Example() => new GameSnapshot
     {
         character = "Survivor", region = "SU", room = "SU_C04", x = 12, y = 7,
+        storyTargetRoom = "SU_C12", storyTargetRegion = "SU",
         px = 250.5f, py = 140.25f, cx = -40f, cy = 0f, avatar = "White", mode = "story",
         dlc = true, multiplayer = true, capturedAt = "2026-10-13T12:34:56.0000000Z",
         progress = SaveSnapshotReader.Host(HostSave, "White"),
@@ -56,6 +57,9 @@ internal static class SnapshotCases
         check(json.SequenceEqual(restored.ToArray()), "gzip/base64url round trip preserves entire JSON without truncation");
         using var document = JsonDocument.Parse(json);
         check(document.RootElement.GetProperty("route").GetBoolean(), "route highlighting is enabled by default in a game snapshot");
+        check(document.RootElement.GetProperty("storyTargetRoom").GetString() == "SU_C12"
+            && document.RootElement.GetProperty("storyTargetRegion").GetString() == "SU",
+            "the live in-game story target is available for optional exact-room website guidance");
         check(document.RootElement.GetProperty("progress").GetProperty("flags").GetProperty("ghostsTalkedTo").GetProperty("CC").GetInt32() == 2, "echo dictionary serializes as a JSON object");
         var players = document.RootElement.GetProperty("players");
         check(players.GetArrayLength() == 3 && !players[2].GetProperty("available").GetBoolean() && !players[2].TryGetProperty("room", out _), "unresolved remote players remain present without fabricated coordinates");

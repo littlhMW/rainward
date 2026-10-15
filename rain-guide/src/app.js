@@ -1,9 +1,9 @@
-import { CAMPAIGNS, REGIONS, SURVIVAL_TIPS } from './data.js?v=2.2.0';
-import { EN_CAMPAIGNS, EN_REGIONS, EN_SURVIVAL_TIPS } from './data-en.js?v=2.2.0';
-import { STORAGE_KEY, defaultState, defaultProfile, normalizeState, recommendedStage, applyGameProgress, regionName, findPath } from './engine.js?v=2.2.0';
+import { CAMPAIGNS, REGIONS, SURVIVAL_TIPS } from './data.js?v=2.3.0';
+import { EN_CAMPAIGNS, EN_REGIONS, EN_SURVIVAL_TIPS } from './data-en.js?v=2.3.0';
+import { STORAGE_KEY, defaultState, defaultProfile, normalizeState, recommendedStage, applyGameProgress, regionName, findPath } from './engine.js?v=2.3.0';
 import { REGION_SPOILERS, SPOILER_POLICY } from './spoilers.js';
 import { MAP_CHARACTERS, locationFragment } from './location.js';
-import { parseGameLink, normalizeSnapshot, MAX_SNAPSHOT_BYTES } from './snapshot.js?v=2.2.0';
+import { parseGameLink, normalizeSnapshot, MAX_SNAPSHOT_BYTES } from './snapshot.js?v=2.3.0';
 
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -105,8 +105,8 @@ function updateControls() {
   if (!ids.includes(profile().current)) profile().current = baseCampaign().start;
   $('#region-select').innerHTML = ids.map(id => `<option value="${id}" ${id === profile().current ? 'selected' : ''}>${esc(names(id))}</option>`).join('');
   const mapUnavailable = state.campaign === 'watcher';
-  for (const id of ['mask-toggle','names-toggle','route-toggle','rooms-toggle','spawns-toggle','world-view']) $('#'+id).disabled = mapUnavailable;
-  for (const [id,key] of [['mask-toggle','mask'],['names-toggle','names'],['route-toggle','route']]) $('#'+id).checked = state.prefs[key];
+  for (const id of ['mask-toggle','names-toggle','route-toggle','locate-room-toggle','rooms-toggle','spawns-toggle','world-view']) $('#'+id).disabled = mapUnavailable;
+  for (const [id,key] of [['mask-toggle','mask'],['names-toggle','names'],['route-toggle','route'],['locate-room-toggle','locateRoom']]) $('#'+id).checked = state.prefs[key];
   $('#spawns-toggle').checked = layers.spawns;
   $('#rooms-toggle').checked = layers.rooms;
 }
@@ -155,7 +155,8 @@ function updatePosition() {
 function sendMap(action = 'settings') {
   if (!mapReady) return;
   const current = received?.campaign === state.campaign;
-  $('#map-frame').contentWindow.postMessage({ type: 'where-to-map', action, mask: state.prefs.mask, rooms: layers.rooms, spawns: layers.spawns, nextRegion: route()[1] || null, route: state.prefs.route, room: selectedRoom || (current && received.region === profile().current ? received.room : null), player: current && received.v !== 2 && received.region === profile().current ? received : null,
+  const exactTargetAvailable = state.prefs.locateRoom && current && received.storyTargetRoom && received.storyTargetRegion === profile().current;
+  $('#map-frame').contentWindow.postMessage({ type: 'where-to-map', action, mask: state.prefs.mask, rooms: layers.rooms, spawns: layers.spawns, nextRegion: route()[1] || null, route: state.prefs.route, locateRoom: state.prefs.locateRoom, targetRoom: exactTargetAvailable ? received.storyTargetRoom : null, room: selectedRoom || (current && received.region === profile().current ? received.room : null), player: current && received.v !== 2 && received.region === profile().current ? received : null,
     players: current && received.v === 2 ? received.players : [], exploredRooms: gameProgress()?.rooms || [], roomOverrides: profile().roomOverrides,
     names: state.prefs.names, language, regionLabel: names(profile().current), regionLabels: Object.fromEntries(Object.keys(REGIONS).map(id=>[id,names(id)])), manualRoomRoute }, location.origin);
 }
@@ -312,6 +313,7 @@ $('#region-select').onchange = e => chooseRegion(e.target.value);
 $('#mask-toggle').onchange = e => { state.prefs.mask=e.target.checked; save(); updateControls(); updateRoomControls(); sendMap(); };
 $('#names-toggle').onchange = e => { state.prefs.names=e.target.checked; save(); updateControls(); renderStory(); updatePosition(); sendMap(); };
 $('#route-toggle').onchange = e => { state.prefs.route=e.target.checked; save(); renderStory(); sendMap(); };
+$('#locate-room-toggle').onchange = e => { state.prefs.locateRoom=e.target.checked; save(); updateControls(); sendMap(); };
 $('#rooms-toggle').onchange = e => { layers.rooms=e.target.checked; sendMap(); };
 $('#spawns-toggle').onchange = e => { layers.spawns=e.target.checked; sendMap(); };
 $('#world-view').onclick = () => sendMap('overview');

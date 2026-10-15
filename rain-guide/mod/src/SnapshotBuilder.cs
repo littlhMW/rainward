@@ -24,6 +24,13 @@ namespace Rainward
                 mode = mode, dlc = ModManager.MSC, multiplayer = lobby != null,
                 capturedAt = DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture)
             };
+            var storyTargetRoom = mode == "story" ? HudMapHighlighter.CurrentStoryGoal(game) : null;
+            if (!String.IsNullOrWhiteSpace(storyTargetRoom) && game.world?.abstractRooms?.Any(room =>
+                String.Equals(room?.name, storyTargetRoom, StringComparison.OrdinalIgnoreCase)) == true)
+            {
+                result.storyTargetRoom = storyTargetRoom.ToUpperInvariant();
+                result.storyTargetRegion = own.region;
+            }
             if (lobby == null)
             {
                 int index = 0;

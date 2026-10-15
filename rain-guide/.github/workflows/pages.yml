@@ -2,7 +2,7 @@ name: Deploy Rainward to GitHub Pages
 
 on:
   push:
-    branches: [main, 'codex/rainward']
+    branches: [main]
   workflow_dispatch:
 
 permissions:

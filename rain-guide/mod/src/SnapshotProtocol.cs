@@ -15,6 +15,8 @@ namespace Rainward
         [DataMember] public string character;
         [DataMember] public string region;
         [DataMember] public string room;
+        [DataMember(EmitDefaultValue = false)] public string storyTargetRoom;
+        [DataMember(EmitDefaultValue = false)] public string storyTargetRegion;
         [DataMember(EmitDefaultValue = false)] public int? x;
         [DataMember(EmitDefaultValue = false)] public int? y;
         [DataMember(EmitDefaultValue = false)] public float? px;

@@ -18,6 +18,7 @@
 
 - 支持九位常规剧情角色。基础角色与 Downpour 使用 Rain World Map 前端；Watcher 保留故事线索，并通过原作者网站打开 Watcher 地图。
 - 故事线索按层级展开，先提供方向，再提供目的地和路线参考。经过房间或开始会面不会自动完成剧情目标，完成状态由玩家确认。
+- 地图工具栏可切换区域指引与房间定位；具体房间目标仅在游戏快照提供有效指引位置时显示，设置默认关闭。
 - 网页无需账户。探索记录、单房间遮罩、手动线索进度和旅途笔记保存在当前浏览器中，可在数据面板备份或清除。
 
 ## Mod
@@ -47,7 +48,7 @@ Rainward: Where to Go is an interactive *Rain World* map and exploration guide. 
 - Base-game and Downpour maps use the open-source front end of [Rain World Map](https://rain-world-map.github.io/), including room connections, terrain, creature layers, dragging, zooming, and room controls.
 - Unexplored terrain is masked by room by default while nodes and exits remain visible. Import a game snapshot to reveal visited rooms; each room can follow the game record, be shown, or be masked independently, and the entire region can be revealed at once.
 - Region names appear on the map. Ordinary names are visible by default; the 17 regions grouped as spoilers in the Wiki navigation template are hidden until enabled. Room codes remain available for precise lookup.
-- Room-code lookup, connections, and recommended routes remain available while terrain is masked. Routes are references based on connections and regional direction; gates, one-way passages, character abilities, and terrain mods affect actual access.
+- Room-code lookup, connections, and recommended routes remain available while terrain is masked. The exact-room option is off by default and uses a validated in-game guidance target when available; otherwise the map keeps regional guidance. Routes are references based on connections and regional direction; gates, one-way passages, character abilities, and terrain mods affect actual access.
 - Nine standard story campaigns are supported. Clues unfold in layers, suggesting a direction before revealing more detail. Visiting a room or starting a meeting does not complete an objective automatically.
 - Watcher keeps its story clues and opens the original author’s map site separately.
 

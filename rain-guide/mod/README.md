@@ -8,7 +8,7 @@
 2. 将其中的 `rainward` 文件夹放入游戏目录 `RainWorld_Data/StreamingAssets/mods/`。
 3. 在 Remix 中启用「雨间：我该去哪 / Rainward: Where to Go」，按提示重启游戏。
 
-更新时关闭游戏，用新版本替换 `rainward` 文件夹。由旧版 `whereshouldigo` 升级时，首次启动会迁移按键与开关配置；确认新版本运行正常后即可删除旧文件夹。Remix 中可以修改打开地图的按键和长按时间，并分别启用或停用游戏内地图高亮与 G 键导航。高亮只作用于游戏内 HUD 地图，不改变地形、入口或出口。
+更新时关闭游戏，用新版本替换 `rainward` 文件夹。由旧版 `whereshouldigo` 升级时，首次启动会迁移按键与开关配置；确认新版本运行正常后即可删除旧文件夹。Remix 中可以修改打开地图的按键和长按时间，并分别设置游戏内地图高亮、具体房间定位与 G 键导航。具体房间定位默认关闭；高亮只作用于游戏内 HUD 地图，不改变地形、入口或出口。
 
 「持续指引」会始终显示当前故事目标路线；开启「受阻后再显示指引」后，可设定连续 1 至 10 个成功休眠周期未发现新房间时显示路线。每次成功休眠后，目标会按当前战役的向导状态重新判定。「标记兴趣点入口」会独立以浅色标记尚未显示过向导投影的相关房间入口，不改变黄色主路线。「保持监视者在附近」是独立选项，默认关闭；关闭时 Mod 不干预监视者行为。黄色主路线以约 3.6 秒为周期缓慢明暗变化。
 
@@ -18,7 +18,7 @@
 
 按住快捷键时生成一次位置快照，不会持续追踪游戏。浏览器打开时，联机游戏仍会继续运行，请先停在安全位置。使用新增或修改地形、房间或连接的 Mod 时，地图信息可能不准确；本工具不扫描已安装的 Mod。
 
-打开网页时仍会显示网页自身的推荐路线。启用 Remix 的「启用高亮路线」后，长按游戏地图键打开的 HUD 地图会以黄色标出通往游戏向导当前目标房间的连接；关闭后不添加该叠加层。关闭「启用 G 键导航」后，长按 G 不会打开网页地图。
+打开网页时仍会显示网页自身的推荐路线。启用 Remix 的「启用高亮路线」后，长按游戏地图键打开的 HUD 地图会以黄色标出推荐路线。默认关闭「定位到具体房间」时，路线只指向通往目标区域的当前区域出口；进入目标区域后不再细化至房间。开启后才会指向游戏向导当前标记的房间。「标记兴趣点入口」独立显示兴趣点，不改变主路线。关闭「启用 G 键导航」后，长按 G 不会打开网页地图。
 
 雨甸中会显示当前可读取的玩家位置，探索记录只使用房主存档。客机收到的房主记录可能晚于当前周期；自由模式可以提供位置，但没有可确认的探索和剧情记录。无法读取的位置会标为未知。
 
@@ -44,7 +44,7 @@ Base-game and Downpour maps retain rooms, connections, terrain, dragging, zoomin
 
 The mod does not modify saves, access the clipboard, send Steam IDs, or continuously track the game. The website requires an internet connection. In Rain Meadow, exploration uses the host's save; the current cycle may not yet be synchronized. Mods that change terrain, rooms, or connections can make map information inaccurate.
 
-The web map keeps its own route display. With “Highlight recommended route” enabled, the in-game HUD map marks connections toward the recommended direction in yellow; disabling it removes only that overlay. “Enable G-key navigation” controls opening the web map. Neither option changes terrain, entrances, or exits.
+The web map keeps its own route display. With “Enable route highlighting” enabled, the in-game HUD map marks the recommended route in yellow. “Locate specific rooms” is off by default: the route points only to the current-region exit toward the destination, and stops refining once you enter that region. When enabled, it follows the room currently marked by the game's guide. “Mark interest-point entrances” remains independent and does not change the main route. “Enable G-key navigation” controls opening the web map. These options do not change terrain, entrances, or exits.
 
 Continuous guidance keeps the current story route visible. When “Guide only when stuck” is enabled, set the route to appear after 1–10 successful sleeps without discovering a new room. The story target is reevaluated after each successful sleep. “Mark interest-point entrances” independently marks relevant rooms whose Overseer projections have not yet been shown; it does not change the yellow main route. “Keep the Overseer nearby” is a separate option and is off by default; when disabled, the mod does not interfere with Overseer behavior. The main route slowly pulses over a cycle of about 3.6 seconds.
 

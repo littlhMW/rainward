@@ -8,6 +8,7 @@ namespace Rainward
         internal readonly Configurable<KeyCode> OpenKey;
         internal readonly Configurable<int> HoldTenths;
         internal readonly Configurable<bool> EnableRouteHighlight;
+        internal readonly Configurable<bool> LocateSpecificRoom;
         internal readonly Configurable<bool> EnableGNavigation;
         internal readonly Configurable<bool> GuideWhenBlocked;
         internal readonly Configurable<int> GuideAfterCycles;
@@ -23,6 +24,8 @@ namespace Rainward
                     new ConfigAcceptableRange<int>(2, 20)));
             EnableRouteHighlight = config.Bind("EnableRouteHighlight", true,
                 new ConfigurableInfo("littlhmw.rainward-highlight-route"));
+            LocateSpecificRoom = config.Bind("LocateSpecificRoom", GuidanceRoutePlanner.DefaultLocateSpecificRoom,
+                new ConfigurableInfo("littlhmw.rainward-specific-room"));
             EnableGNavigation = config.Bind("EnableGNavigation", true,
                 new ConfigurableInfo("littlhmw.rainward-g-navigation"));
             GuideWhenBlocked = config.Bind("GuideWhenBlocked", false,
@@ -51,25 +54,28 @@ namespace Rainward
                 new OpCheckBox(EnableRouteHighlight, new Vector2(25, 365))
                     { description = Translate("littlhmw.rainward-highlight-route") },
                 new OpLabel(60, 365, Translate("littlhmw.rainward-highlight-route-label")),
-                new OpCheckBox(EnableGNavigation, new Vector2(25, 330))
+                new OpCheckBox(LocateSpecificRoom, new Vector2(25, 330))
+                    { description = Translate("littlhmw.rainward-specific-room") },
+                new OpLabel(60, 330, Translate("littlhmw.rainward-specific-room-label")),
+                new OpCheckBox(EnableGNavigation, new Vector2(25, 295))
                     { description = Translate("littlhmw.rainward-g-navigation") },
-                new OpLabel(60, 330, Translate("littlhmw.rainward-g-navigation-label")),
-                new OpCheckBox(GuideWhenBlocked, new Vector2(25, 295))
+                new OpLabel(60, 295, Translate("littlhmw.rainward-g-navigation-label")),
+                new OpCheckBox(GuideWhenBlocked, new Vector2(25, 260))
                     { description = Translate("littlhmw.rainward-guide-when-blocked") },
-                new OpLabel(60, 295, Translate("littlhmw.rainward-guide-when-blocked-label")),
-                new OpLabel(25, 255, Translate("littlhmw.rainward-guide-after-cycles-label")),
-                new OpSlider(GuideAfterCycles, new Vector2(330, 255), 200)
+                new OpLabel(60, 260, Translate("littlhmw.rainward-guide-when-blocked-label")),
+                new OpLabel(25, 220, Translate("littlhmw.rainward-guide-after-cycles-label")),
+                new OpSlider(GuideAfterCycles, new Vector2(330, 220), 200)
                     { description = Translate("littlhmw.rainward-guide-after-cycles") },
-                new OpCheckBox(GuideInterestPoints, new Vector2(25, 210))
+                new OpCheckBox(GuideInterestPoints, new Vector2(25, 180))
                     { description = Translate("littlhmw.rainward-guide-interest-points") },
-                new OpLabel(60, 210, Translate("littlhmw.rainward-guide-interest-points-label")),
-                new OpCheckBox(KeepOverseerNearby, new Vector2(25, 175))
+                new OpLabel(60, 180, Translate("littlhmw.rainward-guide-interest-points-label")),
+                new OpCheckBox(KeepOverseerNearby, new Vector2(25, 145))
                     { description = Translate("littlhmw.rainward-keep-overseer-nearby") },
-                new OpLabel(60, 175, Translate("littlhmw.rainward-keep-overseer-nearby-label")),
-                new OpLabel(new Vector2(25, 105), new Vector2(550, 55),
+                new OpLabel(60, 145, Translate("littlhmw.rainward-keep-overseer-nearby-label")),
+                new OpLabel(new Vector2(25, 80), new Vector2(550, 50),
                     Translate("littlhmw.rainward-default-help") + "\n" +
                     Translate("littlhmw.rainward-snapshot-help"), FLabelAlignment.Left),
-                new OpLabel(new Vector2(25, 15), new Vector2(550, 75),
+                new OpLabel(new Vector2(25, 5), new Vector2(550, 65),
                     Translate("littlhmw.rainward-terrain-warning") + "\n" +
                     Translate("littlhmw.rainward-no-mod-scan") + "\n" +
                     Translate("littlhmw.rainward-browser-online"), FLabelAlignment.Left)
