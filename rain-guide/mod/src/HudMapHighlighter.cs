@@ -79,7 +79,7 @@ namespace Rainward
 
         internal static bool GuidanceVisibilityChanged(bool onlyWhenBlocked, int threshold) => Progress.RecordGuidanceMode(onlyWhenBlocked, threshold);
 
-        internal static void Draw(On.HUD.Map.orig_Draw orig, HUD.Map map, float timeStacker, bool enabled, MapOptions options)
+        internal static void Draw(On.HUD.Map.orig_Draw orig, HUD.Map map, float timeStacker, MapOptions options)
         {
             MapState state = null;
             if (map != null && States.TryGetValue(map, out state))
@@ -91,7 +91,10 @@ namespace Rainward
             orig(map, timeStacker);
             try
             {
-                if (!enabled || map?.hud?.owner == null || !map.hud.owner.RevealMap)
+                // Route and interest markers have independent switches. The
+                // route builder returns an empty set when it is disabled, but
+                // interest entrances remain available on the same HUD map.
+                if (map?.hud?.owner == null || !map.hud.owner.RevealMap)
                 {
                     ClearMap(map);
                     return;

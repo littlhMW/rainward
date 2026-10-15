@@ -158,7 +158,7 @@ namespace Rainward
 
         private void MapDraw(On.HUD.Map.orig_Draw orig, HUD.Map map, float timeStacker)
         {
-            HudMapHighlighter.Draw(orig, map, timeStacker, options?.EnableRouteHighlight.Value ?? true, options);
+            HudMapHighlighter.Draw(orig, map, timeStacker, options);
         }
 
         private static bool IsStory(RainWorldGame game) => game != null && game.IsStorySession && game.GetStorySession?.saveState != null;
