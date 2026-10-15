@@ -19,7 +19,6 @@ namespace Rainward
         private static readonly FieldInfo DotAField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("dotA", Instance);
         private static readonly FieldInfo DotBField = Type.GetType("HUD.Map+OnMapConnection, Assembly-CSharp")?.GetField("dotB", Instance);
         private static readonly FieldInfo RegionField = typeof(World).GetField("region", Instance);
-        private static readonly FieldInfo AbstractRoomWorldField = typeof(AbstractRoom).GetField("world", Instance);
         private static readonly FieldInfo SettingsTriggersField = typeof(RoomSettings).GetField("triggers", Instance);
         private static readonly FieldInfo TriggerEventField = typeof(EventTrigger).GetField("tEvent", Instance);
         private static readonly FieldInfo TriggerSlugcatsField = typeof(EventTrigger).GetField("slugcats", Instance);
@@ -31,61 +30,69 @@ namespace Rainward
         private static readonly Color InterestColor = new Color(0.92f, 0.9f, 0.82f, 1f);
         private static readonly Dictionary<HUD.Map, MapState> States = new Dictionary<HUD.Map, MapState>();
         private static readonly GuidanceProgress Progress = new GuidanceProgress();
-        private static readonly FieldInfo ShowToRoomField = typeof(OverseersWorldAI.DirectionFinder).GetField("showToRoom", Instance);
         private static readonly MethodInfo RoomSettingsTemplateMethod = typeof(Region).GetMethod("GetRoomSettingsTemplate", Instance, null, new[] { typeof(string) }, null);
 
         internal static bool InitializeGuidance(RainWorldGame game, string sessionKey)
         {
             if (!IsStory(game)) return false;
-            TryCurrentStoryGoal(game, out var target);
-            if (!Progress.Begin(sessionKey, target)) return true;
+            if (!Progress.Begin(sessionKey, CurrentGuidanceTarget(game))) return true;
             Reset();
             return true;
         }
 
         internal static string CurrentStoryGoal(RainWorldGame game)
         {
-            return TryCurrentStoryGoal(game, out var target) ? target : Progress.CurrentTarget;
+            var goal = CurrentCampaignGoal(game);
+            return goal != null && String.Equals(goal.Region, CurrentRegion(game), StringComparison.OrdinalIgnoreCase)
+                ? goal.Room : null;
         }
 
         internal static bool RefreshStoryGoal(RainWorldGame game)
         {
-            return TryCurrentStoryGoal(game, out var target) && Progress.ObserveTarget(target);
+            return IsStory(game) && Progress.ObserveTarget(CurrentGuidanceTarget(game));
         }
 
-        private static bool TryCurrentStoryGoal(RainWorldGame game, out string target)
+        internal static string CurrentGuidanceTarget(RainWorldGame game)
         {
-            target = null;
-            var roomIndex = CurrentStoryGoalRoomIndex(game);
-            if (roomIndex < 0) return false;
-            try
-            {
-                var room = game.world.GetAbstractRoom(roomIndex);
-                if (room == null || String.IsNullOrWhiteSpace(room.name)) return false;
-                target = room.name;
-                return true;
-            }
-            catch { return false; }
+            var goal = CurrentCampaignGoal(game);
+            if (goal != null) return goal.Stage + "|" + goal.Region + "|" + goal.Room;
+            var region = CurrentRegion(game);
+            var nextRegion = GuidanceRoutePlanner.CampaignTargetRegion(game?.StoryCharacter?.value, region);
+            return String.IsNullOrWhiteSpace(nextRegion) ? null : "region|" + region + "|" + nextRegion;
         }
 
-        private static int CurrentStoryGoalRoomIndex(RainWorldGame game)
+        private static CampaignGuidanceGoal CurrentCampaignGoal(RainWorldGame game)
         {
-            if (!IsStory(game) || ShowToRoomField == null) return -1;
-            var finder = game.world?.overseersWorldAI?.directionFinder;
-            if (finder == null) return -1;
+            if (!IsStory(game)) return null;
             try
             {
-                if (!(ShowToRoomField.GetValue(finder) is int roomIndex) || roomIndex < 0) return -1;
-                return game.world.GetAbstractRoom(roomIndex) == null ? -1 : roomIndex;
+                var save = game.GetStorySession.saveState;
+                var misc = save.miscWorldSaveData;
+                var death = save.deathPersistentSaveData;
+                var ghostVisits = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                if (death.ghostsTalkedTo != null)
+                    foreach (var pair in death.ghostsTalkedTo)
+                        if (pair.Key != null && !String.IsNullOrWhiteSpace(pair.Key.value))
+                            ghostVisits[pair.Key.value] = pair.Value;
+                return CampaignGuidanceGoals.Resolve(game.StoryCharacter?.value, save.cycleNumber,
+                    save.denPosition, misc.EverMetMoon ? misc.SLOracleState.playerEncounters : 0,
+                    misc.SSaiConversationsHad, death.theMark, misc.moonHeartRestored,
+                    misc.pebblesEnergyTaken, misc.smPearlTagged, save.hasRobo,
+                    death.redExtraCycles, death.karmaCap, ghostVisits);
             }
-            catch { return -1; }
+            catch { return null; }
+        }
+
+        private static string CurrentRegion(RainWorldGame game)
+        {
+            try { return (RegionField?.GetValue(game?.world) as Region)?.name; }
+            catch { return null; }
         }
 
         internal static void SuccessfulSleep(RainWorldGame game, string previousGoal, bool? discoveredNewRoom)
         {
             if (!IsStory(game)) return;
-            if (!TryCurrentStoryGoal(game, out var currentGoal)) currentGoal = Progress.CurrentTarget;
-            Progress.SuccessfulSleep(previousGoal, currentGoal, discoveredNewRoom);
+            Progress.SuccessfulSleep(previousGoal, CurrentGuidanceTarget(game), discoveredNewRoom);
         }
 
         internal static bool GuidanceVisibilityChanged(bool onlyWhenBlocked, int threshold) => Progress.RecordGuidanceMode(onlyWhenBlocked, threshold);
@@ -161,36 +168,24 @@ namespace Rainward
             var startRoom = owner.MapOwnerRoom;
             var localRooms = MapRoomIndices(data);
             var route = new List<RouteEdge>();
-            var preciseTargetRoom = -1;
-            var targetReached = false;
+            var goal = CurrentCampaignGoal(game);
             if (options?.LocateSpecificRoom.Value == true)
             {
-                preciseTargetRoom = CurrentStoryGoalRoomIndex(game);
-                if (preciseTargetRoom < 0) preciseTargetRoom = RoomIndex(data, Progress.CurrentTarget);
-                targetReached = preciseTargetRoom >= 0 && startRoom == preciseTargetRoom;
-                if (preciseTargetRoom >= 0 && !targetReached)
+                if (goal != null && !String.IsNullOrWhiteSpace(goal.Room)
+                    && String.Equals(goal.Region, map.RegionName, StringComparison.OrdinalIgnoreCase))
                 {
-                    if (localRooms.Contains(preciseTargetRoom))
-                        route = GuidanceRoutePlanner.FindPath(edges, startRoom, new HashSet<int> { preciseTargetRoom });
-                    if (route.Count == 0)
-                    {
-                        // A precise story target can be outside the visible map.
-                        // Follow the world graph to the last room represented here.
-                        var worldRoute = FindWorldRoute(game, startRoom, preciseTargetRoom);
-                        var worldRooms = GuidanceRoutePlanner.PathRooms(worldRoute, startRoom);
-                        var localGoal = LastRoomOnMap(worldRooms, localRooms);
-                        if (localGoal >= 0 && localGoal != startRoom)
-                            route = GuidanceRoutePlanner.FindPath(edges, startRoom, new HashSet<int> { localGoal });
-                    }
+                    var targetRoom = RoomIndex(data, goal.Room);
+                    if (targetRoom >= 0 && localRooms.Contains(targetRoom) && targetRoom != startRoom)
+                        route = GuidanceRoutePlanner.FindPath(edges, startRoom, new HashSet<int> { targetRoom });
                 }
             }
-            // Regional guidance deliberately uses the campaign route table,
-            // not OverseersWorldAI.DirectionFinder.showToRoom. That target can
-            // disappear after story events; the HUD route should still lead to
-            // the campaign's next region. Exact-room mode uses the game target
-            // when available and falls back to this route if it is not.
-            if (route.Count == 0 && !targetReached)
-                route = BuildCampaignRegionalRoute(map, data, edges, startRoom, game);
+            // Story goals come from the campaign route and save-state milestones.
+            // A specific room is used only when that goal lies in the active map;
+            // otherwise guidance stops at the next region exit on its route.
+            if (route.Count == 0 && (goal == null || !String.Equals(goal.Region, map.RegionName,
+                StringComparison.OrdinalIgnoreCase) || String.IsNullOrWhiteSpace(goal.Room)
+                || options?.LocateSpecificRoom.Value != true))
+                route = BuildCampaignRegionalRoute(map, data, edges, startRoom, game, goal);
 
             foreach (var edge in route)
             {
@@ -201,11 +196,16 @@ namespace Rainward
         }
 
         private static List<RouteEdge> BuildCampaignRegionalRoute(HUD.Map map, object data,
-            IList<RouteEdge> edges, int startRoom, RainWorldGame game)
+            IList<RouteEdge> edges, int startRoom, RainWorldGame game, CampaignGuidanceGoal goal)
         {
             var result = new List<RouteEdge>();
-            var nextRegion = GuidanceRoutePlanner.CampaignTargetRegion(game?.StoryCharacter?.value, map?.RegionName);
+            var currentRegion = map?.RegionName;
+            var targetRegion = goal?.Region;
+            var nextRegion = String.IsNullOrWhiteSpace(targetRegion)
+                ? GuidanceRoutePlanner.CampaignTargetRegion(game?.StoryCharacter?.value, currentRegion)
+                : GuidanceRoutePlanner.FirstRegionOnPath(currentRegion, targetRegion);
             if (String.IsNullOrWhiteSpace(nextRegion)) return result;
+            if (String.Equals(currentRegion, targetRegion, StringComparison.OrdinalIgnoreCase)) return result;
 
             var gates = GateRooms(map, data, nextRegion);
             return GuidanceRoutePlanner.FindPath(edges, startRoom, gates);
@@ -232,10 +232,10 @@ namespace Rainward
             if (String.IsNullOrEmpty(name) || !name.StartsWith("GATE_", StringComparison.OrdinalIgnoreCase)) return false;
             var parts = name.Split('_');
             return parts.Length >= 3
-                && (String.Equals(parts[1], targetRegion, StringComparison.OrdinalIgnoreCase)
-                    || String.Equals(parts[2], targetRegion, StringComparison.OrdinalIgnoreCase)
-                    || (String.Equals(parts[1], currentRegion, StringComparison.OrdinalIgnoreCase)
-                        && String.Equals(parts[2], targetRegion, StringComparison.OrdinalIgnoreCase)));
+                && ((String.Equals(parts[1], currentRegion, StringComparison.OrdinalIgnoreCase)
+                        && String.Equals(parts[2], targetRegion, StringComparison.OrdinalIgnoreCase))
+                    || (String.Equals(parts[2], currentRegion, StringComparison.OrdinalIgnoreCase)
+                        && String.Equals(parts[1], targetRegion, StringComparison.OrdinalIgnoreCase)));
         }
 
         private static void BuildInterestDoorPairs(HUD.Map map, MapOptions options, MapState state)
@@ -298,67 +298,6 @@ namespace Rainward
             }
             catch { }
             return result;
-        }
-
-        private static List<RouteEdge> FindWorldRoute(RainWorldGame game, int start, int goal)
-        {
-            var result = new List<RouteEdge>();
-            if (game?.world?.abstractRooms == null || start < 0 || goal < 0) return result;
-            var edges = new List<RouteEdge>();
-            var rooms = game.world.abstractRooms;
-            for (var i = 0; i < rooms.Length; i++)
-            {
-                var connections = rooms[i]?.connections;
-                if (connections == null) continue;
-                foreach (var connection in connections)
-                    if (connection >= 0 && connection < rooms.Length && connection != i && i < connection)
-                        edges.Add(new RouteEdge(i, connection));
-            }
-            return GuidanceRoutePlanner.FindPath(edges, start, new HashSet<int> { goal });
-        }
-
-        private static int LastRoomOnMap(IList<int> path, ISet<int> mapRooms)
-        {
-            if (path == null || mapRooms == null) return -1;
-            var result = -1;
-            foreach (var room in path)
-                if (mapRooms.Contains(room)) result = room;
-            return result;
-        }
-
-        private static bool IsConfirmedRegionExit(RainWorldGame game, int roomIndex)
-        {
-            if (game?.world == null || roomIndex < 0) return false;
-            try
-            {
-                var room = game.world.GetAbstractRoom(roomIndex);
-                var gate = room?.GetType().GetProperty("gate", Instance);
-                var value = gate?.GetValue(room, null);
-                return value is bool isGate ? isGate : value != null;
-            }
-            catch { return false; }
-        }
-
-        private static bool IsConfirmedDifferentRegion(RainWorldGame game, HUD.Map map, int roomIndex)
-        {
-            if (game?.world == null || roomIndex < 0) return false;
-            try
-            {
-                var currentRegion = RegionField?.GetValue(game.world) as Region;
-                var targetRoom = game.world.GetAbstractRoom(roomIndex);
-                var targetWorld = AbstractRoomWorldField?.GetValue(targetRoom) as World;
-                var targetRegion = targetWorld == null ? null : RegionField?.GetValue(targetWorld) as Region;
-                var currentName = currentRegion?.name;
-                var targetName = targetRegion?.name;
-                if (!String.IsNullOrWhiteSpace(currentName) && !String.IsNullOrWhiteSpace(targetName))
-                    return !String.Equals(currentName, targetName, StringComparison.OrdinalIgnoreCase);
-
-                var mapName = map?.RegionName;
-                if (!String.IsNullOrWhiteSpace(mapName) && !String.IsNullOrWhiteSpace(targetName))
-                    return !String.Equals(mapName, targetName, StringComparison.OrdinalIgnoreCase);
-            }
-            catch { }
-            return false;
         }
 
         private static bool IsInterestDoor(Region region, string roomName, string timeline, string campaign, int cycle)

@@ -42,7 +42,7 @@ internal static class GuidanceCases
             "blocked count starts on the sleep after a changed story target");
         check(progress.ObserveTarget("HI_A24") && progress.CurrentTarget == "HI_A24"
             && progress.SleepsWithoutProgress == 0 && !progress.ShouldShowRoute(true),
-            "a newly available read-only game target refreshes the route and clears stale blocked state");
+            "a newly available campaign goal refreshes the route and clears stale blocked state");
         check(!progress.ObserveTarget("HI_A24"),
             "observing the same game target does not invalidate guidance repeatedly");
 
@@ -88,6 +88,39 @@ internal static class GuidanceCases
         check(GuidanceRoutePlanner.CampaignTargetRegion("unknown", "SU") == null
             && GuidanceRoutePlanner.CampaignTargetRegion("white", "UNKNOWN") == null,
             "unsupported campaign or region does not invent a destination");
+        var firstShelterGoal = CampaignGuidanceGoals.Resolve("White", 0, "SU_A01",
+            0, 0, false, false, false, false, false, false, 2, null);
+        var moonGoal = CampaignGuidanceGoals.Resolve("white", 3, "SL_A01",
+            0, 0, false, false, false, false, false, false, 2, null);
+        var pebblesGoal = CampaignGuidanceGoals.Resolve("white", 5, "SL_A01",
+            1, 0, false, false, false, false, false, false, 2, null);
+        var depthsGoal = CampaignGuidanceGoals.Resolve("white", 8, "SS_A01",
+            1, 0, true, false, false, false, false, false, 5, null);
+        check(firstShelterGoal.Stage == "settle" && firstShelterGoal.Region == "HI"
+            && firstShelterGoal.Room == null,
+            "new survivor save starts with a region goal from campaign progression");
+        check(moonGoal.Stage == "first-visit" && moonGoal.Region == "SL" && moonGoal.Room == "SL_AI",
+            "survivor remains directed to Moon's room after reaching Shoreline");
+        check(pebblesGoal.Stage == "high-visit" && pebblesGoal.Region == "SS" && pebblesGoal.Room == "SS_AI"
+            && GuidanceRoutePlanner.FirstRegionOnPath("SL", pebblesGoal.Region) == "SH",
+            "the next region changes only after the Moon conversation is saved");
+        check(depthsGoal.Stage == "far-journey" && depthsGoal.Region == "SB" && depthsGoal.Room == null,
+            "the campaign advances to the depths from saved story state");
+        var rivuletReturn = CampaignGuidanceGoals.Resolve("Rivulet", 10, "MS_A01",
+            1, 1, false, true, true, false, false, false, 4, null);
+        check(rivuletReturn.Stage == "rivulet-return" && rivuletReturn.Region == "SL"
+            && rivuletReturn.Room == "SL_AI",
+            "Rivulet's return target follows the saved story milestone");
+        var hunterDelivery = CampaignGuidanceGoals.Resolve("Red", 10, "UW_A01",
+            0, 2, false, false, false, false, false, true, 9, null);
+        var hunterClose = CampaignGuidanceGoals.Resolve("hunter", 10, "SL_A01",
+            1, 2, false, false, false, false, false, true, 9, null);
+        check(hunterDelivery.Stage == "delivery" && hunterDelivery.Room == "SL_AI"
+            && hunterClose.Stage == "hunter-close" && hunterClose.Region == "SB",
+            "Hunter's delivery and final route follow saved campaign flags");
+        check(GuidanceRoutePlanner.FirstRegionOnPath("SL", "SS") == "SH"
+            && GuidanceRoutePlanner.FirstRegionOnPath("SU", "HI") == "HI",
+            "stage room targets resolve to the next connected region, not an Overseer room");
         var regionalRoomHint = GuidanceRoutePlanner.RegionalGuidancePath(edges, 0, 3, false);
         check(regionalRoomHint.Count == 1 && regionalRoomHint[0].A == 0 && regionalRoomHint[0].B == 1,
             "regional mode keeps the next highlighted connection without exposing the full in-region room route");

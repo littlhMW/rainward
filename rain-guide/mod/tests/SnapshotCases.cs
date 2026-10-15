@@ -47,7 +47,7 @@ internal static class SnapshotCases
         var snapshot = Example();
         var json = SnapshotProtocol.Json(snapshot);
         var url = SnapshotProtocol.Url(json);
-        check(url.StartsWith("https://littlhmw.github.io/rainward/#v=2&data=") && new Uri(url).Query == "", "v2 compressed snapshot remains entirely in URL fragment");
+        check(url.StartsWith("https://littlhmw.github.io/rainward/test/#v=2&data=") && new Uri(url).Query == "", "test build opens the test page with the v2 snapshot entirely in the URL fragment");
         var data = url.Split("data=")[1].Replace('-', '+').Replace('_', '/');
         data += new string('=', (4 - data.Length % 4) % 4);
         using var packed = new MemoryStream(Convert.FromBase64String(data));
@@ -59,7 +59,7 @@ internal static class SnapshotCases
         check(document.RootElement.GetProperty("route").GetBoolean(), "route highlighting is enabled by default in a game snapshot");
         check(document.RootElement.GetProperty("storyTargetRoom").GetString() == "SU_C12"
             && document.RootElement.GetProperty("storyTargetRegion").GetString() == "SU",
-            "the live in-game story target is available for optional exact-room website guidance");
+            "the campaign progression target is available for optional exact-room website guidance");
         check(document.RootElement.GetProperty("progress").GetProperty("flags").GetProperty("ghostsTalkedTo").GetProperty("CC").GetInt32() == 2, "echo dictionary serializes as a JSON object");
         var players = document.RootElement.GetProperty("players");
         check(players.GetArrayLength() == 3 && !players[2].GetProperty("available").GetBoolean() && !players[2].TryGetProperty("room", out _), "unresolved remote players remain present without fabricated coordinates");

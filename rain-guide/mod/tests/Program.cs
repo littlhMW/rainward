@@ -38,7 +38,7 @@ void Check(bool condition, string message)
 
 CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
 var url = LinkProtocol.Build("White", "SU", "SU_C04", 12, 7, "White", "story", true, 250.5f, 140.25f, -40f, 0f);
-Check(url.StartsWith("https://littlhmw.github.io/rainward/#v=1&character=Survivor&"), "fixed HTTPS destination and fragment protocol");
+Check(url.StartsWith("https://littlhmw.github.io/rainward/test/#v=1&character=Survivor&"), "test build opens the separate test page with the location fragment");
 Check(new Uri(url).Query == "", "location is not a server query parameter");
 Check(url.Contains("&room=SU_C04&x=12&y=7&"), "room and tile coordinates preserved");
 Check(url.Contains("&px=250.5&py=140.25&cx=-40&cy=0"), "pixels use culture-independent decimal points");

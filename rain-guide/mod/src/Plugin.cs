@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Rainward
 {
-    [BepInPlugin(ModId, "Rainward: Where to Go", "1.3.8")]
+    [BepInPlugin(ModId, "Rainward: Where to Go", "1.3.9")]
     [BepInDependency("henpemaz.rainmeadow", BepInDependency.DependencyFlags.SoftDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
@@ -173,7 +173,7 @@ namespace Rainward
         private void GameWin(On.RainWorldGame.orig_Win orig, RainWorldGame game,
             bool malnourished, bool fromWarpPoint)
         {
-            var previousGoal = HudMapHighlighter.CurrentStoryGoal(game);
+            var previousGoal = HudMapHighlighter.CurrentGuidanceTarget(game);
             var discoveredNewRoom = NewRoomsThisCycle(game);
             orig(game, malnourished, fromWarpPoint);
             if (!fromWarpPoint && IsStory(game))

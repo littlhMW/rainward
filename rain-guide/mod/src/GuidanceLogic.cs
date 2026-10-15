@@ -15,6 +15,81 @@ namespace Rainward
         }
     }
 
+    internal sealed class CampaignGuidanceGoal
+    {
+        internal readonly string Stage;
+        internal readonly string Region;
+        internal readonly string Room;
+
+        internal CampaignGuidanceGoal(string stage, string region, string room = null)
+        {
+            Stage = stage;
+            Region = region;
+            Room = room;
+        }
+    }
+
+    internal static class CampaignGuidanceGoals
+    {
+        internal static CampaignGuidanceGoal Resolve(string character, int cycle, string denPosition,
+            int moonConversations, int pebblesConversations, bool hasMark, bool moonHeartRestored,
+            bool pebblesEnergyTaken, bool smPearlTagged, bool hasRobo, bool redExtraCycles,
+            int karmaCap, IDictionary<string, int> ghostsTalkedTo)
+        {
+            switch ((character ?? "").ToLowerInvariant())
+            {
+                case "white": case "survivor": case "yellow": case "monk":
+                    if (hasMark) return new CampaignGuidanceGoal("far-journey", "SB");
+                    if (moonConversations > 0) return new CampaignGuidanceGoal("high-visit", "SS", "SS_AI");
+                    if (cycle > 0 && !String.IsNullOrWhiteSpace(denPosition)
+                        && !denPosition.StartsWith("SU_", StringComparison.OrdinalIgnoreCase))
+                        return new CampaignGuidanceGoal("first-visit", "SL", "SL_AI");
+                    return new CampaignGuidanceGoal("settle", "HI");
+
+                case "gourmand":
+                    return hasMark
+                        ? new CampaignGuidanceGoal("gourmand-west", "OE")
+                        : new CampaignGuidanceGoal("gourmand-visit", "SS", "SS_AI");
+
+                case "artificer":
+                    return hasRobo && hasMark
+                        ? new CampaignGuidanceGoal("artificer-city", "LC")
+                        : new CampaignGuidanceGoal("artificer-visit", "SS", "SS_AI");
+
+                case "rivulet":
+                    if (moonHeartRestored) return new CampaignGuidanceGoal("rivulet-return", "SL", "SL_AI");
+                    if (pebblesEnergyTaken) return new CampaignGuidanceGoal("rivulet-deep", "MS", "MS_CORE");
+                    if (pebblesConversations > 0) return new CampaignGuidanceGoal("rivulet-carry", "RM", "RM_CORE");
+                    if (moonConversations > 0) return new CampaignGuidanceGoal("rivulet-high", "RM", "RM_AI");
+                    return new CampaignGuidanceGoal("rivulet-coast", "SL", "SL_AI");
+
+                case "spear": case "spearmaster":
+                    if (smPearlTagged) return new CampaignGuidanceGoal("spear-final", "SI");
+                    if (pebblesConversations > 0) return new CampaignGuidanceGoal("spear-deliver", "DM", "DM_AI");
+                    return new CampaignGuidanceGoal("spear-high", "SS", "SS_AI");
+
+                case "red": case "hunter":
+                    if (!redExtraCycles) return null;
+                    return moonConversations > 0
+                        ? new CampaignGuidanceGoal("hunter-close", "SB")
+                        : new CampaignGuidanceGoal("delivery", "SL", "SL_AI");
+
+                case "saint":
+                    if (karmaCap >= 9) return new CampaignGuidanceGoal("saint-close", "HR");
+                    foreach (var region in new[] { "SI", "CC", "CL", "SL", "UG", "LF", "SB" })
+                    {
+                        int visits;
+                        if (ghostsTalkedTo == null || !ghostsTalkedTo.TryGetValue(region, out visits)) visits = 0;
+                        if (visits < 2) return new CampaignGuidanceGoal("saint-" + region, region);
+                    }
+                    return new CampaignGuidanceGoal("saint-close", "HR");
+
+                default:
+                    return null;
+            }
+        }
+    }
+
     internal sealed class GuidanceProgress
     {
         internal const int DefaultSleepsBeforeGuidance = 2;
@@ -142,7 +217,7 @@ namespace Rainward
             }
         }
 
-        private static string FirstRegionOnPath(string from, string destination)
+        internal static string FirstRegionOnPath(string from, string destination)
         {
             if (String.IsNullOrWhiteSpace(from) || String.IsNullOrWhiteSpace(destination)
                 || String.Equals(from, destination, StringComparison.OrdinalIgnoreCase)) return destination;

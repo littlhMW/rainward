@@ -5,7 +5,7 @@ namespace Rainward
 {
     internal static class LinkProtocol
     {
-        internal const string Website = "https://littlhmw.github.io/rainward/";
+        internal const string Website = "https://littlhmw.github.io/rainward/test/";
 
         internal static string Character(string internalName)
         {
